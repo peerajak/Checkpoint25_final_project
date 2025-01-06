@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: ur_description
+    relative_path: urdf/ur_moveit.urdf.xacro
+  srdf:
+    relative_path: config/name.srdf
+  package_settings:
+    author_name: Peerajak Witoonchart
+    author_email: peerajak@gmail.com
+    generated_timestamp: 1736140279
