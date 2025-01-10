@@ -41,3 +41,13 @@ ros2 launch my_moveit_config moveit_rviz.launch.py
 ```
 
 
+Terminal 4
+
+```
+cd ~/ros2_ws
+source install/setup.bash
+```
+
+```
+ros2 launch moveit2_scripts test_trajectory.launch.py
+```
