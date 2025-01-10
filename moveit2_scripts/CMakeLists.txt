@@ -17,6 +17,7 @@ find_package(geometric_shapes REQUIRED)
 find_package(control_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -43,7 +44,8 @@ ament_target_dependencies(test_trajectory
 	moveit_ros_planning_interface
 	interactive_markers
 	moveit_ros_planning
-	control_msgs)
+	control_msgs
+	rviz_visual_tools)
 
 # Install the executable
 install(TARGETS 
