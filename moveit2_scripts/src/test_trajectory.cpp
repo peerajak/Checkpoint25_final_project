@@ -1,3 +1,8 @@
+#include "geometric_shapes/mesh_operations.h"
+#include "geometric_shapes/shape_operations.h"
+#include "geometric_shapes/shapes.h"
+#include "geometric_shapes/shape_messages.h"
+#include "shape_msgs/msg/detail/mesh__struct.hpp"
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <rclcpp/rclcpp.hpp>
@@ -58,24 +63,82 @@ int main(int argc, char **argv) {
   attached_object.object.id = "box";
 
   /* A default pose */
-  geometry_msgs::msg::Pose pose;
-  pose.position.z = 0.11;
+  geometry_msgs::msg::Pose pose_counter, pose_top, pose_wall;
+  geometry_msgs::msg::Pose pose_coffee_machine_mesh;
+  pose_counter.position.x = 0.3;
+  pose_counter.position.y = 0.36;
+  pose_counter.position.z = -0.532;
 
-  pose.orientation.x = 0.0;
-  pose.orientation.y = 0.0;
-  pose.orientation.z = 0.0;
-  pose.orientation.w = 1.0;
+  pose_counter.orientation.x = 0.0;
+  pose_counter.orientation.y = 0.0;
+  pose_counter.orientation.z = 0.0;
+  pose_counter.orientation.w = 0.0;
+
+  pose_top.position.x = 0.3;
+  pose_top.position.y = 0.36;
+  pose_top.position.z = -0.032;
+
+  pose_top.orientation.x = 0.0;
+  pose_top.orientation.y = 0.0;
+  pose_top.orientation.z = 0.0;
+  pose_top.orientation.w = 0.0;
+
+  pose_wall.position.x = 0.3;
+  pose_wall.position.y = -0.64;
+  pose_wall.position.z = -0.032;
+
+  pose_wall.orientation.x = 0.0;
+  pose_wall.orientation.y = 0.0;
+  pose_wall.orientation.z = 0.0;
+  pose_wall.orientation.w = 0.0;
+
+  pose_coffee_machine_mesh.position.x = 0.1;
+  pose_coffee_machine_mesh.position.y = 0.86;
+  pose_coffee_machine_mesh.position.z = -0.032;
+
+  pose_coffee_machine_mesh.orientation.x = 0.0;
+  pose_coffee_machine_mesh.orientation.y = 0.0;
+  pose_coffee_machine_mesh.orientation.z = 0.707;
+  pose_coffee_machine_mesh.orientation.w = 0.707;
   /* Define a box to be attached */
-  shape_msgs::msg::SolidPrimitive primitive;
-  primitive.type = primitive.BOX;
-  primitive.dimensions.resize(3);
-  primitive.dimensions[0] = 0.075;
-  primitive.dimensions[1] = 0.075;
-  primitive.dimensions[2] = 0.275;
+  shape_msgs::msg::SolidPrimitive primitive_counter, primitive_top,
+      primitive_wall;
+  shape_msgs::msg::Mesh coffee_machine_mesh;
+  primitive_counter.type = primitive_counter.BOX;
+  primitive_counter.dimensions.resize(3);
+  primitive_counter.dimensions[0] = 0.5;
+  primitive_counter.dimensions[1] = 1.8;
+  primitive_counter.dimensions[2] = 1.0;
+
+  primitive_top.type = primitive_top.BOX;
+  primitive_top.dimensions.resize(3);
+  primitive_top.dimensions[0] = 0.85;
+  primitive_top.dimensions[1] = 1.81;
+  primitive_top.dimensions[2] = 0.05;
+
+  primitive_wall.type = primitive_wall.BOX;
+  primitive_wall.dimensions.resize(3);
+  primitive_wall.dimensions[0] = 2.0;
+  primitive_wall.dimensions[1] = 0.3;
+  primitive_wall.dimensions[2] = 2.0;
+
+  shapes::Mesh *m = shapes::createMeshFromResource(
+      "package://the_construct_office_gazebo/models/coffee_machine/meshes/"
+      "cafeteria.dae");
+  shapes::ShapeMsg shelf_mesh_msg;
+  shapes::constructMsgFromShape(m, shelf_mesh_msg);
+  coffee_machine_mesh = boost::get<shape_msgs::msg::Mesh>(shelf_mesh_msg);
 
   // Add the shape and pose to the collision object
-  attached_object.object.primitives.push_back(primitive);
-  attached_object.object.primitive_poses.push_back(pose);
+  attached_object.object.primitives.push_back(primitive_counter);
+  attached_object.object.primitives.push_back(primitive_top);
+  attached_object.object.primitives.push_back(primitive_wall);
+  attached_object.object.primitive_poses.push_back(pose_counter);
+  attached_object.object.primitive_poses.push_back(pose_top);
+  attached_object.object.primitive_poses.push_back(pose_wall);
+
+  attached_object.object.meshes.push_back(coffee_machine_mesh);
+  attached_object.object.mesh_poses.push_back(pose_coffee_machine_mesh);
 
   // Note that attaching an object to the robot requires
   // the corresponding operation to be specified as an ADD operation.
@@ -84,7 +147,7 @@ int main(int argc, char **argv) {
   // Since we are attaching the object to the robot hand to simulate picking up
   // the object, we want the collision checker to ignore collisions between the
   // object and the robot hand.
-  //attached_object.touch_links = std::vector<std::string>{
+  // attached_object.touch_links = std::vector<std::string>{
   //    "panda_hand", "panda_leftfinger", "panda_rightfinger"};
 
   // Add an object into the environment
