@@ -51,3 +51,14 @@ source install/setup.bash
 ```
 ros2 launch moveit2_scripts test_trajectory.launch.py
 ```
+
+
+### Important files
+
+world file
+
+~/ros2_ws/src/universal_robot_ros2/the_construct_office_gazebo/worlds/starbots_complete.world
+
+robot xacro file
+
+~/ros2_ws/src/universal_robot_ros2/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
