@@ -1,12 +1,12 @@
 Panels:
   - Class: rviz_common/Displays
-    Help Height: 71
+    Help Height: 31
     Name: Displays
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1
       Splitter Ratio: 0.5
-    Tree Height: 71
+    Tree Height: 31
   - Class: rviz_common/Help
     Name: Help
   - Class: rviz_common/Views
@@ -412,7 +412,7 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 934
+  Height: 434
   Help:
     collapsed: false
   Hide Left Dock: false

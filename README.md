@@ -62,3 +62,8 @@ world file
 robot xacro file
 
 ~/ros2_ws/src/universal_robot_ros2/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
+
+
+### Next step 
+
+- Read how to create a package for TF publication, do publication given updating value of transformation matrices from, and to a moving position.

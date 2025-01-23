@@ -1,7 +1,7 @@
 #include "geometric_shapes/mesh_operations.h"
+#include "geometric_shapes/shape_messages.h"
 #include "geometric_shapes/shape_operations.h"
 #include "geometric_shapes/shapes.h"
-#include "geometric_shapes/shape_messages.h"
 #include "shape_msgs/msg/detail/mesh__struct.hpp"
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -47,8 +47,8 @@ int main(int argc, char **argv) {
   while (planning_scene_diff_publisher->get_subscription_count() < 1) {
     rclcpp::sleep_for(std::chrono::milliseconds(500));
   }
-  visual_tools.prompt(
-      "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+  //visual_tools.prompt(
+  //    "Press 'next' in the RvizVisualToolsGui window to continue the demo");
 
   // Define the attached object message
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -233,12 +233,12 @@ int main(int argc, char **argv) {
   current_state->copyJointGroupPositions(joint_model_group,
                                          joint_group_positions);
 
-  // joint_group_positions[0] = 0.00;  // Shoulder Pan
-  joint_group_positions[1] = -2.50; // Shoulder Lift
-  joint_group_positions[2] = 1.50;  // Elbow
-  joint_group_positions[3] = -1.50; // Wrist 1
-  joint_group_positions[4] = -1.55; // Wrist 2
-  // joint_group_positions[5] = 0.00;  // Wrist 3
+  joint_group_positions[0] = 2.2514; // Shoulder Pan
+  // joint_group_positions[1] = 0.4712; // Shoulder Lift
+  // joint_group_positions[2] = 3.00;   // Elbow
+  // joint_group_positions[3] = -1.867; // Wrist 1
+  // joint_group_positions[4] = -0.698; // Wrist 2
+  // joint_group_positions[5] = 0.925;  // Wrist 3
   move_group.setJointValueTarget(joint_group_positions);
 
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
@@ -247,6 +247,16 @@ int main(int argc, char **argv) {
       (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
   move_group.execute(my_plan);
+
+  joint_group_positions[1] = 0.4712; // Shoulder Lift
+  move_group.setJointValueTarget(joint_group_positions);
+
+  // step 2
+
+  // success =
+  //     (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+
+  // move_group.execute(my_plan);
 
   rclcpp::shutdown();
   return 0;
