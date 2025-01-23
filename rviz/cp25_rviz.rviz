@@ -9,7 +9,7 @@ Panels:
         - /Image2
         - /TF1
         - /TF1/Frames1
-      Splitter Ratio: 0.5
+      Splitter Ratio: 0.7941176295280457
     Tree Height: 355
   - Class: rviz_common/Selection
     Name: Selection
@@ -117,6 +117,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        aruco_frame:
+          Value: true
         base:
           Value: true
         base_link:
@@ -168,7 +170,7 @@ Visualization Manager:
         wrist_rgbd_camera_left_ir_optical_frame:
           Value: false
         wrist_rgbd_camera_link:
-          Value: false
+          Value: true
         wrist_rgbd_camera_right_ir_frame:
           Value: false
         wrist_rgbd_camera_right_ir_optical_frame:
@@ -204,6 +206,8 @@ Visualization Manager:
                           ft_frame:
                             {}
             wrist_rgbd_camera_link:
+              aruco_frame:
+                {}
               wrist_rgbd_camera_depth_frame:
                 wrist_rgbd_camera_depth_optical_frame:
                   {}
@@ -264,7 +268,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.4871779680252075
+      Distance: 2.6907615661621094
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -279,10 +283,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.1203981414437294
+      Pitch: 0.3003981113433838
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.173582077026367
+      Yaw: 0.12039623409509659
     Saved: ~
 Window Geometry:
   Displays:

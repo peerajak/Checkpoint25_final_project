@@ -52,6 +52,26 @@ source install/setup.bash
 ros2 launch moveit2_scripts test_trajectory.launch.py
 ```
 
+or 
+
+```
+ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
+```
+
+
+to View TF frames
+
+```
+ros2 run tf2_tools view_frames
+```
+
+To view RVIZ2 Camera 
+
+```
+cd ~/ros2_ws/src/Checkpoint25_final_project/
+rviz2 -d rviz/cp25_rviz.rviz
+```
+
 
 ### Important files
 
