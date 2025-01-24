@@ -84,6 +84,12 @@ robot xacro file
 ~/ros2_ws/src/universal_robot_ros2/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
 
 
-### Next step 
+### Working on, and Next step 
 
-- Read how to create a package for TF publication, do publication given updating value of transformation matrices from, and to a moving position.
+- currently I change the camera position to see the aruco mark clearly, to proof of concept that I can do this project with this method
+- The result is promising, see the result
+
+![alt text](cp25_proof_of_concepting.png)
+
+- It looks like a proof of concept. Check the error value of the proof of concept
+- If it is proven, do the robot arm path planning and moving the robot arm to show the aruco marks to the original camera position
