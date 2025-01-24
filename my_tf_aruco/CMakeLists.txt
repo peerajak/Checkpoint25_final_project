@@ -24,6 +24,7 @@ endif()
 
 install(PROGRAMS
   scripts/aruco_to_camlink_tf_pub.py
+  scripts/test_cv_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
