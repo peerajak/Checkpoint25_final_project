@@ -11,8 +11,8 @@ Panels:
         - /Image2/Topic1
         - /TF1
         - /TF1/Frames1
-      Splitter Ratio: 0.6200787425041199
-    Tree Height: 245
+      Splitter Ratio: 0.7303149700164795
+    Tree Height: 355
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -53,7 +53,7 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz_default_plugins/Image
-      Enabled: true
+      Enabled: false
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -65,7 +65,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /wrist_rgbd_depth_sensor/image_raw
-      Value: true
+      Value: false
     - Class: rviz_default_plugins/Image
       Enabled: true
       Max Value: 1
@@ -78,7 +78,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /wrist_rgbd_depth_sensor/image_bgr
+        Value: /wrist_rgbd_depth_sensor/image_aruco_frame
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -122,7 +122,7 @@ Visualization Manager:
         aruco_frame:
           Value: true
         base:
-          Value: true
+          Value: false
         base_link:
           Value: false
         base_link_inertia:
@@ -152,7 +152,7 @@ Visualization Manager:
         upper_arm_link:
           Value: false
         world:
-          Value: false
+          Value: true
         wrist_1_link:
           Value: false
         wrist_2_link:
@@ -162,7 +162,7 @@ Visualization Manager:
         wrist_rgbd_camera_depth_frame:
           Value: false
         wrist_rgbd_camera_depth_optical_frame:
-          Value: false
+          Value: true
         wrist_rgbd_camera_fisheye_frame:
           Value: false
         wrist_rgbd_camera_fisheye_optical_frame:
@@ -172,7 +172,7 @@ Visualization Manager:
         wrist_rgbd_camera_left_ir_optical_frame:
           Value: false
         wrist_rgbd_camera_link:
-          Value: true
+          Value: false
         wrist_rgbd_camera_right_ir_frame:
           Value: false
         wrist_rgbd_camera_right_ir_optical_frame:
@@ -208,11 +208,10 @@ Visualization Manager:
                           ft_frame:
                             {}
             wrist_rgbd_camera_link:
-              aruco_frame:
-                {}
               wrist_rgbd_camera_depth_frame:
                 wrist_rgbd_camera_depth_optical_frame:
-                  {}
+                  aruco_frame:
+                    {}
                 wrist_rgbd_camera_fisheye_frame:
                   wrist_rgbd_camera_fisheye_optical_frame:
                     {}
@@ -270,35 +269,35 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.6907615661621094
+      Distance: 1.1007053852081299
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.23740479350090027
-        Y: 0.33072760701179504
-        Z: 0.4978395998477936
+        X: -0.09878508746623993
+        Y: 0.3085378110408783
+        Z: 0.5819590091705322
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.33039766550064087
+      Pitch: 1.474795937538147
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.4753941297531128
+      Yaw: 2.4435858726501465
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
   Height: 846
   Hide Left Dock: false
-  Hide Right Dock: false
+  Hide Right Dock: true
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001fe000002affc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003e00000180000000cb00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000001c4000000910000002800fffffffb0000000a0049006d006100670065010000025b000000920000002800ffffff000000010000010f000002affc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003e000002af000000a500fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b00000003efc0100000002fb0000000800540069006d00650100000000000004b00000027900fffffffb0000000800540069006d0065010000000000000450000000000000000000000197000002af00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001fe000002affc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003e000001ee000000cb00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d0061006700650100000232000000bb0000002800fffffffb0000000a0049006d006100670065000000025b000000920000002800ffffff000000010000010f000002affc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003e000002af000000a500fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b00000003efc0100000002fb0000000800540069006d00650100000000000004b00000027900fffffffb0000000800540069006d00650100000000000004500000000000000000000002ac000002af00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -306,7 +305,7 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Views:
-    collapsed: false
+    collapsed: true
   Width: 1200
   X: 60
-  Y: 60
+  Y: 0

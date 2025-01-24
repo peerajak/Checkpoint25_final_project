@@ -5,6 +5,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, DurabilityPolicy, QoSProfile
 from sensor_msgs.msg import Image
+from sensor_msgs.msg import CameraInfo
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
@@ -20,8 +21,8 @@ from numpy.linalg import inv
 
 class ArucoToCamlinkTF(Node):
     # Dictionary that was used to generate the ArUco marker
-    aruco_dictionary_name = "DICT_4X4_100"
-    aruco_marker_side_length = 0.026 
+    aruco_dictionary_name = "DICT_4X4_50"
+    aruco_marker_side_length = 0.045 
 
     # The different ArUco dictionaries built into the OpenCV library. 
     ARUCO_DICT = {
@@ -47,6 +48,7 @@ class ArucoToCamlinkTF(Node):
     def __init__(self, aruco_frame="aruco_frame"):
         super().__init__('aruco_to_camlink_tf_node')
         self.is_marker_detected = False
+        self.is_camera_info_set = False
         self._aruco_frame = aruco_frame       
         
         # Create a new `TransformStamped` object.
@@ -55,7 +57,7 @@ class ArucoToCamlinkTF(Node):
         # This line sets the `header.frame_id` attribute of the `TransformStamped` object.
         # The `header.frame_id` attribute specifies the frame in which the transformation is defined.
         # In this case, the transformation is defined in the `world` frame.
-        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_link"
+        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
         # This line sets the `child_frame_id` attribute of the `TransformStamped` object.
         # The `child_frame_id` attribute specifies the frame that is being transformed to.
         # In this case, the robot's base frame is being transformed to the `world` frame.
@@ -67,11 +69,12 @@ class ArucoToCamlinkTF(Node):
         # This line creates a new `TransformBroadcaster` object.
         # A `TransformBroadcaster` object is a ROS node that publishes TF messages.
         self.br = tf2_ros.TransformBroadcaster(self)
-        self.subscription = self.create_subscription(
+        self.subscription_image = self.create_subscription(
                 Image,
                 '/wrist_rgbd_depth_sensor/image_raw',  
                 self.image_callback, 10)
-        self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_bgr', 10)
+        self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
+        self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 10)
         self.cv_bridge = CvBridge()
         self.get_logger().info("aruco_to_camlink_tf_node ready!")
         
@@ -116,18 +119,21 @@ class ArucoToCamlinkTF(Node):
             print("[INFO] ArUCo tag of is not supported")
             sys.exit(0)
         
+        if not self.is_camera_info_set:
+            return None
+        
         # Load the camera parameters from the saved file
         #cv_file = cv2.FileStorage( camera_calibration_parameters_filename, cv2.FILE_STORAGE_READ) 
         #mtx = cv_file.getNode('K').mat()
         #dst = cv_file.getNode('D').mat()
         #cv_file.release()
-        mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
-        mtx = mtx_np
-        dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
-        prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
-                            [0.000000, 764.304443, 215.883204, 0.000000],\
-                            [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
-        dst = dst_np
+        #mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
+        #mtx = mtx_np
+        #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
+        #prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
+        #                    [0.000000, 764.304443, 215.883204, 0.000000],\
+        #                    [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
+        #dst = dst_np
         # Load the ArUco dictionary
         print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
@@ -156,7 +162,7 @@ class ArucoToCamlinkTF(Node):
         # Detect ArUco markers in the video frame
         (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
             detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
-            cameraMatrix=mtx, distCoeff=dst)
+            cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
 
         # Check that at least one ArUco marker was detected
         if marker_ids is not None: 
@@ -187,7 +193,7 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 #print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx_np,dst_np)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 print('rvecs',rvecs)
@@ -240,8 +246,8 @@ class ArucoToCamlinkTF(Node):
                 #print(obj_points[i])
 
                 # Draw the axes on the marker
-                #cv2.aruco.drawAxis(detectingImage , mtx, dst, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, mtx, dst, rvecs, tvecs, 0.05) 
+                #cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k, dst, rvecs, tvecs, 0.05)
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05) 
         else:
             self.is_marker_detected = False
         # Display the resulting frame
@@ -265,10 +271,51 @@ class ArucoToCamlinkTF(Node):
         #cv2.waitKey(3)
         detectingImage = self.detect_pose_return_tf()
 
-        try:
-            self.publisher.publish(self.cv_bridge.cv2_to_imgmsg(detectingImage))
-        except Exception as e:
-            print(e)
+        if detectingImage is not None:
+            try:
+                self.publisher.publish(self.cv_bridge.cv2_to_imgmsg(detectingImage))
+            except Exception as e:
+                print(e)
+
+    def camera_info_callback(self, msg: CameraInfo) -> None:
+        self.is_camera_info_set = True
+        self.distortion_params = np.zeros((5,), np.float32) 
+        self.distortion_params[0] = msg.d[0] 
+        self.distortion_params[1] = msg.d[1] 
+        self.distortion_params[2] = msg.d[2] 
+        self.distortion_params[3] = msg.d[3] 
+        self.distortion_params[4] = msg.d[4] 
+
+        self.projection_matrix_k = np.zeros((3,3), np.float32)
+        self.projection_matrix_k[0,0] = msg.k[0]
+        self.projection_matrix_k[0,1] = msg.k[1]
+        self.projection_matrix_k[0,2] = msg.k[2]
+        self.projection_matrix_k[1,0] = msg.k[3]
+        self.projection_matrix_k[1,1] = msg.k[4]
+        self.projection_matrix_k[1,2] = msg.k[5]
+        self.projection_matrix_k[2,0] = msg.k[6]
+        self.projection_matrix_k[2,1] = msg.k[7]
+        self.projection_matrix_k[2,2] = msg.k[8]
+
+        self.projection_matrix_p = np.zeros((3,4), np.float32)
+        self.projection_matrix_p[0,0] = msg.p[0]
+        self.projection_matrix_p[0,1] = msg.p[1]
+        self.projection_matrix_p[0,2] = msg.p[2]
+        self.projection_matrix_p[0,3] = msg.p[3]
+        self.projection_matrix_p[1,0] = msg.p[4]
+        self.projection_matrix_p[1,1] = msg.p[5]
+        self.projection_matrix_p[1,2] = msg.p[6]
+        self.projection_matrix_p[1,3] = msg.p[7]
+        self.projection_matrix_p[2,0] = msg.p[8]
+        self.projection_matrix_p[2,1] = msg.p[9]
+        self.projection_matrix_p[2,2] = msg.p[10]
+        self.projection_matrix_p[2,3] = msg.p[11]
+
+        print(self.distortion_params)
+        print(self.projection_matrix_k)
+        print(self.projection_matrix_p)
+        
+
 
     def euler_from_quaternion(self, x, y, z, w):
         """
@@ -313,6 +360,10 @@ def main(args=None):
     rclpy.init()
     aruco_to_cam_tf_obj = ArucoToCamlinkTF()
     rclpy.spin(aruco_to_cam_tf_obj)
+
+    #TODO
+    # - add subscription to /camera_info topic and get all camera parameters, instead of mock up camera param currently use
+    # - fix the value to be correct value, and expect correct aruco_frame's TF
 
 if __name__ == '__main__':
     main()
