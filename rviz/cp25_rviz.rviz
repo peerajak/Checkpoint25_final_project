@@ -11,7 +11,7 @@ Panels:
         - /Image2/Topic1
         - /TF1
         - /TF1/Frames1
-      Splitter Ratio: 0.3326771557331085
+      Splitter Ratio: 0.6200787425041199
     Tree Height: 245
   - Class: rviz_common/Selection
     Name: Selection
@@ -119,6 +119,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        aruco_frame:
+          Value: true
         base:
           Value: true
         base_link:
@@ -179,7 +181,7 @@ Visualization Manager:
       Name: TF
       Show Arrows: true
       Show Axes: true
-      Show Names: false
+      Show Names: true
       Tree:
         world:
           base_link:
@@ -206,6 +208,8 @@ Visualization Manager:
                           ft_frame:
                             {}
             wrist_rgbd_camera_link:
+              aruco_frame:
+                {}
               wrist_rgbd_camera_depth_frame:
                 wrist_rgbd_camera_depth_optical_frame:
                   {}
@@ -273,18 +277,18 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.15435189008712769
-        Y: 0.16960497200489044
-        Z: 0.29414182901382446
+        X: -0.23740479350090027
+        Y: 0.33072760701179504
+        Z: 0.4978395998477936
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3003981113433838
+      Pitch: 0.33039766550064087
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.12039623409509659
+      Yaw: 1.4753941297531128
     Saved: ~
 Window Geometry:
   Displays:
