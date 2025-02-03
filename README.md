@@ -52,7 +52,12 @@ source install/setup.bash
 ros2 launch moveit2_scripts test_trajectory.launch.py
 ```
 
-or 
+Terminal 5
+
+```
+cd ~/ros2_ws
+source install/setup.bash
+```
 
 ```
 ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
@@ -64,6 +69,8 @@ to View TF frames
 ```
 ros2 run tf2_tools view_frames
 ```
+
+Terminal 6
 
 To view RVIZ2 Camera 
 

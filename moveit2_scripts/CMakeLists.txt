@@ -32,6 +32,8 @@ if(BUILD_TESTING)
 endif()
 
 # Generate the executable
+
+## test_trajectory
 add_executable(test_trajectory
     src/test_trajectory.cpp)
 target_include_directories(test_trajectory
@@ -47,9 +49,25 @@ ament_target_dependencies(test_trajectory
 	control_msgs
 	rviz_visual_tools)
 
+## cartesian_trajectory
+add_executable(cartesian_trajectory
+    src/cartesian_trajectory.cpp)
+target_include_directories(cartesian_trajectory
+    PUBLIC include)
+ament_target_dependencies(cartesian_trajectory
+    ament_cmake
+    rclcpp
+    rclcpp_action
+    moveit_core
+    moveit_ros_planning_interface
+    interactive_markers
+    moveit_ros_planning
+    control_msgs)
+
 # Install the executable
 install(TARGETS 
 	test_trajectory
+	cartesian_trajectory
     DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -233,12 +233,12 @@ int main(int argc, char **argv) {
   current_state->copyJointGroupPositions(joint_model_group,
                                          joint_group_positions);
 
-  joint_group_positions[0] = 2.2514; // Shoulder Pan
-  // joint_group_positions[1] = 0.4712; // Shoulder Lift
-  // joint_group_positions[2] = 3.00;   // Elbow
-  // joint_group_positions[3] = -1.867; // Wrist 1
-  // joint_group_positions[4] = -0.698; // Wrist 2
-  // joint_group_positions[5] = 0.925;  // Wrist 3
+  joint_group_positions[0] = -216/180*3.14;// Shoulder Pan
+  //joint_group_positions[1] = -1.7171; // Shoulder Lift
+  //joint_group_positions[2] = 0;   // Elbow
+  //joint_group_positions[3] = -1.226; // Wrist 1
+  //joint_group_positions[4] = 1.589; // Wrist 2
+  //joint_group_positions[5] = 0.244;  // Wrist 3
   move_group.setJointValueTarget(joint_group_positions);
 
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
@@ -248,16 +248,61 @@ int main(int argc, char **argv) {
 
   move_group.execute(my_plan);
 
-  joint_group_positions[1] = 0.4712; // Shoulder Lift
-  move_group.setJointValueTarget(joint_group_positions);
-
   // step 2
+   visual_tools.prompt(
+      "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+   joint_group_positions[0] = -212/180*3.14; // Shoulder Lift
+   joint_group_positions[1] = 22/180*3.14; 
+   
+   //joint_group_positions[4] = -49/180*3.14; 
+   //joint_group_positions[4] = -62/180*3.14; 
 
-  // success =
-  //     (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+   move_group.setJointValueTarget(joint_group_positions);
+   success =   (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
-  // move_group.execute(my_plan);
+   move_group.execute(my_plan);
 
+  // step 3
+   visual_tools.prompt(
+      "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+
+    // print current pose
+    geometry_msgs::msg::Pose current_pose = move_group.getCurrentPose().pose;
+    geometry_msgs::msg::Pose desired_pose = current_pose ;
+    // Print the current pose of the end effector
+    RCLCPP_INFO(LOGGER, "Current pose: %f %f %f %f %f %f %f",
+              current_pose.position.x, current_pose.position.y,
+              current_pose.position.z, current_pose.orientation.x,
+              current_pose.orientation.y, current_pose.orientation.z,
+              current_pose.orientation.w);
+
+
+
+
+  std::vector<geometry_msgs::msg::Pose> waypoints;
+  const double jump_threshold = 0.0;
+  const double eef_step = 0.01;
+  double target_z = -2.80;
+  double z_resolution = 0.01, z_goal_threshold = 0.01;
+   while (abs(desired_pose.position.z - target_z) > z_goal_threshold) {
+    desired_pose.position.z += z_resolution *
+                               (target_z - desired_pose.position.z) /
+                               abs(desired_pose.position.z - target_z);
+    waypoints.push_back(desired_pose);
+  }
+  moveit_msgs::msg::RobotTrajectory trajectory;
+
+  double fraction = move_group.computeCartesianPath(
+      waypoints, eef_step, jump_threshold, trajectory);
+
+  move_group.execute(trajectory);
+  current_pose = move_group.getCurrentPose().pose;
+  RCLCPP_INFO(LOGGER, "Current pose: %f %f %f %f %f %f %f",
+              current_pose.position.x, current_pose.position.y,
+              current_pose.position.z, current_pose.orientation.x,
+              current_pose.orientation.y, current_pose.orientation.z,
+              current_pose.orientation.w);
+  // end step
   rclcpp::shutdown();
   return 0;
 }

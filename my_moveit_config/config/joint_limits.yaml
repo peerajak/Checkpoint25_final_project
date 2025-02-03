@@ -9,10 +9,12 @@ default_acceleration_scaling_factor: 0.1
 # Joint limits can be turned off with [has_velocity_limits, has_acceleration_limits]
 joint_limits:
   elbow_joint:
-    has_velocity_limits: true
+    has_velocity_limits: false
     max_velocity: 3.1415926535897931
     has_acceleration_limits: false
     max_acceleration: 0
+    min_position: -3.1415926535897931
+    max_position: 3.1415926535897931
   rg2_gripper_finger_left_joint:
     has_velocity_limits: true
     max_velocity: 0.59999999999999998
@@ -34,27 +36,38 @@ joint_limits:
     has_acceleration_limits: false
     max_acceleration: 0
   shoulder_lift_joint:
-    has_velocity_limits: true
+    has_velocity_limits: false
+    angle_wraparound: false
     max_velocity: 3.1415926535897931
     has_acceleration_limits: false
     max_acceleration: 0
+    min_position: -6.28318
+    max_position: 6.28318
   shoulder_pan_joint:
     has_velocity_limits: true
     max_velocity: 3.1415926535897931
     has_acceleration_limits: false
     max_acceleration: 0
+    min_position: -3.1415926535897931
+    max_position: 3.1415926535897931
   wrist_1_joint:
     has_velocity_limits: true
     max_velocity: 6.2831853071795862
     has_acceleration_limits: false
     max_acceleration: 0
+    min_position: -6.28318
+    max_position: 6.28318
   wrist_2_joint:
     has_velocity_limits: true
     max_velocity: 6.2831853071795862
     has_acceleration_limits: false
     max_acceleration: 0
+    min_position: -6.28318
+    max_position: 6.28318
   wrist_3_joint:
     has_velocity_limits: true
     max_velocity: 6.2831853071795862
     has_acceleration_limits: false
     max_acceleration: 0
+    min_position: -6.28318
+    max_position: 6.28318
