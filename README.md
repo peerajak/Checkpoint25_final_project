@@ -26,7 +26,7 @@ colcon build; source install/setup.bash
 ```
 
 ```
-ros2 launch my_moveit_config move_group.launch.py
+source install/setup.bash; ros2 launch my_moveit_config move_group.launch.py
 ```
 
 Terminal 3
@@ -37,7 +37,7 @@ source install/setup.bash
 ```
 
 ```
-ros2 launch my_moveit_config moveit_rviz.launch.py
+source install/setup.bash; ros2 launch my_moveit_config moveit_rviz.launch.py
 ```
 
 
@@ -49,7 +49,7 @@ source install/setup.bash
 ```
 
 ```
-ros2 launch moveit2_scripts test_trajectory.launch.py
+rsource install/setup.bash; os2 launch moveit2_scripts test_trajectory.launch.py
 ```
 
 Terminal 5
@@ -60,7 +60,7 @@ source install/setup.bash
 ```
 
 ```
-ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
+source install/setup.bash; ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
 ```
 
 
