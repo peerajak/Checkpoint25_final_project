@@ -13,7 +13,9 @@
 #include <moveit_msgs/msg/planning_scene.hpp>
 #include <moveit_msgs/srv/apply_planning_scene.hpp>
 #include <rviz_visual_tools/rviz_visual_tools.hpp>
+#include <memory>
 
+// #define PLANNING_SCENE
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_demo");
 static const std::string PLANNING_GROUP = "ur_manipulator";
 
@@ -38,7 +40,7 @@ int main(int argc, char **argv) {
       "base_link", "planning_scene_ros_api_tutorial", move_group_node);
   visual_tools.loadRemoteControl();
   visual_tools.deleteAllMarkers();
-
+#ifdef PLANNING_SCENE
   rclcpp::Publisher<moveit_msgs::msg::PlanningScene>::SharedPtr
       planning_scene_diff_publisher =
           move_group_node->create_publisher<moveit_msgs::msg::PlanningScene>(
@@ -122,11 +124,11 @@ int main(int argc, char **argv) {
   primitive_wall.dimensions[1] = 0.3;
   primitive_wall.dimensions[2] = 2.0;
 
-  shapes::Mesh *m = shapes::createMeshFromResource(
+  std::unique_ptr<shapes::Mesh> coffee_machine_shape_mesh_ptr( shapes::createMeshFromResource(
       "package://the_construct_office_gazebo/models/coffee_machine/meshes/"
-      "cafeteria.dae");
+      "cafeteria.dae"));
   shapes::ShapeMsg shelf_mesh_msg;
-  shapes::constructMsgFromShape(m, shelf_mesh_msg);
+  shapes::constructMsgFromShape(coffee_machine_shape_mesh_ptr.get(), shelf_mesh_msg);
   coffee_machine_mesh = boost::get<shape_msgs::msg::Mesh>(shelf_mesh_msg);
 
   // Add the shape and pose to the collision object
@@ -156,6 +158,7 @@ int main(int argc, char **argv) {
   // the set of collision objects in the "world" part of the
   // planning scene. Note that we are using only the "object"
   // field of the attached_object message here.
+ 
   RCLCPP_INFO(LOGGER,
               "Adding the object into the world at the location of the hand.");
   moveit_msgs::msg::PlanningScene planning_scene;
@@ -179,6 +182,8 @@ int main(int argc, char **argv) {
   // sleeps inserted for visualization purposes asynchronous updates do not pose
   // a problem), it would be perfectly justified to replace the
   // planning_scene_diff_publisher by the following service client:
+
+
   rclcpp::Client<moveit_msgs::srv::ApplyPlanningScene>::SharedPtr
       planning_scene_diff_client =
           move_group_node->create_client<moveit_msgs::srv::ApplyPlanningScene>(
@@ -209,7 +214,9 @@ int main(int argc, char **argv) {
     }
   }
   // end planning scene
-
+#endif
+   visual_tools.prompt(
+      "Press 'next' in the RvizVisualToolsGui window to continue the demo");
   moveit::planning_interface::MoveGroupInterface move_group(move_group_node,
                                                             PLANNING_GROUP);
 
@@ -233,7 +240,7 @@ int main(int argc, char **argv) {
   current_state->copyJointGroupPositions(joint_model_group,
                                          joint_group_positions);
  
-  joint_group_positions[0] =  -221/180*3.14;// Shoulder Pan
+  joint_group_positions[0] = 2.808555;// Shoulder Pan
   joint_group_positions[1] = -1.5708; // Shoulder Lift
   joint_group_positions[2] = 0.0;   // Elbow
   joint_group_positions[3] = -1.5708; // Wrist 1
@@ -247,23 +254,25 @@ int main(int argc, char **argv) {
       (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
   move_group.execute(my_plan);
-
-  // step 2
    visual_tools.prompt(
       "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+  // step 2
+
    // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-   joint_group_positions[0] = -221/180*3.14;// Shoulder Pan
-   joint_group_positions[1] = -28/180*3.14; // Shoulder Lift
-   joint_group_positions[2] = 128/180*3.14;   // Elbow
-   joint_group_positions[3] = -132/180*3.14; // Wrist 1
-   joint_group_positions[4] = -51/180*3.14; // Wrist 2
-   joint_group_positions[5] = -70/180*3.14;// Wrist 3
+   joint_group_positions[0] = 2.808555;// Shoulder Pan
+   joint_group_positions[1] = -0.0697777; // Shoulder Lift
+   joint_group_positions[2] = 1.604888;   // Elbow
+   joint_group_positions[3] = -1.849111; // Wrist 1
+   joint_group_positions[4] = -0.348888; // Wrist 2
+   joint_group_positions[5] = -1.482777;// Wrist 3
    
 
    move_group.setJointValueTarget(joint_group_positions);
    success =   (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
    move_group.execute(my_plan);
+
+
   /*
   // step 3
    visual_tools.prompt(
