@@ -90,6 +90,7 @@ robot xacro file
 
 ~/ros2_ws/src/universal_robot_ros2/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
 
+use blender to view 3d dae files.
 
 ### Working on, and Next step 
 

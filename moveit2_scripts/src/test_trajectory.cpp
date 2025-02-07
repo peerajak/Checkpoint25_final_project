@@ -15,7 +15,7 @@
 #include <rviz_visual_tools/rviz_visual_tools.hpp>
 #include <memory>
 
-// #define PLANNING_SCENE
+#define PLANNING_SCENE
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_demo");
 static const std::string PLANNING_GROUP = "ur_manipulator";
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
   // subtract the object from the world
   // and to attach the object to the robot.
   moveit_msgs::msg::AttachedCollisionObject attached_object;
-  attached_object.link_name = "base_link"; // panda_hand
+  attached_object.link_name = "base_link";
   /* The header must contain a valid TF frame*/
   attached_object.object.header.frame_id = "base_link";
   /* The id of the object */
@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
   /* A default pose */
   geometry_msgs::msg::Pose pose_counter, pose_top, pose_wall;
   geometry_msgs::msg::Pose pose_coffee_machine_mesh;
+  //geometry_msgs::msg::Pose pose_coffee_machine_box;
   pose_counter.position.x = 0.3;
   pose_counter.position.y = 0.36;
   pose_counter.position.z = -0.532;
@@ -102,10 +103,21 @@ int main(int argc, char **argv) {
   pose_coffee_machine_mesh.orientation.y = 0.0;
   pose_coffee_machine_mesh.orientation.z = 0.707;
   pose_coffee_machine_mesh.orientation.w = 0.707;
+
+//   pose_coffee_machine_box.position.x = 0.1;
+//   pose_coffee_machine_box.position.y = 0.86;
+//   pose_coffee_machine_box.position.z = -0.032;
+
+//   pose_coffee_machine_box.orientation.x = 0.0;
+//   pose_coffee_machine_box.orientation.y = 0.0;
+//   pose_coffee_machine_box.orientation.z = 0.707;
+//   pose_coffee_machine_box.orientation.w = 0.707;
+
   /* Define a box to be attached */
   shape_msgs::msg::SolidPrimitive primitive_counter, primitive_top,
       primitive_wall;
   shape_msgs::msg::Mesh coffee_machine_mesh;
+  //shape_msgs::msg::SolidPrimitive primitive_coffee_machine_box;
   primitive_counter.type = primitive_counter.BOX;
   primitive_counter.dimensions.resize(3);
   primitive_counter.dimensions[0] = 0.5;
@@ -124,9 +136,15 @@ int main(int argc, char **argv) {
   primitive_wall.dimensions[1] = 0.3;
   primitive_wall.dimensions[2] = 2.0;
 
+//   primitive_coffee_machine_box.type = primitive_coffee_machine_box.BOX;
+//   primitive_coffee_machine_box.dimensions.resize(3);
+//   primitive_coffee_machine_box.dimensions[0] = 0.212366;
+//   primitive_coffee_machine_box.dimensions[1] = 0.36046;
+//   primitive_coffee_machine_box.dimensions[2] = 0.409494;
+
   std::unique_ptr<shapes::Mesh> coffee_machine_shape_mesh_ptr( shapes::createMeshFromResource(
-      "package://the_construct_office_gazebo/models/coffee_machine/meshes/"
-      "cafeteria.dae"));
+     "package://the_construct_office_gazebo/models/coffee_machine/meshes/"
+     "cafeteria.dae"));
   shapes::ShapeMsg shelf_mesh_msg;
   shapes::constructMsgFromShape(coffee_machine_shape_mesh_ptr.get(), shelf_mesh_msg);
   coffee_machine_mesh = boost::get<shape_msgs::msg::Mesh>(shelf_mesh_msg);
@@ -139,12 +157,17 @@ int main(int argc, char **argv) {
   attached_object.object.primitive_poses.push_back(pose_top);
   attached_object.object.primitive_poses.push_back(pose_wall);
 
+
   attached_object.object.meshes.push_back(coffee_machine_mesh);
   attached_object.object.mesh_poses.push_back(pose_coffee_machine_mesh);
-
+  //attached_object.object.primitives.push_back(primitive_coffee_machine_box);
+  //attached_object.object.primitive_poses.push_back(pose_coffee_machine_box);
   // Note that attaching an object to the robot requires
   // the corresponding operation to be specified as an ADD operation.
   attached_object.object.operation = attached_object.object.ADD;
+
+
+  
 
   // Since we are attaching the object to the robot hand to simulate picking up
   // the object, we want the collision checker to ignore collisions between the
@@ -165,8 +188,8 @@ int main(int argc, char **argv) {
   planning_scene.world.collision_objects.push_back(attached_object.object);
   planning_scene.is_diff = true;
   planning_scene_diff_publisher->publish(planning_scene);
-  visual_tools.prompt(
-      "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+  //visual_tools.prompt(
+  //    "Press 'next' in the RvizVisualToolsGui window to continue the demo");
 
   // Interlude: Synchronous vs Asynchronous updates
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
