@@ -87,7 +87,7 @@ class ArucoToCamlinkTF(Node):
         This function broadcasts a new TF message to the TF network.
         """
         if(self.is_marker_detected):
-            print('broadcast_new_tf')
+            # print('broadcast_new_tf')
             # Get the current odometry data.
             #position = self.cam_bot_odom.pose.pose.position
             #orientation = self.cam_bot_odom.pose.pose.orientation
@@ -135,7 +135,7 @@ class ArucoToCamlinkTF(Node):
         #                    [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
         #dst = dst_np
         # Load the ArUco dictionary
-        print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
+        # print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
         this_aruco_parameters = cv2.aruco.DetectorParameters_create()
         
@@ -189,15 +189,15 @@ class ArucoToCamlinkTF(Node):
                 realign_corners[1] = corners[i][:,1,:].flatten()
                 realign_corners[2] = corners[i][:,2,:].flatten()
                 realign_corners[3] = corners[i][:,3,:].flatten()
-                print(realign_corners)  
+                # print(realign_corners)  
                 image_points = realign_corners.reshape(4,1,2)
-                #print(image_points)
+                ## print(image_points)
             
                 flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
-                print('rvecs',rvecs)
-                print('tvecs',tvecs)
+                # print('rvecs',rvecs)
+                # print('tvecs',tvecs)
                 # Store the translation (i.e. position) information
                 self.transform_translation_x = tvecs[0]
                 self.transform_translation_y = tvecs[1]
@@ -220,6 +220,9 @@ class ArucoToCamlinkTF(Node):
                                                             self.transform_rotation_y, 
                                                             self.transform_rotation_z, 
                                                             self.transform_rotation_w)
+                self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
+                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
+                 self.transform_stamped.header.frame_id))
 
                 # roll_x = math.degrees(roll_x)
                 # pitch_y = math.degrees(pitch_y)
@@ -311,9 +314,9 @@ class ArucoToCamlinkTF(Node):
         self.projection_matrix_p[2,2] = msg.p[10]
         self.projection_matrix_p[2,3] = msg.p[11]
 
-        print(self.distortion_params)
-        print(self.projection_matrix_k)
-        print(self.projection_matrix_p)
+        # print(self.distortion_params)
+        # print(self.projection_matrix_k)
+        # print(self.projection_matrix_p)
         
 
 

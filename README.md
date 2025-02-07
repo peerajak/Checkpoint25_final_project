@@ -22,7 +22,7 @@ Terminal 2
 
 ```
 cd ~/ros2_ws
-colcon build; source install/setup.bash
+source install/setup.bash
 ```
 
 ```
@@ -49,7 +49,7 @@ source install/setup.bash
 ```
 
 ```
-rsource install/setup.bash; os2 launch moveit2_scripts test_trajectory.launch.py
+source install/setup.bash; ros2 launch moveit2_scripts test_trajectory.launch.py
 ```
 
 Terminal 5
