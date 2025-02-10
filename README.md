@@ -101,3 +101,29 @@ use blender to view 3d dae files.
 
 - It looks like a proof of concept. Check the error value of the proof of concept
 - If it is proven, do the robot arm path planning and moving the robot arm to show the aruco marks to the original camera position
+
+
+# Devop
+
+Terminal 1: Rosbridge
+
+This Rosbridge provide JSON connection to web browser
+
+```
+ros2 launch rosbridge_server  main_rosbridge_launch.py
+```
+
+Terminal 2: Http server 
+
+Installation 
+
+```
+cd ~/webpage_ws/
+ln -s ~/ros2_ws/src/Checkpoint25_final_project/cp25_webapp .
+```
+
+```
+cd ~/webpage_ws/cp25_webapp
+python3 -m http.server 7000
+```
+
