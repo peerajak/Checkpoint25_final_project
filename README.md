@@ -102,6 +102,22 @@ use blender to view 3d dae files.
 - It looks like a proof of concept. Check the error value of the proof of concept
 - If it is proven, do the robot arm path planning and moving the robot arm to show the aruco marks to the original camera position
 
+# Real Robot
+
+Terminal 1
+
+```
+cd ~/ros2_ws/
+source install/setup.bash; ros2 launch real_moveit_config move_group.launch.py
+```
+
+Terminal 2
+
+```
+cd ~/ros2_ws/
+source install/setup.bash; ros2 launch real_moveit_config moveit_rviz.launch.py
+```
+
 
 # Devop
 
