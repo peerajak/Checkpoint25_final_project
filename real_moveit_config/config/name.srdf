@@ -3,7 +3,7 @@
     This is a format for representing semantic information about the robot structure.
     A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
 -->
-<robot name="name">
+<robot name="ur3e">
     <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
     <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
     <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
@@ -33,7 +33,7 @@
         <joint name="rg2_gripper_finger_left_joint" value="0"/>
     </group_state>
     <group_state name="gripper_close" group="gripper">
-        <joint name="rg2_gripper_finger_left_joint" value="-0.6401"/>
+        <joint name="rg2_gripper_finger_left_joint" value="-0.5699"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="hand_ee" parent_link="wrist_3_link" group="gripper" parent_group="ur_manipulator"/>
