@@ -118,6 +118,19 @@ cd ~/ros2_ws/
 source install/setup.bash; ros2 launch real_moveit_config moveit_rviz.launch.py
 ```
 
+Terminal 3
+
+```
+cd ~/ros2_ws/
+source install/setup.bash; ros2 launch moveit2_scripts move_real_arm_to_show_aruco_trajectory.launch.py
+```
+
+Terminal 4
+
+```
+cd ~/ros2_ws/src/Checkpoint25_final_project/
+rviz2 -d rviz/cp25_realrobot_rviz.rviz
+```
 
 # Devop
 

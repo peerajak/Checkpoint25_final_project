@@ -1,8 +1,6 @@
-#include "geometric_shapes/mesh_operations.h"
 #include "geometric_shapes/shape_messages.h"
 #include "geometric_shapes/shape_operations.h"
 #include "geometric_shapes/shapes.h"
-#include "shape_msgs/msg/detail/mesh__struct.hpp"
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <rclcpp/rclcpp.hpp>
