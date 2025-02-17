@@ -49,7 +49,7 @@ source install/setup.bash
 ```
 
 ```
-source install/setup.bash; ros2 launch moveit2_scripts test_trajectory.launch.py
+source install/setup.bash; ros2 launch moveit2_scripts move_sim_arm_to_show_aruco_trajectory.launch.py
 ```
 
 Terminal 5
