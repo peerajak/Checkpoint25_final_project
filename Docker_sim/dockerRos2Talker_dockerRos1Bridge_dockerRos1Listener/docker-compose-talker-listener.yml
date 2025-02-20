@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+
+  test_humble_talker:
+    image: test:talker_listener
+    container_name: test_humble_talker
+    environment:
+        - ROS_DOMAIN_ID=2
+        #- RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+        #- CYCLONEDDS_URI=file:///var/lib/theconstruct.rrl/cyclonedds.xml
+    command: bash -c "source /ros2_ws/install/local_setup.bash && ros2 run demo_nodes_cpp talker"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  test_humble_listener:
+    image: test:talker_listener
+    container_name: test_humble_listener
+    environment:
+        - ROS_DOMAIN_ID=2
+        #- RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+        #- CYCLONEDDS_URI=file:///var/lib/theconstruct.rrl/cyclonedds.xml
+    command: bash -c "source /ros2_ws/install/local_setup.bash && ros2 run demo_nodes_cpp listener"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
