@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+
+  test_humble_talker:
+    image: test:talker_listener
+    container_name: test_humble_talker
+    environment:
+        - ROS_DOMAIN_ID=2
+    command: bash -c "source /ros2_ws/install/local_setup.bash && ros2 run demo_nodes_cpp talker"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ### README ###
+  # 1. Goto Host and set env variable
+  #    $ export ROS_DOMAIN_ID=2
+  # 2. run the subscriber
+  #    $ ros2 run demo_nodes_cpp listener
+  # Success
