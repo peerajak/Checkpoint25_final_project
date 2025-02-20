@@ -32,6 +32,8 @@ if(BUILD_TESTING)
 endif()
 
 # Generate the executable
+
+## test_trajectory
 add_executable(test_trajectory
     src/test_trajectory.cpp)
 target_include_directories(test_trajectory
@@ -47,9 +49,61 @@ ament_target_dependencies(test_trajectory
 	control_msgs
 	rviz_visual_tools)
 
+## cartesian_trajectory
+add_executable(cartesian_trajectory
+    src/cartesian_trajectory.cpp)
+target_include_directories(cartesian_trajectory
+    PUBLIC include)
+ament_target_dependencies(cartesian_trajectory
+    ament_cmake
+    rclcpp
+    rclcpp_action
+    moveit_core
+    moveit_ros_planning_interface
+    interactive_markers
+    moveit_ros_planning
+    control_msgs)
+
+## move_sim_arm_to_show_aruco_trajectory
+add_executable(move_sim_arm_to_show_aruco_trajectory
+    src/move_sim_arm_to_show_aruco_trajectory.cpp)
+target_include_directories(move_sim_arm_to_show_aruco_trajectory
+    PUBLIC include)
+ament_target_dependencies(move_sim_arm_to_show_aruco_trajectory
+    ament_cmake
+	rclcpp
+	rclcpp_action
+	moveit_core
+	moveit_ros_planning_interface
+	interactive_markers
+	moveit_ros_planning
+	control_msgs
+	rviz_visual_tools)
+
+
+## move_real_arm_to_show_aruco_trajectory
+add_executable(move_real_arm_to_show_aruco_trajectory
+    src/move_real_arm_to_show_aruco_trajectory.cpp)
+target_include_directories(move_real_arm_to_show_aruco_trajectory
+    PUBLIC include)
+ament_target_dependencies(move_real_arm_to_show_aruco_trajectory
+    ament_cmake
+	rclcpp
+	rclcpp_action
+	moveit_core
+	moveit_ros_planning_interface
+	interactive_markers
+	moveit_ros_planning
+	control_msgs
+	rviz_visual_tools)
+
+
 # Install the executable
 install(TARGETS 
 	test_trajectory
+	move_sim_arm_to_show_aruco_trajectory
+	move_real_arm_to_show_aruco_trajectory
+	cartesian_trajectory
     DESTINATION lib/${PROJECT_NAME}
 )
 

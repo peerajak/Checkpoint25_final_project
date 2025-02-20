@@ -1,19 +1,17 @@
-#include "geometric_shapes/mesh_operations.h"
 #include "geometric_shapes/shape_messages.h"
 #include "geometric_shapes/shape_operations.h"
 #include "geometric_shapes/shapes.h"
-#include "shape_msgs/msg/detail/mesh__struct.hpp"
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <rclcpp/rclcpp.hpp>
 
 #include <geometry_msgs/msg/pose.hpp>
+#include <memory>
 #include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
 #include <moveit_msgs/msg/planning_scene.hpp>
 #include <moveit_msgs/srv/apply_planning_scene.hpp>
 #include <rviz_visual_tools/rviz_visual_tools.hpp>
-#include <memory>
 
 #define PLANNING_SCENE
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_demo");
@@ -49,8 +47,8 @@ int main(int argc, char **argv) {
   while (planning_scene_diff_publisher->get_subscription_count() < 1) {
     rclcpp::sleep_for(std::chrono::milliseconds(500));
   }
-  //visual_tools.prompt(
-  //    "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+  // visual_tools.prompt(
+  //     "Press 'next' in the RvizVisualToolsGui window to continue the demo");
 
   // Define the attached object message
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -66,8 +64,7 @@ int main(int argc, char **argv) {
 
   /* A default pose */
   geometry_msgs::msg::Pose pose_counter, pose_top, pose_wall;
-  geometry_msgs::msg::Pose pose_coffee_machine_mesh;
-  //geometry_msgs::msg::Pose pose_coffee_machine_box;
+  geometry_msgs::msg::Pose pose_coffee_machine_box;
   pose_counter.position.x = 0.3;
   pose_counter.position.y = 0.36;
   pose_counter.position.z = -0.532;
@@ -95,29 +92,20 @@ int main(int argc, char **argv) {
   pose_wall.orientation.z = 0.0;
   pose_wall.orientation.w = 0.0;
 
-  pose_coffee_machine_mesh.position.x = 0.1;
-  pose_coffee_machine_mesh.position.y = 0.86;
-  pose_coffee_machine_mesh.position.z = -0.032;
+  pose_coffee_machine_box.position.x = 0.1+0.1;
+  pose_coffee_machine_box.position.y = 0.86;
+  pose_coffee_machine_box.position.z = 0.068+0.509494/2;
 
-  pose_coffee_machine_mesh.orientation.x = 0.0;
-  pose_coffee_machine_mesh.orientation.y = 0.0;
-  pose_coffee_machine_mesh.orientation.z = 0.707;
-  pose_coffee_machine_mesh.orientation.w = 0.707;
-
-//   pose_coffee_machine_box.position.x = 0.1;
-//   pose_coffee_machine_box.position.y = 0.86;
-//   pose_coffee_machine_box.position.z = -0.032;
-
-//   pose_coffee_machine_box.orientation.x = 0.0;
-//   pose_coffee_machine_box.orientation.y = 0.0;
-//   pose_coffee_machine_box.orientation.z = 0.707;
-//   pose_coffee_machine_box.orientation.w = 0.707;
+  pose_coffee_machine_box.orientation.x = 0.0;
+  pose_coffee_machine_box.orientation.y = 0.0;
+  pose_coffee_machine_box.orientation.z = 0.0;
+  pose_coffee_machine_box.orientation.w = 0.0;
 
   /* Define a box to be attached */
   shape_msgs::msg::SolidPrimitive primitive_counter, primitive_top,
       primitive_wall;
-  shape_msgs::msg::Mesh coffee_machine_mesh;
-  //shape_msgs::msg::SolidPrimitive primitive_coffee_machine_box;
+
+  shape_msgs::msg::SolidPrimitive primitive_coffee_machine_box;
   primitive_counter.type = primitive_counter.BOX;
   primitive_counter.dimensions.resize(3);
   primitive_counter.dimensions[0] = 0.5;
@@ -136,18 +124,13 @@ int main(int argc, char **argv) {
   primitive_wall.dimensions[1] = 0.3;
   primitive_wall.dimensions[2] = 2.0;
 
-//   primitive_coffee_machine_box.type = primitive_coffee_machine_box.BOX;
-//   primitive_coffee_machine_box.dimensions.resize(3);
-//   primitive_coffee_machine_box.dimensions[0] = 0.212366;
-//   primitive_coffee_machine_box.dimensions[1] = 0.36046;
-//   primitive_coffee_machine_box.dimensions[2] = 0.409494;
+    primitive_coffee_machine_box.type = primitive_coffee_machine_box.BOX;
+    primitive_coffee_machine_box.dimensions.resize(3);
+    primitive_coffee_machine_box.dimensions[0] = 0.56046;
+    primitive_coffee_machine_box.dimensions[1] = 0.212366;
+    primitive_coffee_machine_box.dimensions[2] = 0.509494;
 
-  std::unique_ptr<shapes::Mesh> coffee_machine_shape_mesh_ptr( shapes::createMeshFromResource(
-     "package://the_construct_office_gazebo/models/coffee_machine/meshes/"
-     "cafeteria.dae"));
-  shapes::ShapeMsg shelf_mesh_msg;
-  shapes::constructMsgFromShape(coffee_machine_shape_mesh_ptr.get(), shelf_mesh_msg);
-  coffee_machine_mesh = boost::get<shape_msgs::msg::Mesh>(shelf_mesh_msg);
+
 
   // Add the shape and pose to the collision object
   attached_object.object.primitives.push_back(primitive_counter);
@@ -157,17 +140,11 @@ int main(int argc, char **argv) {
   attached_object.object.primitive_poses.push_back(pose_top);
   attached_object.object.primitive_poses.push_back(pose_wall);
 
-
-  attached_object.object.meshes.push_back(coffee_machine_mesh);
-  attached_object.object.mesh_poses.push_back(pose_coffee_machine_mesh);
-  //attached_object.object.primitives.push_back(primitive_coffee_machine_box);
-  //attached_object.object.primitive_poses.push_back(pose_coffee_machine_box);
-  // Note that attaching an object to the robot requires
-  // the corresponding operation to be specified as an ADD operation.
+  attached_object.object.primitives.push_back(primitive_coffee_machine_box);
+  attached_object.object.primitive_poses.push_back(pose_coffee_machine_box);
+  //  Note that attaching an object to the robot requires
+  //  the corresponding operation to be specified as an ADD operation.
   attached_object.object.operation = attached_object.object.ADD;
-
-
-  
 
   // Since we are attaching the object to the robot hand to simulate picking up
   // the object, we want the collision checker to ignore collisions between the
@@ -181,15 +158,15 @@ int main(int argc, char **argv) {
   // the set of collision objects in the "world" part of the
   // planning scene. Note that we are using only the "object"
   // field of the attached_object message here.
- 
+
   RCLCPP_INFO(LOGGER,
               "Adding the object into the world at the location of the hand.");
   moveit_msgs::msg::PlanningScene planning_scene;
   planning_scene.world.collision_objects.push_back(attached_object.object);
   planning_scene.is_diff = true;
   planning_scene_diff_publisher->publish(planning_scene);
-  //visual_tools.prompt(
-  //    "Press 'next' in the RvizVisualToolsGui window to continue the demo");
+  // visual_tools.prompt(
+  //     "Press 'next' in the RvizVisualToolsGui window to continue the demo");
 
   // Interlude: Synchronous vs Asynchronous updates
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -205,7 +182,6 @@ int main(int argc, char **argv) {
   // sleeps inserted for visualization purposes asynchronous updates do not pose
   // a problem), it would be perfectly justified to replace the
   // planning_scene_diff_publisher by the following service client:
-
 
   rclcpp::Client<moveit_msgs::srv::ApplyPlanningScene>::SharedPtr
       planning_scene_diff_client =
@@ -238,7 +214,7 @@ int main(int argc, char **argv) {
   }
   // end planning scene
 #endif
-   visual_tools.prompt(
+  visual_tools.prompt(
       "Press 'next' in the RvizVisualToolsGui window to continue the demo");
   moveit::planning_interface::MoveGroupInterface move_group(move_group_node,
                                                             PLANNING_GROUP);
@@ -262,13 +238,13 @@ int main(int argc, char **argv) {
   std::vector<double> joint_group_positions;
   current_state->copyJointGroupPositions(joint_model_group,
                                          joint_group_positions);
- 
-  joint_group_positions[0] = 2.808555;// Shoulder Pan
-  joint_group_positions[1] = -1.5708; // Shoulder Lift
-  joint_group_positions[2] = 0.0;   // Elbow
-  joint_group_positions[3] = -1.5708; // Wrist 1
-  joint_group_positions[4] = 0.0; // Wrist 2
-  joint_group_positions[5] = 0.0; // Wrist 3
+
+  joint_group_positions[0] = 2.808555; // Shoulder Pan
+  joint_group_positions[1] = -1.5708;  // Shoulder Lift
+  joint_group_positions[2] = 0.0;      // Elbow
+  joint_group_positions[3] = -1.5708;  // Wrist 1
+  joint_group_positions[4] = 0.0;      // Wrist 2
+  joint_group_positions[5] = 0.0;      // Wrist 3
   move_group.setJointValueTarget(joint_group_positions);
 
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
@@ -277,24 +253,23 @@ int main(int argc, char **argv) {
       (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
   move_group.execute(my_plan);
-   visual_tools.prompt(
+  visual_tools.prompt(
       "Press 'next' in the RvizVisualToolsGui window to continue the demo");
   // step 2
 
-   // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-   joint_group_positions[0] = 2.808555;// Shoulder Pan
-   joint_group_positions[1] = -0.0697777; // Shoulder Lift
-   joint_group_positions[2] = 1.604888;   // Elbow
-   joint_group_positions[3] = -1.849111; // Wrist 1
-   joint_group_positions[4] = -0.348888; // Wrist 2
-   joint_group_positions[5] = -1.482777;// Wrist 3
-   
+  // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+  joint_group_positions[0] = 2.808555;   // Shoulder Pan
+  joint_group_positions[1] = -0.0697777; // Shoulder Lift
+  joint_group_positions[2] = 1.604888;   // Elbow
+  joint_group_positions[3] = -1.849111;  // Wrist 1
+  joint_group_positions[4] = -0.348888;  // Wrist 2
+  joint_group_positions[5] = -1.482777;  // Wrist 3
 
-   move_group.setJointValueTarget(joint_group_positions);
-   success =   (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+  move_group.setJointValueTarget(joint_group_positions);
+  success =
+      (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
 
-   move_group.execute(my_plan);
-
+  move_group.execute(my_plan);
 
   /*
   // step 3
@@ -339,6 +314,9 @@ int main(int argc, char **argv) {
               current_pose.orientation.w);
   // end step
   */
+  while (true) {
+    sleep(1);
+  }
   rclcpp::shutdown();
   return 0;
 }
