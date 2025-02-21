@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+
+  ros2_usbcam:
+    image: test:ros2_usbcam_show 
+    container_name: ros2_usbcam
+    networks:
+      - test-humble-bridge-network
+    environment:
+      - ROS_DOMAIN_ID=1
+    devices:
+      - /dev/video0:/dev/video0
+    command: bash -c "source /opt/ros/humble/setup.bash && ros2 run image_tools cam2image"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros2_image_show:
+    image: test:ros2_usbcam_show 
+    container_name: ros2_image_show
+    networks:
+      - test-humble-bridge-network
+    environment:
+      - ROS_DOMAIN_ID=1
+      - DISPLAY=${DISPLAY} 
+    devices:
+      - /dev/video0:/dev/video0
+    command: bash -c "source /opt/ros/humble/setup.bash  && ros2 run rqt_image_view rqt_image_view /image"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+networks:
+  test-humble-bridge-network:
+    driver: bridge  

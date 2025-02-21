@@ -91,7 +91,7 @@ RUN cd /ros1_bridge && . /ros2_ws/install/local_setup.bash
 # Build
 RUN apt-get install -y ros-humble-rmw-implementation ros-humble-rmw-implementation-cmake ros-humble-rclcpp
 ####### .bashrc 
-RUN cd /ros2_ws && touch .bashrc && echo "export ROS1_INSTALL_PATH=/ros1_ws/devel_isolated" >> .bashrc && echo "export ROS2_INSTALL_PATH=/opt/ros/humble" >> .bashrc
+RUN cd /ros2_ws && touch .bashrc && echo "export ROS1_INSTALL_PATH=/ros1_ws/devel_isolated" >> /root/.bashrc && echo "export ROS2_INSTALL_PATH=/opt/ros/humble" >> /root/.bashrc
 # Change the default shell to Bash
 SHELL [ "/bin/bash" , "-c" ]
 ENV ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
