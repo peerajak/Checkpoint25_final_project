@@ -81,7 +81,6 @@ RUN apt install -y libpoco-dev libboost-thread-dev libboost-filesystem-dev libbo
 liburdfdom-headers-dev uuid-dev libbz2-dev libgpgme-dev libboost-python-dev libogre-1.9-dev liburdfdom-dev
 RUN sed -e '11iset(CATKIN_ENABLE_TESTING 0)' -i /ros1_ws/src/rosconsole/CMakeLists.txt 
 RUN cd /ros1_ws && ./src/catkin/bin/catkin_make_isolated -DCMAKE_BUILD_TYPE=Release
-RUN rm /ros1_ws/src/ros_tutorials/rospy_tutorials/001_talker_listener/talker
 #ENTRYPOINT ["/bin/bash", "-c", "/ros2_ws/entrypoint.sh"]
 
 # Create a workspace for the ros1_bridge

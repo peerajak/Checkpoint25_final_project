@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+
+  ros1_usb_cam:
+    image: FIXME
+    container_name: ros1_usb_cam
+    networks:
+      - test-humble-bridge-network
+    environment:
+        - ROS_DOMAIN_ID=2
+    command: bash -c "source /ros2_ws/install/local_setup.bash && ros2 run demo_nodes_cpp talker"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros2_image_show:
+    image: test:ros2_usbcam_show 
+    container_name: ros2_image_show
+    networks:
+      - test-humble-bridge-network
+    environment:
+      - ROS_DOMAIN_ID=1
+      - DISPLAY=${DISPLAY} 
+    devices:
+      - /dev/video0:/dev/video0
+    command: bash -c "source /opt/ros/humble/setup.bash  && ros2 run rqt_image_view rqt_image_view /image"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+
+networks:
+  test-humble-bridge-network:
+    driver: bridge  

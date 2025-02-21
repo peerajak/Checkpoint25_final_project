@@ -52,5 +52,3 @@ check the list of supported pairs with the `--print-pairs` option
 
 ```
 
-Terminal 3
-

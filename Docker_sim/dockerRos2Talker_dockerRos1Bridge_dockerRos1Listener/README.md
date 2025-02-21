@@ -50,11 +50,8 @@ inside docker :
 
 ```
     root@8d474171d7d9:/ros2_ws#     source ${ROS1_INSTALL_PATH}/setup.bash
-    root@8d474171d7d9:/ros2_ws#     rosrun rospy_tutorials talker
-[rosrun] You have chosen a non-unique executable, please pick one of the following:
-1) /ros1_ws/devel_isolated/rospy_tutorials/share/rospy_tutorials/001_talker_listener/talker
-2) /ros1_ws/src/ros_tutorials/rospy_tutorials/001_talker_listener/talker
-#? 1
+    root@8d474171d7d9:/ros2_ws#     rosrun roscpp_tutorials talker
+
 [INFO] [1740107758.177407]: hello world 1740107758.1772978
 [INFO] [1740107758.277407]: hello world 1740107758.277299
 [INFO] [1740107758.377410]: hello world 1740107758.3773007
@@ -78,6 +75,14 @@ inside docker :
 ```
 
 If you see "I heard:" then successful.
+
+### with 4 dockers communicating to each other
+
+Terminal 1
+
+```
+docker compose -f docker-compose-ex1a.yml up
+```
 
 
 ## Example 1b: ROS 2 talker and ROS 1 listener
