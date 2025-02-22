@@ -4,8 +4,8 @@ FROM ros:noetic-ros-core-focal
 SHELL [ "/bin/bash" , "-c" ]
 
 # Install Git
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git ros-noetic-rviz ros-noetic-compressed-image-transport ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard ros-noetic-amcl ros-noetic-map-server ros-noetic-move-base ros-noetic-urdf ros-noetic-xacro ros-noetic-rqt-image-view ros-noetic-gmapping ros-noetic-navigation ros-noetic-joint-state-publisher ros-noetic-robot-state-publisher ros-noetic-slam-gmapping ros-noetic-dwa-local-planner ros-noetic-joint-state-publisher-gui  ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control 
-
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git ros-noetic-desktop-full ros-noetic-rviz ros-noetic-compressed-image-transport ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard ros-noetic-amcl ros-noetic-map-server ros-noetic-move-base ros-noetic-urdf ros-noetic-xacro ros-noetic-rqt-image-view ros-noetic-gmapping ros-noetic-navigation ros-noetic-joint-state-publisher ros-noetic-robot-state-publisher ros-noetic-slam-gmapping ros-noetic-dwa-local-planner ros-noetic-joint-state-publisher-gui  ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ros-noetic-usb-cam ros-noetic-usb-cam-controllers ros-noetic-usb-cam-hardware ros-noetic-usb-cam-hardware-interface
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential
 
 # Create a Catkin workspace 
@@ -22,7 +22,7 @@ RUN source /opt/ros/noetic/setup.bash \
  && catkin_make
 RUN echo "source /ros1_ws/devel/setup.bash" >> ~/.bashrc
 
-
+COPY ./image_view-only.launch ./usb_cam-only.launch /opt/ros/noetic/share/usb_cam/launch
 # Set the working folder at startup
 WORKDIR /ros1_ws
 

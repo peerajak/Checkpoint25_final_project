@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+
+  ros1_core:
+    image: test:ros1_bridge
+    container_name: ros1_core
+    networks:
+        - test-noetic-bridge-network 
+    environment:
+        - ROS_MASTER_URI=http://ros1_core:11311
+    command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+
+  ros1_usbcam:
+    image: test:ros1_usbcam_show 
+    container_name: ros1_usbcam
+    networks:
+      - test-noetic-bridge-network
+    environment:
+      - ROS_MASTER_URI=http://ros1_core:11311
+    devices:
+      - /dev/video0:/dev/video0
+    command: bash -c "sleep 1 && source /opt/ros/noetic/setup.bash && roslaunch usb_cam usb_cam-only.launch"
+    depends_on:
+      - ros1_core
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix  
+
+  ros1_image_show:
+    image: test:ros1_usbcam_show 
+    container_name: ros1_image_show
+    networks:
+      - test-noetic-bridge-network
+    environment:
+      - ROS_MASTER_URI=http://ros1_core:11311
+      - DISPLAY=${DISPLAY} 
+    command: bash -c "sleep 2 && source /opt/ros/noetic/setup.bash  && rosrun rqt_image_view rqt_image_view /usb_cam/image_raw"
+    depends_on:
+      - ros1_core
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix    
+
+networks:
+  test-noetic-bridge-network:
+    driver: bridge  
