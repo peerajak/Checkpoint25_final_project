@@ -1,14 +1,45 @@
 version: '3.7'
 services:
 
-  ros1_usb_cam:
-    image: FIXME
-    container_name: ros1_usb_cam
+  ros1_core:
+    image: test:ros1_bridge
+    container_name: ros1_core
     networks:
-      - test-humble-bridge-network
+        - test-bridge-network 
+    environment:
+        - ROS_MASTER_URI=http://ros1_core:11311
+    command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros1_usbcam:
+    image: test:ros1_usbcam_show 
+    container_name: ros1_usbcam
+    networks:
+      - test-bridge-network
+    environment:
+      - ROS_MASTER_URI=http://ros1_core:11311
+    devices:
+      - /dev/video0:/dev/video0
+    command: bash -c "sleep 1 && source /opt/ros/noetic/setup.bash && roslaunch usb_cam usb_cam-only.launch"
+    depends_on:
+      - ros1_core
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix  
+
+  ros1_bridge:
+    image: test:ros1_bridge
+    container_name: ros1_bridge
+    networks:
+        - test-bridge-network 
     environment:
         - ROS_DOMAIN_ID=2
-    command: bash -c "source /ros2_ws/install/local_setup.bash && ros2 run demo_nodes_cpp talker"
+        - ROS_MASTER_URI=http://ros1_core:11311
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "cd /ros1_bridge/ && source /ros1_ws/devel_isolated/setup.bash && source /ros1_bridge/install/setup.bash && ros2 run ros1_bridge dynamic_bridge"
+    depends_on:
+      - ros1_core
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix   
 
@@ -16,17 +47,15 @@ services:
     image: test:ros2_usbcam_show 
     container_name: ros2_image_show
     networks:
-      - test-humble-bridge-network
+      - test-bridge-network
     environment:
-      - ROS_DOMAIN_ID=1
+      - ROS_DOMAIN_ID=2
       - DISPLAY=${DISPLAY} 
-    devices:
-      - /dev/video0:/dev/video0
-    command: bash -c "source /opt/ros/humble/setup.bash  && ros2 run rqt_image_view rqt_image_view /image"
+    command: bash -c "source /opt/ros/humble/setup.bash  && ros2 run rqt_image_view rqt_image_view /usb_cam/image_raw"
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix   
 
 
 networks:
-  test-humble-bridge-network:
+  test-bridge-network:
     driver: bridge  
