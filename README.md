@@ -92,15 +92,6 @@ robot xacro file
 
 use blender to view 3d dae files.
 
-### Working on, and Next step 
-
-- currently I change the camera position to see the aruco mark clearly, to proof of concept that I can do this project with this method
-- The result is promising, see the result
-
-![alt text](cp25_proof_of_concepting.png)
-
-- It looks like a proof of concept. Check the error value of the proof of concept
-- If it is proven, do the robot arm path planning and moving the robot arm to show the aruco marks to the original camera position
 
 # Real Robot
 
@@ -155,4 +146,25 @@ ln -s ~/ros2_ws/src/Checkpoint25_final_project/cp25_webapp .
 cd ~/webpage_ws/cp25_webapp
 python3 -m http.server 7000
 ```
+
+
+### Working on, and Next step 
+
+- Task 1 solved. Move robot to the correct position, broadcast aruco_TF, and show the axes on aruco image.
+![alt text](cp25_proof_of_concepting.png)
+
+- Real Robot
+    - successfully move real robot to the correct position, but cannot see the image inside the image topic.
+    - waiting for theConstruct to solve the image topic for me.
+
+- Devop
+    - Proved that Axes can be drawn on real robot
+    - proved that ros1_bridge works.
+    - started some dockers
+    - TODO NEXT: Task1 on ROS2 docker, and have the rosbridge docker bridges all topic to ROS1
+    - TODO NEXT: Do Web dev on ROS1 and get all topic from above rosbridge. 
+
+- Documentation
+    - Not yet start
+
 
