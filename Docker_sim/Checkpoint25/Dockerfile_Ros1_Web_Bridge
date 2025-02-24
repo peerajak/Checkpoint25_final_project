@@ -1,0 +1,64 @@
+# install rosbridge, waypoint and run both
+FROM ros:noetic-ros-core-focal
+
+# Change the default shell to Bash
+SHELL [ "/bin/bash" , "-c" ]
+
+# Install Git
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git python3-rosdep ros-noetic-rosbridge-server ros-noetic-rviz ros-noetic-compressed-image-transport ros-noetic-joy ros-noetic-teleop-twist-joy ros-noetic-teleop-twist-keyboard ros-noetic-amcl ros-noetic-map-server ros-noetic-move-base ros-noetic-urdf ros-noetic-xacro ros-noetic-rqt-image-view ros-noetic-gmapping ros-noetic-navigation ros-noetic-joint-state-publisher ros-noetic-robot-state-publisher ros-noetic-slam-gmapping ros-noetic-dwa-local-planner ros-noetic-joint-state-publisher-gui  ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python-is-python3
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ros-noetic-usb-cam ros-noetic-usb-cam-controllers ros-noetic-usb-cam-hardware ros-noetic-usb-cam-hardware-interface
+# Install python 3.7
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt install python3.7 -y
+
+# Make python 3.7 the default
+RUN echo "alias python=python3.7" >> /root/.bashrc
+RUN export PATH=${PATH}:/usr/bin/python3.7
+RUN /bin/bash -c "source /root/.bashrc"
+
+# Create a Catkin workspace and clone Tortoisebot repos
+RUN source /opt/ros/noetic/setup.bash \
+ && mkdir -p /ros1_ws/src \
+ && cd /ros1_ws/src \
+ && catkin_init_workspace 
+
+COPY async_web_server_cpp.tar /ros1_ws/src/
+COPY course_web_dev_ros.tar /ros1_ws/src/
+COPY tf2_web_republisher.tar /ros1_ws/src/
+COPY web_video_server.tar /ros1_ws/src/
+COPY web2.launch /ros1_ws/src/course_web_dev_ros/launch/
+RUN cd /ros1_ws/src && tar xf async_web_server_cpp.tar && tar xf course_web_dev_ros.tar && tar xf tf2_web_republisher.tar && tar xf web_video_server.tar 
+
+RUN cd /ros1_ws/ && rosdep init && \
+rosdep update && \
+rosdep install --from-paths src --ignore-src -r -y
+
+# Build the Catkin workspace and ensure it's sourced
+RUN source /opt/ros/noetic/setup.bash \
+ && cd /ros1_ws \
+ && catkin_make
+RUN echo "source /ros1_ws/devel/setup.bash" >> ~/.bashrc
+
+COPY ./image_view-only.launch ./usb_cam-only.launch /opt/ros/noetic/share/usb_cam/launch
+
+
+# Set the working folder at startup
+WORKDIR /ros1_ws
+#roslaunch tortoisebot_gazebo tortoisebot_playground.launch
+ENV ROS_DOMAIN_ID=1
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV SLOT_ROSBRIDGE_PORT=20001
+
+COPY ./entrypoint_webbridge.sh /ros1_ws/entrypoint.sh
+
+# Define entrypoint
+# SLOT_ROSBRIDGE_PORT=9090 roslaunch course_web_dev_ros web.launch
+# rosrun course_web_dev_ros tortoisebot_action_server.py & roslaunch course_web_dev_ros tf2_web.launch & roslaunch course_web_dev_ros web.launch
+# ENTRYPOINT ["/bin/bash", "-c", "source /ros1_ws/devel/setup.bash && roslaunch course_web_dev_ros web.launch"]
+
+#tortoisebot-ros1-waypoints:v1
+
+

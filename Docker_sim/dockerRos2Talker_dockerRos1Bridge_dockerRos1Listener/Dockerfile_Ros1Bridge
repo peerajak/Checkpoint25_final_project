@@ -103,6 +103,8 @@ colcon build --symlink-install --packages-select ros1_bridge --cmake-force-confi
 
 RUN apt-get install python3-defusedxml
 
+COPY ./bridge.yaml /ros1_bridge
+
 
 
 CMD ["/bin/bash"]

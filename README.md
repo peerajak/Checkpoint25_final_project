@@ -162,6 +162,31 @@ python3 -m http.server 7000
     - proved that ros1_bridge works.
     - started some dockers
     - TODO NEXT: Task1 on ROS2 docker, and have the rosbridge docker bridges all topic to ROS1
+
+Terminal 1
+
+```
+cd ~/MyRobotics/Checkpoint25/Checkpoint25_final_project/Docker_sim/dockerRos2USBcam_dockerRos1Bridge_dockerRos1WebBridge_webShowImage
+docker compose -f docker-compose_r2cam.yml up
+```
+
+Terminal 2
+
+```
+cd ~/MyRobotics/Checkpoint25/Checkpoint25_final_project/Docker_sim/Checkpoint25
+docker build -t ros1_and_web_bridge:v1 -f ./Dockerfile_Ros1_Web_Bridge .
+```
+
+Terminal 3
+
+```
+cd ~/MyRobotics/Checkpoint25/Checkpoint25_final_project/cp25_webapp/webpage
+python3 -m http.server 7000
+```
+and fix index.html, main.js.
+
+
+
     - TODO NEXT: Do Web dev on ROS1 and get all topic from above rosbridge. 
 
 - Documentation

@@ -63,3 +63,25 @@ cd  /ros2_ws/src/Checkpoint25_final_project/
 rviz2 -d rviz/cp25_rviz.rviz
 ```
 
+
+
+## How to create web bridge
+
+step 1. From ros1_bridge docker, create ros1_and_web_bridge docker, and install the following packages
+    - ROS1 rosbridge_server
+    - ROS1 web_video_server
+    - ROS1 course_web_dev
+
+```
+docker build -t ros1_and_web_bridge:v1 -f ./Dockerfile_Ros1_Web_Bridge .
+```
+
+step 2. ROS2 camera topic --> ros1_bridge (topic selection) --> ROS1 rosbridge, web_video_server --> WEBPage {connect, show camera images on web}
+
+step 3. ROS2 3d robot model --> ros1_bridge (topic selection) --> ROS1 rosbridge --> WEBPage {Robot model}
+
+step 4. Set Web's Robot model state according to joint_state, robot_state topics.]
+
+step 5. Aruco detector, and aruco position, orientation in text, and aruco axes in the video image
+
+(optional step 5): Show pointclound and aruco axes.

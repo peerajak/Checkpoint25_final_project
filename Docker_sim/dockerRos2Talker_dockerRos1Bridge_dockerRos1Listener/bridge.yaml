@@ -1,0 +1,9 @@
+topics:
+  -
+    topic: /chatter  # Topic name on both ROS 1 and ROS 2
+    type: std_msgs/msg/String  # Type of topic to bridge
+    queue_size: 1  # Queue size
+services_2_to_1:
+  -
+    service: /add_two_ints  # ROS 1 service name
+    type: roscpp_tutorials/TwoInts  # The ROS 1 service type name

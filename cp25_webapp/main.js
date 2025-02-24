@@ -156,7 +156,7 @@ var app = new Vue({
                 host: host,
                 width: 400,
                 height: 300,
-                topic: '/camera/image_raw',
+                topic: '/image',
                 ssl: true,
             })
             }

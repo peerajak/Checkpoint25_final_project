@@ -1,0 +1,9 @@
+<launch>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+        <arg name="port" value="9090" />
+        <!-- arg name="websocket_external_port" value="$(env SLOT_ROSBRIDGE_PORT)" /-->
+    </include>
+    <node name="web_video_server" pkg="web_video_server" type="web_video_server">
+        <param name="port" value="11315" />
+    </node>
+</launch>

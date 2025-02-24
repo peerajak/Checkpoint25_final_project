@@ -1,0 +1,99 @@
+version: '3.7'
+services:
+
+  ros1_core:
+    image: test:ros1_bridge
+    container_name: ros1_core
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_MASTER_URI=http://ros1_core:11311
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros1_bridge:
+    image: test:ros1_bridge
+    container_name: ros1_bridge
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_DOMAIN_ID=2
+        - ROS_MASTER_URI=http://ros1_core:11311
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "cd /ros1_bridge/ && source /ros1_ws/devel_isolated/setup.bash && source /ros1_bridge/install/setup.bash && ros2 run ros1_bridge parameter_bridge"
+    depends_on:
+      - ros1_core
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros1_talker:
+    image: test:ros1_bridge
+    container_name: ros1_talker
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_DOMAIN_ID=2
+        - ROS_MASTER_URI=http://ros1_core:11311
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "sleep 1 && source /ros1_ws/devel_isolated/setup.bash && rosparam load /ros1_bridge/bridge.yaml && rosrun roscpp_tutorials talker"
+    depends_on:
+      - ros1_core
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros2_listener:
+    image: test:ros1_bridge
+    container_name: ros2_listener
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_DOMAIN_ID=2
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "sleep 1 && source /ros2_ws/install/setup.bash && ros2 run demo_nodes_cpp listener"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+
+  ros1_server:
+    image: test:ros1_bridge
+    container_name: ros1_server
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_DOMAIN_ID=2
+        - ROS_MASTER_URI=http://ros1_core:11311
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "sleep 1 && source /ros1_ws/devel_isolated/setup.bash && rosrun roscpp_tutorials add_two_ints_server"
+    depends_on:
+      - ros1_core
+      - ros1_bridge
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+  ros2_client:
+    image: test:ros1_bridge
+    container_name: ros2_client
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_DOMAIN_ID=2
+        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+        - ROS2_INSTALL_PATH=/ros2_ws/install
+    command: bash -c "sleep 1 && source /ros2_ws/install/setup.bash && ros2 run demo_nodes_cpp add_two_ints_client"
+    depends_on:
+      - ros1_bridge
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+
+networks:
+  test-bridge-network:
+    driver: bridge
+
