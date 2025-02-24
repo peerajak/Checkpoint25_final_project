@@ -267,9 +267,8 @@
 
 <body>
     <div id="app" class="container-fluid">
-        <div class="row">            
+        <div class="row">
             <div class="col-3 text-center">
-                <h3>&nbsp;</h3>
                 <div class="card mt-2">
                     <div class="card-body">
                         <h3>Connection status</h3>
@@ -287,7 +286,9 @@
                 <div class="card mt-2">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="text-center">Camera visualization</h2>
+                            <h2 class="text-center">Joystick values</h2>
+                            <p>Vertical: {{ joystick.vertical.toFixed(3) }}</p>
+                            <p>Horizontal: {{ joystick.horizontal.toFixed(3) }}</p>
                         </div>
                     </div>                                
                 </div>
@@ -295,7 +296,7 @@
                      <div class="card">
                         <div class="card-body">
                             
-                            <h5>Point cloud visualization</h5>
+                            <h5>Action client data</h5>
                               <div style="width: 40%; display: table-cell;">
                                 <div>
                                     <label class="text-muted">Feedback</label>
@@ -333,12 +334,12 @@
 
             </div>
             <div class="col-9">
-                <h3>Checkpoint 25 Camera calibration user interface</h3>
+                <h3>Controls</h3>
                 <div class="row">
                     <div class="col-4">
                         <div class="card mt-2">
                             <div class="card-header">
-                                <h4>Arm controller</h4>
+                                <h4>Robot model</h4>
                             </div>
                             <div class="card-body" id="robotModel">
                                 <div id="div3DViewer"></div>
@@ -346,7 +347,7 @@
                         </div>                        
                         <div class="card mt-2">
                             <div class="card-header">
-                                <h4>Gripper controller</h4>
+                                <h4>Camera</h4>
                             </div>
                             <div class="card-body">
                                 <div id="cameraButton">
@@ -358,7 +359,7 @@
                     <div class="col-3">
                         <div class="card mt-2">
                             <div class="card-header">
-                                <h4>Aruco Detector Mode</h4>
+                                <h4>Generated Map</h4>
                             </div>
                             <div class="card-body">
                                 <div id="divMap"></div>
@@ -366,26 +367,53 @@
                         </div>
                         <div class="card mt-2">
                             <div class="card-header">
-                                <h4>Robot stat visualization</h4>
+                                <h4>Commands</h4>
+                            </div>
+                            <div class="card-body"> 
+                                    <div class="card mt-2">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h2 class="text-center">Joystick</h2>
+                                                <hr>
+                                                <p>Some actions for the robot</p>
+                                                <div id="dragstartzone" @mousedown="startDrag" @mousemove="doDrag">
+                                                </div>
+                                                <div id="dragCircle" :style="dragCircleStyle"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                             </div>
                         </div>                    
                     </div>
                     <div class="col-5">
                         <div class="card mt-3">
                             <div class="card-header">
-                                <h4>Robot stateand TF</h4>
+                                <h4>Waypoint Buttons</h4>
                             </div>
-                        </div>  
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h4>Joint state values</h4>
+                            <div class="image-container" >
+                                <img src="waypoint_button_map.png" alt="Waypoint Map" >
+                                <button class="waypoint_button" id="WP1" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP1')" v-if="!is_wp_array_reached[0]">WP1</button>
+                                <button class="waypoint_button_done" id="WP1" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP1')"  v-else="!is_wp_array_reached[0]">WP1</button>
+                                <button class="waypoint_button" id="WP2" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP2')" v-if="!is_wp_array_reached[1]">WP2</button>
+                                <button class="waypoint_button_done" id="WP2" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP2')"  v-else="!is_wp_array_reached[1]">WP2</button>
+                                <button class="waypoint_button" id="WP3" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP3')" v-if="!is_wp_array_reached[2]">WP3</button>
+                                <button class="waypoint_button_done" id="WP3" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP3')"  v-else="!is_wp_array_reached[2]">WP3</button>
+                                <button class="waypoint_button" id="WP4" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP4')" v-if="!is_wp_array_reached[3]">WP4</button>
+                                <button class="waypoint_button_done" id="WP4" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP4')"  v-else="!is_wp_array_reached[3]">WP4</button>
+                                <button class="waypoint_button" id="WP5" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP5')" v-if="!is_wp_array_reached[4]">WP5</button>
+                                <button class="waypoint_button_done" id="WP5" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP5')"  v-else="!is_wp_array_reached[4]">WP5</button>
+                                <button class="waypoint_button" id="WP6" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP6')" v-if="!is_wp_array_reached[5]">WP6</button>
+                                <button class="waypoint_button_done" id="WP6" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP6')"  v-else="!is_wp_array_reached[5]">WP6</button>
+                                <button class="waypoint_button" id="WP7" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP7')" v-if="!is_wp_array_reached[6]">WP7</button>
+                                <button class="waypoint_button_done" id="WP7" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP7')"  v-else="!is_wp_array_reached[6]">WP7</button>
+                                <button class="waypoint_button" id="WP8" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP8')" v-if="!is_wp_array_reached[7]">WP8</button>
+                                <button class="waypoint_button_done" id="WP8" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP8')"  v-else="!is_wp_array_reached[7]">WP8</button>
+                                <button class="waypoint_button" id="WP9" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP9')" v-if="!is_wp_array_reached[8]">WP9</button>
+                                <button class="waypoint_button_done" id="WP9" :disabled="!connected || action.status.status == 1" @click="WP_button_clicked('WP9')"  v-else="!is_wp_array_reached[8]">WP9</button>
+                                <button class="cancel_waypoint_button" :disabled="!connected || ![1].includes(action.status.status)" @click="cancelGoal">Cancel</button>
                             </div>
-                        </div>   
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h4>End effector position</h4>
-                            </div>
-                        </div>                                            
+                        </div>                    
                     </div>
                 </div>
 

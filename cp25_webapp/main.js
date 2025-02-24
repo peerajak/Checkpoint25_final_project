@@ -12,7 +12,7 @@ var app = new Vue({
         isShowRobotModel: true,
         mapViewer: null,
         mapGridClient: null,
-        rosbridge_address: 'wss://i-0731bdff0371ae157.robotigniteacademy.com/13aa71aa-c34d-4e3f-ab2f-5039eb9cd8a2/rosbridge/',
+        rosbridge_address: 'ws://localhost:9090',
         port: '9090',
         // dragging data
         dragging: false,
@@ -146,18 +146,19 @@ var app = new Vue({
         setCamera: function() {
 
             if(this.viewer == null){
-                let without_wss = this.rosbridge_address.split('wss://')[1]
-                console.log(without_wss)
-                let domain = without_wss.split('/')[0] + '/' + without_wss.split('/')[1]
+                // let without_wss = this.rosbridge_address.split('ws://')[1]
+                // console.log(without_wss)
+                // let domain = without_wss.split('/')[0] + '/' + without_wss.split('/')[1]
+                let domain = '127.0.0.1:11315'
                 console.log(domain)
-                let host = domain + '/cameras'
+                let host = domain //+ '/cameras'
                 this.viewer = new MJPEGCANVAS.Viewer({
                 divID: 'divCamera',
                 host: host,
                 width: 400,
                 height: 300,
-                topic: '/image',
-                ssl: true,
+                topic: '/camera/image_raw',
+                ssl: false,
             })
             }
 
@@ -210,7 +211,8 @@ var app = new Vue({
                 width: 400,
                 height: 300,
                 antialias: true,
-                fixedFrame: 'odom'
+                fixedFrame: 'odom',
+                axesDisplay : true
             })
 
             // Add a grid.
@@ -240,6 +242,37 @@ var app = new Vue({
                 rootObject: this.viewer3d.scene,
                 loader: ROS3D.COLLADA_LOADER_2
             })
+
+            //Setup TF Axes visualizer
+            var tfAxes1 = new ROS3D.TFAxes({
+                frame_id: "base_link",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient,
+                rootObject : this.viewer3d.scene,
+            });
+
+            var tfAxes2 = new ROS3D.TFAxes({
+                frame_id: "wheel_left",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient,
+                rootObject : this.viewer3d.scene,
+            });
+
+            var tfAxes3 = new ROS3D.TFAxes({
+                frame_id: "wheel_right",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient,
+                rootObject : this.viewer3d.scene,
+            });
 
 
         },
