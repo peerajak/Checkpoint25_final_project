@@ -157,7 +157,7 @@ var app = new Vue({
                 host: host,
                 width: 400,
                 height: 300,
-                topic: '/camera/image_raw',
+                topic: '/wrist_rgbd_depth_sensor/image_raw',
                 ssl: false,
             })
             }

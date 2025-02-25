@@ -10,4 +10,4 @@ echo "$(date +'[%Y-%m-%d %T]') Starting action server..."
 #rosrun course_web_dev_ros tortoisebot_action_server.py &
 
 
-rosrun rqt_image_view rqt_image_view /wrist_rgbd_depth_sensor/image_raw
+rosrun rqt_image_view rqt_image_view /camera/image_raw

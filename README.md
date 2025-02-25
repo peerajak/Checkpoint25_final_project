@@ -193,3 +193,10 @@ and fix index.html, main.js.
     - Not yet start
 
 
+### Trouble shooting.
+
+Don't forget those dockers whose shoing the GUI on host computer must have called this command before running such the docker.
+
+```
+xhost +local:root
+```
