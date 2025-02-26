@@ -190,7 +190,7 @@ Terminal 4
 docker stop ros1_tf2_webbridge
 docker start ros1_tf2_webbridge
 ```
-![alt text](cp25_current_webdev.png)
+![alt text](cp25_currently_webdev.png)
 
 
     - TODO NEXT: Do Web dev on ROS1 and get all topic from above rosbridge. 
