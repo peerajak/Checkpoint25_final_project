@@ -147,7 +147,7 @@ cd ~/webpage_ws/cp25_webapp
 python3 -m http.server 7000
 ```
 
-
+![alt text](cp25_current_webdev.png)
 ### Working on, and Next step 
 
 - Task 1 solved. Move robot to the correct position, broadcast aruco_TF, and show the axes on aruco image.
@@ -190,7 +190,7 @@ Terminal 4
 docker stop ros1_tf2_webbridge
 docker start ros1_tf2_webbridge
 ```
-![alt text](cp25_current_webdev.png)
+![alt text](cp25_proof_of_concepting.png)
 
 
     - TODO NEXT: Do Web dev on ROS1 and get all topic from above rosbridge. 
