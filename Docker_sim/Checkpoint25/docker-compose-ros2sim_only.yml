@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+
+
+  ros2_sim:
+    image: ros2_moveit_sim:v1
+    build: 
+      dockerfile: ./dockerfile_ros2_moveit_sim 
+    container_name: ros2_sim
+    networks:
+      - test-bridge-network
+    environment:
+      - ROS_DOMAIN_ID=2
+      - DISPLAY=${DISPLAY} 
+    command: bash -c "source /ros2_ws/install/setup.bash && ros2 launch the_construct_office_gazebo starbots_ur3e.launch.xml"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+
+
+networks:
+  test-bridge-network:
+    driver: bridge  

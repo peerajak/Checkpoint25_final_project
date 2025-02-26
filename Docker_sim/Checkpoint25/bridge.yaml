@@ -1,9 +1,32 @@
 topics:
   -
-    topic: /chatter  # Topic name on both ROS 1 and ROS 2
-    type: std_msgs/msg/String  # Type of topic to bridge
-    queue_size: 1  # Queue size
-services_2_to_1:
+    topic: /tf_static
+    type: tf2_msgs/msg/TFMessage
+    queue_size: 1
+    # qos:
+    #   history: keep_all
+    #   durability: transient_local
+  - 
+    topic: /tf
+    type: tf2_msgs/msg/TFMessage
+    queue_size: 1
+
   -
-    service: /add_two_ints  # ROS 1 service name
-    type: roscpp_tutorials/TwoInts  # The ROS 1 service type name
+    topic: /joint_states
+    type: sensor_msgs/msg/JointState
+    queue_size: 1
+
+  -
+    topic: /wrist_rgbd_depth_sensor/image_raw
+    type: sensor_msgs/msg/Image
+    queue_size: 1
+
+  -
+    topic: /robot_description
+    type: std_msgs/msg/String
+    queue_size: 1
+
+  -
+    topic: /parameter_events
+    type: rcl_interfaces/msg/ParameterEvent
+    queue_size: 1

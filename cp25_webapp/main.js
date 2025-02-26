@@ -7,11 +7,8 @@ var app = new Vue({
         viewer: null,
         logs: [],
         loading: false,
-        isShowMap: true,
         isShowCamera: true,
         isShowRobotModel: true,
-        mapViewer: null,
-        mapGridClient: null,
         rosbridge_address: 'ws://localhost:9090',
         port: '9090',
         // dragging data
@@ -72,8 +69,7 @@ var app = new Vue({
             this.ros.on('connection', () => {
                 this.logs.unshift((new Date()).toTimeString() + ' - Connected!')
                 this.connected = true
-                this.loading = false
-                this.showMap()
+                this.loading = false                
                 this.showCamera()
                 this.showRobotModel()
                 this.pubInterval = setInterval(this.publish, 100)
@@ -87,16 +83,12 @@ var app = new Vue({
                 this.loading = false   
                 this.unset3DViewer()  
                 this.unsetCamera()
-                this.unsetMap()
+
                 clearInterval(this.pubInterval)         
             })
         },
-        showMap: function(){
-            this.setMap()
-         },
-        closeMap: function(){
-            this.unsetMap()
-        },
+
+
         showCamera: function() {
             this.setCamera()
         },
@@ -109,40 +101,7 @@ var app = new Vue({
         closeRobotModel: function () {
             this.unset3DViewer()  
         },
-        setMap: function(){
-            if(this.mapViewer == null){
-                    this.mapViewer = new ROS2D.Viewer({
-                    divID: 'divMap',
-                    width: 320,
-                    height: 266
-                })
-                        // Setup the map client.
-            this.mapGridClient = new ROS2D.OccupancyGridClient({
-                ros: this.ros,
-                rootObject: this.mapViewer.scene,
-                continuous: true                             
-            })
-            scaleFactor = 1
-            shift_offset = 0
-            // Scale the canvas to fit to the map
-            this.mapGridClient.on('change', () => {
-            this.mapViewer.scaleToDimensions(this.mapGridClient.currentGrid.width*scaleFactor, this.mapGridClient.currentGrid.height*scaleFactor)
-            this.mapViewer.shift((this.mapGridClient.currentGrid.pose.position.x+shift_offset)*scaleFactor, (this.mapGridClient.currentGrid.pose.position.y-shift_offset)*scaleFactor)
-            /*var divmap = document.getElementById('divMap') 
-            var canvas = divmap.childNodes.item('canvas')
-            var context = canvas.getContext('2d');
-            context.save();
-            context.rotate(1.57);
-            context.restore
-            //canvas.width = 384;
-            //canvas.height = 384;
-            */
-            })
 
-
-            }
-
-        },
         setCamera: function() {
 
             if(this.viewer == null){
@@ -221,7 +180,7 @@ var app = new Vue({
                 cellSize: 0.5,
                 num_cells: 20
             }))
-
+            
             // Setup a client to listen to TFs.
             this.tfClient = new ROSLIB.TFClient({
                 ros: this.ros,
@@ -242,7 +201,7 @@ var app = new Vue({
                 rootObject: this.viewer3d.scene,
                 loader: ROS3D.COLLADA_LOADER_2
             })
-
+            /*
             //Setup TF Axes visualizer
             var tfAxes1 = new ROS3D.TFAxes({
                 frame_id: "base_link",
@@ -255,7 +214,7 @@ var app = new Vue({
             });
 
             var tfAxes2 = new ROS3D.TFAxes({
-                frame_id: "wheel_left",
+                frame_id: "upper_arm_link",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
@@ -265,21 +224,18 @@ var app = new Vue({
             });
 
             var tfAxes3 = new ROS3D.TFAxes({
-                frame_id: "wheel_right",
+                frame_id: "rg2_gripper_base_link",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
-            });
+            });*/
 
 
         },
-        unsetMap() {
-            document.getElementById('divMap').innerHTML = ''
-            this.mapViewer = null
-        },
+
         unsetCamera() {
             document.getElementById('divCamera').innerHTML = ''
             this.viewer = null
