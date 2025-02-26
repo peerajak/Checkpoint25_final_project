@@ -211,7 +211,7 @@ var app = new Vue({
                 scale : 0.1,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
-            });
+            });*/
 
             var tfAxes2 = new ROS3D.TFAxes({
                 frame_id: "upper_arm_link",
@@ -231,7 +231,7 @@ var app = new Vue({
                 scale : 0.1,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
-            });*/
+            });
 
 
         },

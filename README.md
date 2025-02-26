@@ -183,8 +183,14 @@ Terminal 3
 cd ~/MyRobotics/Checkpoint25/Checkpoint25_final_project/cp25_webapp/webpage
 python3 -m http.server 7000
 ```
-and fix index.html, main.js.
 
+Terminal 4
+
+```
+docker stop ros1_tf2_webbridge
+docker start ros1_tf2_webbridge
+```
+![alt text](cp25_current_webdev.png)
 
 
     - TODO NEXT: Do Web dev on ROS1 and get all topic from above rosbridge. 
