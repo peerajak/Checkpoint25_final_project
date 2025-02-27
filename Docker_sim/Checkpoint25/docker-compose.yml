@@ -1,18 +1,6 @@
 version: '3.7'
 services:
 
-
-  ros1_core:
-    image: test:ros1_bridge
-    container_name: ros1_core
-    networks:
-        - test-bridge-network 
-    environment:
-        - ROS_MASTER_URI=http://ros1_core:11311
-    command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix   
-
   ros2_sim:
     image: ros2_moveit_sim:v1
     build: 
@@ -26,6 +14,22 @@ services:
     command: bash -c "source /ros2_ws/install/setup.bash && ros2 launch the_construct_office_gazebo starbots_ur3e.launch.xml"
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix   
+
+
+  ros1_core:
+    image: test:ros1_bridge
+    container_name: ros1_core
+    networks:
+        - test-bridge-network 
+    environment:
+        - ROS_MASTER_URI=http://ros1_core:11311
+    command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   
+    depends_on:
+      ros2_sim:
+         condition: service_started
+
 
   ros1_bridge:
     image: test:ros1_bridge
@@ -54,13 +58,12 @@ services:
       - 11315:11315
     depends_on:
       - ros1_core
-      - ros1_bridge
     environment:
       - SLOT_ROSBRIDGE_PORT=20001
       - ROS_MASTER_URI=http://ros1_core:11311
       - ROS_HOSTNAME=ros1_tf2_webbridge
       - DISPLAY=${DISPLAY} 
-    command: bash -c "sleep 2 && source /opt/ros/noetic/setup.bash  && /ros1_ws/entrypoint.sh" 
+    command: bash -c "sleep 10 && source /opt/ros/noetic/setup.bash  && /ros1_ws/entrypoint.sh" 
     # command: bash -c "sleep 2 && source /opt/ros/noetic/setup.bash  && rosrun rqt_image_view rqt_image_view /camera/image_raw" 
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix    

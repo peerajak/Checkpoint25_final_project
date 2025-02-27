@@ -35,6 +35,7 @@ COPY Universal_Robots_ROS2_Description.tar /ros1_ws/src/
 
 RUN cd /ros1_ws/src && tar xf async_web_server_cpp.tar && tar xf course_web_dev_ros.tar && tar xf tf2_web_republisher.tar && tar xf web_video_server.tar && \
 tar xf robotnik_sensors.tar && tar xf rg2_gripper_description.tar && tar xf Universal_Robots_ROS2_Description.tar
+COPY tf2_web.launch /ros1_ws/src/course_web_dev_ros/launch/
 COPY web2.launch /ros1_ws/src/course_web_dev_ros/launch/
 
 
