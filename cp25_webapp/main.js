@@ -168,7 +168,7 @@ var app = new Vue({
                 background: '#cccccc',
                 divID: 'div3DViewer',
                 width: 400,
-                height: 500,
+                height: 400,
                 antialias: true,
                 fixedFrame: 'odom',
                 axesDisplay : true,
