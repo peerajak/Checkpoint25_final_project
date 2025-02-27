@@ -158,11 +158,12 @@ python3 -m http.server 7000
     - waiting for theConstruct to solve the image topic for me.
 
 - Devop
-    - Proved that Axes can be drawn on real robot
-    - proved that ros1_bridge works.
-    - started some dockers
-    - TODO NEXT: Task1 on ROS2 docker, and have the rosbridge docker bridges all topic to ROS1
-
+    - Done ROS2 -> r1_bridge -> r1_web_bridge -> web, with moveit able to control, and web able to show moving robot arm.
+    - TODO NEXT: 
+        -   Web control robot arms into two position: 1) Home, 2) show_aruco (move_sim_arm_to_show_aruco_trajectory.launch.py)
+        -   docker run the aruco_detector (ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py)
+        -   Show the aruco marker w.r.t. Camera in X,Y,Z, Yaw, Pitch, Row
+        
 Terminal 1
 
 ```
