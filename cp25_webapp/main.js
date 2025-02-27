@@ -168,10 +168,15 @@ var app = new Vue({
                 background: '#cccccc',
                 divID: 'div3DViewer',
                 width: 400,
-                height: 300,
+                height: 500,
                 antialias: true,
                 fixedFrame: 'odom',
-                axesDisplay : true
+                axesDisplay : true,
+                cameraPose: {
+                    x: -2,
+                    y: 0,
+                    z: 1.0
+                  }
             })
 
             // Add a grid.
@@ -201,7 +206,7 @@ var app = new Vue({
                 rootObject: this.viewer3d.scene,
                 loader: ROS3D.COLLADA_LOADER_2
             })
-            /*
+            
             //Setup TF Axes visualizer
             var tfAxes1 = new ROS3D.TFAxes({
                 frame_id: "base_link",
@@ -211,7 +216,7 @@ var app = new Vue({
                 scale : 0.1,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
-            });*/
+            });
 
             var tfAxes2 = new ROS3D.TFAxes({
                 frame_id: "upper_arm_link",
