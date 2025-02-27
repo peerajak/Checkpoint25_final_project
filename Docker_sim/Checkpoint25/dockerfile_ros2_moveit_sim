@@ -46,6 +46,7 @@ RUN apt update && cd /ros2_ws/src  && rosdep install -r --from-paths . --ignore-
 RUN cd /ros2_ws && source /opt/ros/humble/setup.bash  && colcon build 
 
 RUN mkdir -p /home/user && ln -s /ros2_ws /home/user/
+COPY entrypoint_ros2_moveit_sim.sh /ros2_ws/entrypoint.sh
 RUN echo "source /ros2_ws/install/setup.bash " >> /root/.bashrc
 
 # Gazenp and RVIZ slam

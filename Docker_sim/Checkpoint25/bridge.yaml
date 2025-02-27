@@ -6,12 +6,11 @@ topics:
     qos:
       history: keep_all
       durability: transient_local
+  
   - 
     topic: /tf
     type: tf2_msgs/msg/TFMessage
     queue_size: 1
-    qos:
-      durability: transient_local
 
   -
     topic: /joint_states
@@ -23,8 +22,4 @@ topics:
     type: sensor_msgs/msg/Image
     queue_size: 1
 
-  -
-    topic: /robot_description
-    type: std_msgs/msg/String
-    queue_size: 1
 
