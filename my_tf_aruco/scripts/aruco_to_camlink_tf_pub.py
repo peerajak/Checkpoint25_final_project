@@ -271,8 +271,8 @@ class ArucoToCamlinkTF(Node):
         (rows,cols,channels) = self.cv_image.shape
 
 
-        #cv2.imshow("Image window", self.cv_image)
-        #cv2.waitKey(3)
+        cv2.imshow("Image window", self.cv_image)
+        cv2.waitKey(3)
         detectingImage = self.detect_pose_return_tf()
         
         if detectingImage is not None:
