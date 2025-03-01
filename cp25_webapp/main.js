@@ -302,7 +302,7 @@ var app = new Vue({
                 console.error(error)
             })
         },
-        callMoveitSimService: function() {
+        callMoveitSimService: function(toPos) {
             // service is busy
             this.service_busy = true
             this.service_response = ''
@@ -315,7 +315,7 @@ var app = new Vue({
 
             // define the request
             let request = new ROSLIB.ServiceRequest({
-                data: true,
+                data: toPos == "goShow",
             })
 
             // define a callback
