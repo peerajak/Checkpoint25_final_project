@@ -74,9 +74,9 @@ class ArucoToCamlinkTF(Node):
                 '/wrist_rgbd_depth_sensor/image_raw',  
                 self.image_callback, 10)
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
-        self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 10)
+        self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 1)
         self.cv_bridge = CvBridge()
-        self.get_logger().info("aruco_to_camlink_tf_node ready!")
+        self.get_logger().info("aruco_to_camlink_tf_node ready!!")
         
 
     def timer_callback(self):
@@ -117,7 +117,8 @@ class ArucoToCamlinkTF(Node):
         # Check that we have a valid ArUco marker
         if self.ARUCO_DICT.get(self.aruco_dictionary_name, None) is None:
             print("[INFO] ArUCo tag of is not supported")
-            sys.exit(0)
+            #sys.exit(0)
+            return None
         
         if not self.is_camera_info_set:
             return None
@@ -262,7 +263,7 @@ class ArucoToCamlinkTF(Node):
 
     def image_callback(self, msg: Image) -> None:
         try:
-            self.cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+            self.cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
         except Exception as e:
             self.get_logger().error("Error converting ROS Image to OpenCV format: {0}".format(e))
             return
@@ -270,13 +271,14 @@ class ArucoToCamlinkTF(Node):
         (rows,cols,channels) = self.cv_image.shape
 
 
-        #cv2.imshow("Image window", self.cv_image)
-        #cv2.waitKey(3)
+        cv2.imshow("Image window", self.cv_image)
+        cv2.waitKey(3)
         detectingImage = self.detect_pose_return_tf()
-
+        
         if detectingImage is not None:
             try:
-                self.publisher.publish(self.cv_bridge.cv2_to_imgmsg(detectingImage))
+                image_message = self.cv_bridge.cv2_to_imgmsg(detectingImage, encoding="passthrough")
+                self.publisher.publish(image_message)
             except Exception as e:
                 print(e)
 
