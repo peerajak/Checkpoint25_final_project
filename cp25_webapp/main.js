@@ -73,6 +73,7 @@ var app = new Vue({
                 this.showCamera()
                 this.showRobotModel()
                 this.pubInterval = setInterval(this.publish, 100)
+                this.callPlanningSceneService()
             })
             this.ros.on('error', (error) => {
                 this.logs.unshift((new Date()).toTimeString() + ` - Error: ${error}`)
@@ -277,45 +278,56 @@ var app = new Vue({
             this.ros.close()
             this.goal = null
         },
-        sendGoal: function() {
-            let actionClient = new ROSLIB.ActionClient({
-                ros : this.ros,
-                serverName : '/tortoisebot_as',
-                actionName : 'course_web_dev_ros/WaypointActionAction'
+        callPlanningSceneService: function() {
+            // service is busy
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/planning_scene_cp25',
+                serviceType: 'std_srvs/Empty',
             })
-
-            this.goal = new ROSLIB.Goal({
-                actionClient : actionClient,
-                goalMessage: {
-                    ...this.action.goal
-                }
-            })
-
-            this.goal.on('status', (status) => {
-                this.action.status = status
-            })
-
-            this.goal.on('feedback', (feedback) => {
-                this.action.feedback = feedback
-            })
-
-            this.goal.on('result', (result) => {
-                this.action.result = result 
-                this.isOnAction = false
-                let wpnum_idx = this.WPnum - 1
-                if(this.action.result.success){
-                    this.is_wp_array_reached[wpnum_idx] = true
-                }else{
-                    this.is_wp_array_reached[wpnum_idx] = false
-                }
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
                 
             })
-            this.isOnAction = true
-            this.goal.send()
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
         },
-        cancelGoal: function() {
-            this.goal.cancel()
+        callMoveitSimService: function() {
+            // service is busy
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/moveit_sim_service',
+                serviceType: 'std_srvs/SetBool',
+            })
+
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
+                data: true,
+            })
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
         },
+
         WP_button_clicked: function (wpname) {            
             this.WPnum = parseInt(wpname.charAt(2))
             let wpnum_idx = this.WPnum - 1

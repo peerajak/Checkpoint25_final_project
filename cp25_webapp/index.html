@@ -283,12 +283,12 @@
                                     <p>Click on the button to control the robot arm to the position shown in image</p>           
                                     <div class="image-container" >
                                         <!-- img src="Button_MoveArm_Home.png" alt="Waypoint Map" -->
-                                        <button class="waypoint_button" id="WP1" :disabled="!connected" @click="WP_button_clicked('WP1')" v-if="!is_wp_array_reached[0]">Home Button</button>
+                                        <button class="waypoint_button" id="WP1" :disabled="!connected" @click="callMoveitSimService" v-if="!is_wp_array_reached[0]">Home Button</button>
                                         <p>Home Position</p>
                                     </div> 
                                     <div class="image-container" >
                                         <!--img src="Button_MoveArm_ShowAruco.png" alt="Waypoint Map2" -->
-                                        <button class="waypoint_button" id="WP2" :disabled="!connected " @click="WP_button_clicked('WP2')" v-if="!is_wp_array_reached[1]">Show Marker Button</button>
+                                        <button class="waypoint_button" id="WP2" :disabled="!connected " @click="callMoveitSimService"  v-if="!is_wp_array_reached[1]">Show Marker Button</button>
                                         <p>Show marker position</p>
                                     </div>
                                 </div>  
