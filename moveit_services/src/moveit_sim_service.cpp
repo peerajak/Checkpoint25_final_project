@@ -112,11 +112,67 @@ private:
                 response->message = "moveit to show: failed";                
             }
 
+        }else{ // meaning request->data == DATA_GO_HOME
+          RCLCPP_INFO(LOGGER, "moveit_sim_callback");
+          //visual_tools->prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
+
+          RCLCPP_INFO(LOGGER, "moveit_sim_callback2");
+
+          const moveit::core::JointModelGroup *joint_model_group =
+          move_group->getCurrentState()->getJointModelGroup(PLANNING_GROUP);
+          RCLCPP_INFO(LOGGER, "moveit_sim_callback3");
+  
+          RCLCPP_INFO(LOGGER, "Planning frame: %s",move_group->getPlanningFrame().c_str());
+  
+          RCLCPP_INFO(LOGGER, "End effector link: %s",move_group->getEndEffectorLink().c_str());
+  
+          RCLCPP_INFO(LOGGER, "Available Planning Groups:");
+          std::copy(move_group->getJointModelGroupNames().begin(), move_group->getJointModelGroupNames().end(),
+              std::ostream_iterator<std::string>(std::cout, ", "));
+  
+          moveit::core::RobotStatePtr current_state = move_group->getCurrentState(10);
+          std::vector<double> joint_group_positions;
+          current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
+  
+          joint_group_positions[0] = 2.808555; // Shoulder Pan
+          joint_group_positions[1] = -1.5708;  // Shoulder Lift
+          joint_group_positions[2] = 0.0;      // Elbow
+          joint_group_positions[3] = -1.5708;  // Wrist 1
+          joint_group_positions[4] = 0.0;      // Wrist 2
+          joint_group_positions[5] = 0.0;      // Wrist 3
+          move_group->setJointValueTarget(joint_group_positions);
+  
+          moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+  
+          bool success = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+  
+          move_group->execute(my_plan);
+          sleep(5);
+          // step 2 Home
+  
+          // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+          joint_group_positions[0] = 0.0;   // Shoulder Pan
+          joint_group_positions[1] = -1.5708; // Shoulder Lift
+          joint_group_positions[2] = 0.0;   // Elbow
+          joint_group_positions[3] = -1.5708;  // Wrist 1
+          joint_group_positions[4] = 0.0;  // Wrist 2
+          joint_group_positions[5] = 0.0;  // Wrist 3
+  
+          move_group->setJointValueTarget(joint_group_positions);
+          bool success2 = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+  
+          move_group->execute(my_plan);
+
+          if(success && success2){
+              response->success = true;
+              response->message = "moveit to show: success";
+          } else {
+              response->success = false;
+              response->message = "moveit to show: failed";                
+          }
+
         }
-        // if(request->data == DATA_GO_HOME){
-        //     response->success = false;
-        //     response->message = "moveit to show: failed";                 
-        // }
+
 
 
     }
