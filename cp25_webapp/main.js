@@ -230,11 +230,11 @@ var app = new Vue({
             });
 
             var tfAxes3 = new ROS3D.TFAxes({
-                frame_id: "rg2_gripper_base_link",
+                frame_id: "aruco_frame",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
-                scale : 0.1,
+                scale : 0.5,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });

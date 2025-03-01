@@ -263,7 +263,7 @@ class ArucoToCamlinkTF(Node):
 
     def image_callback(self, msg: Image) -> None:
         try:
-            self.cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding='rgb8')
+            self.cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         except Exception as e:
             self.get_logger().error("Error converting ROS Image to OpenCV format: {0}".format(e))
             return
@@ -277,7 +277,7 @@ class ArucoToCamlinkTF(Node):
         
         if detectingImage is not None:
             try:
-                image_message = self.cv_bridge.cv2_to_imgmsg(detectingImage, encoding="rgb8")
+                image_message = self.cv_bridge.cv2_to_imgmsg(detectingImage, encoding="bgr8")
                 self.publisher.publish(image_message)
             except Exception as e:
                 print(e)
