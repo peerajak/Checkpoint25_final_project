@@ -22,4 +22,16 @@ topics:
     type: sensor_msgs/msg/Image
     queue_size: 1
 
+  -
+    topic:  /wrist_rgbd_depth_sensor/image_aruco_frame
+    type: sensor_msgs/msg/Image
+    queue_size: 1
 
+
+services_2_to_1:
+  -
+    service: /moveit_sim_service # ROS 1 service name
+    type: std_srvs/SetBool  # The ROS 1 service type name
+  -
+    service: /planning_scene_cp25 # ROS 1 service name
+    type: std_srvs/Empty  # The ROS 1 service type name
