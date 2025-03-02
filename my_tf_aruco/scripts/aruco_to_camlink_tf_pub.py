@@ -120,9 +120,9 @@ class ArucoToCamlinkTF(Node):
             self.transform_stamped.transform.translation.x = 0.0
             self.transform_stamped.transform.translation.y = 0.0
             self.transform_stamped.transform.translation.z = 0.0      
-            R.from_matrix([[0, -1, 0],
+            r = R.from_matrix([[0, -1, 0],
                    [1, 0, 0],
-                   [0, 0, 1]])   
+                   [0, 0, 1]])          
             quat = r.as_quat()   
 
             # Quaternion format     
