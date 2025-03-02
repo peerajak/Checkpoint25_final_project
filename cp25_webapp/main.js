@@ -221,7 +221,7 @@ var app = new Vue({
             });
 
             var tfAxes2 = new ROS3D.TFAxes({
-                frame_id: "upper_arm_link",
+                frame_id: "wrist_2_link",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,

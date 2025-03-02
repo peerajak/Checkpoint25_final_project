@@ -57,7 +57,7 @@ class ArucoToCamlinkTF(Node):
         # This line sets the `header.frame_id` attribute of the `TransformStamped` object.
         # The `header.frame_id` attribute specifies the frame in which the transformation is defined.
         # In this case, the transformation is defined in the `world` frame.
-        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
+        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_link"
         # This line sets the `child_frame_id` attribute of the `TransformStamped` object.
         # The `child_frame_id` attribute specifies the frame that is being transformed to.
         # In this case, the robot's base frame is being transformed to the `world` frame.
