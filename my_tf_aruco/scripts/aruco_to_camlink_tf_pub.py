@@ -111,7 +111,7 @@ class ArucoToCamlinkTF(Node):
 
             # Send (broadcast) the TF message.
             self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing detected tf to aruco_frame")
+            self.get_logger().info("publishing tf to aruco_frame")
         else:
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
@@ -119,18 +119,8 @@ class ArucoToCamlinkTF(Node):
             # The translation of the TF message is set to the current position of the robot.
             self.transform_stamped.transform.translation.x = 0.0
             self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0
-
-            # Set the rotation of the TF message.
-            # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = 0.0
-            self.transform_stamped.transform.rotation.y = 0.0
-            self.transform_stamped.transform.rotation.z = 0.0
-            self.transform_stamped.transform.rotation.w = 0.0
-
-            # Send (broadcast) the TF message.
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing zero tf to aruco_frame")           
+            self.transform_stamped.transform.translation.z = 0.0         
+     
     
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
@@ -187,6 +177,7 @@ class ArucoToCamlinkTF(Node):
         # Check that at least one ArUco marker was detected
         if marker_ids is not None: 
             self.is_marker_detected = True
+            self.had_detected_marker = True
             num_markers = len(marker_ids)
             # print('corners ',corners)
             # print('marker_ids', marker_ids)
@@ -273,6 +264,7 @@ class ArucoToCamlinkTF(Node):
                 detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05) 
         else:
             self.is_marker_detected = False
+
         # Display the resulting frame
 
         #cv2.imshow('frame',detectingImage )
