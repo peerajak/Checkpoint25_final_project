@@ -117,16 +117,16 @@ class ArucoToCamlinkTF(Node):
 
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = 0
-            self.transform_stamped.transform.translation.y = 0
-            self.transform_stamped.transform.translation.z = 0
+            self.transform_stamped.transform.translation.x = 0.0
+            self.transform_stamped.transform.translation.y = 0.0
+            self.transform_stamped.transform.translation.z = 0.0
 
             # Set the rotation of the TF message.
             # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = 0
-            self.transform_stamped.transform.rotation.y = 0
-            self.transform_stamped.transform.rotation.z = 0
-            self.transform_stamped.transform.rotation.w = 0
+            self.transform_stamped.transform.rotation.x = 0.0
+            self.transform_stamped.transform.rotation.y = 0.0
+            self.transform_stamped.transform.rotation.z = 0.0
+            self.transform_stamped.transform.rotation.w = 0.0
 
             # Send (broadcast) the TF message.
             self.br.sendTransform(self.transform_stamped)
