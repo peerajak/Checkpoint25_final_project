@@ -120,7 +120,8 @@ class ArucoToCamlinkTF(Node):
             self.transform_stamped.transform.translation.x = 0.0
             self.transform_stamped.transform.translation.y = 0.0
             self.transform_stamped.transform.translation.z = 0.0         
-     
+            self.br.sendTransform(self.transform_stamped)
+            self.get_logger().info("publishing tf to aruco_frame")
     
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
