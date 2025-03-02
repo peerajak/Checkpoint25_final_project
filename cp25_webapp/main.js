@@ -9,6 +9,7 @@ var app = new Vue({
         loading: false,
         isShowCamera: true,
         isShowRobotModel: true,
+        service_busy: false,
         rosbridge_address: 'ws://localhost:9090',
         port: '9090',
         // dragging data
@@ -234,7 +235,7 @@ var app = new Vue({
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
-                scale : 0.2,
+                scale : 0.1,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });

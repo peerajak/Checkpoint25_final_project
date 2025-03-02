@@ -111,7 +111,26 @@ class ArucoToCamlinkTF(Node):
 
             # Send (broadcast) the TF message.
             self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing tf to aruco_frame")
+            self.get_logger().info("publishing detected tf to aruco_frame")
+        else:
+             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+
+            # Set the translation of the TF message.
+            # The translation of the TF message is set to the current position of the robot.
+            self.transform_stamped.transform.translation.x = 0
+            self.transform_stamped.transform.translation.y = 0
+            self.transform_stamped.transform.translation.z = 0
+
+            # Set the rotation of the TF message.
+            # The rotation of the TF message is set to the current orientation of the robot.
+            self.transform_stamped.transform.rotation.x = 0
+            self.transform_stamped.transform.rotation.y = 0
+            self.transform_stamped.transform.rotation.z = 0
+            self.transform_stamped.transform.rotation.w = 0
+
+            # Send (broadcast) the TF message.
+            self.br.sendTransform(self.transform_stamped)
+            self.get_logger().info("publishing zero tf to aruco_frame")           
     
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker

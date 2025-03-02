@@ -167,6 +167,7 @@
         border: 1px solid #999999;
         background-color: #cccccc;
         color: #666666;
+        background-image: url("");
         }
 
         .waypoint_button#WP1 {             
@@ -177,6 +178,10 @@
             color: #f5f10f; /* set your desired text color */
             background-image: url("");
         }
+        .waypoint_button#WP1:disabled, button[disabled]{             
+            color: #666666;
+            background-image: url("");
+        }
         .waypoint_button#WP2 {
             color: #f5f10f; /* set your desired text color */  
             background-image: url("Button_MoveArm_ShowAruco.png");
@@ -185,7 +190,10 @@
             color: #f5f10f; /* set your desired text color */
             background-image: url("");
         }
-
+        .waypoint_button#WP2:disabled, button[disabled]{             
+            color: #666666;
+            background-image: url("");
+        }
     </style>
 </head>
 
@@ -282,13 +290,12 @@
                                 <div class="row">                 
                                     <p>Click on the button to control the robot arm to the position shown in image</p>           
                                     <div class="image-container" >
-                                        <!-- img src="Button_MoveArm_Home.png" alt="Waypoint Map" -->
-                                        <button class="waypoint_button" id="WP1" :disabled="!connected" @click="callMoveitSimService('goHome')" v-if="!is_wp_array_reached[0]">Home Button</button>
+                                        <button class="waypoint_button" id="WP1" :disabled="!connected || service_busy" @click="callMoveitSimService('goHome')" v-if="!is_wp_array_reached[0]">Home Button</button>
                                         <p>Home Position</p>
+                                       
                                     </div> 
                                     <div class="image-container" >
-                                        <!--img src="Button_MoveArm_ShowAruco.png" alt="Waypoint Map2" -->
-                                        <button class="waypoint_button" id="WP2" :disabled="!connected " @click="callMoveitSimService('goShow')"  v-if="!is_wp_array_reached[1]">Show Marker Button</button>
+                                        <button class="waypoint_button" id="WP2" :disabled="!connected || service_busy" @click="callMoveitSimService('goShow')"  v-if="!is_wp_array_reached[1]">Show Marker Button</button>
                                         <p>Show marker position</p>
                                     </div>
                                 </div>  
@@ -319,7 +326,7 @@
         </div>       
 
 
-
+    </div>
 
         <script type="text/javascript">
             // We could have loaded main.js simply with:

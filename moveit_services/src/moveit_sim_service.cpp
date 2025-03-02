@@ -5,11 +5,12 @@
 #include <memory>
 #include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
-#include <rviz_visual_tools/rviz_visual_tools.hpp>
+//#include <rviz_visual_tools/rviz_visual_tools.hpp>
 
 
 #define DATA_GO_SHOW true
 #define DATA_GO_HOME false
+#define SLEEPTIME 3
 using SetBool = std_srvs::srv::SetBool;
 using std::placeholders::_1;
 using std::placeholders::_2;
@@ -31,10 +32,10 @@ public:
     srv_ = create_service<SetBool>("moveit_sim_service", std::bind(&MoveitSimServerNode::moveit_sim_callback, this, _1, _2));
    
     move_group = std::make_shared<moveit::planning_interface::MoveGroupInterface>(node_,PLANNING_GROUP);
-    rviz_visual_tools::RvizVisualTools visual_tools_org("base_link", "planning_scene_ros_api_tutorial", node_);
-    visual_tools = std::make_shared<rviz_visual_tools::RvizVisualTools>(visual_tools_org);
-    visual_tools->loadRemoteControl();
-    visual_tools->deleteAllMarkers();
+    // rviz_visual_tools::RvizVisualTools visual_tools_org("base_link", "planning_scene_ros_api_tutorial", node_);
+    // visual_tools = std::make_shared<rviz_visual_tools::RvizVisualTools>(visual_tools_org);
+    // visual_tools->loadRemoteControl();
+    // visual_tools->deleteAllMarkers();
     rclcpp::sleep_for(std::chrono::seconds(1));
     executor_->add_node(node_);
     executor_thread_ = std::thread([this]() { this->executor_->spin(); });
@@ -44,7 +45,7 @@ public:
 private:
   rclcpp::Service<SetBool>::SharedPtr srv_;
   std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group;
-  std::shared_ptr<rviz_visual_tools::RvizVisualTools>visual_tools;
+  //std::shared_ptr<rviz_visual_tools::RvizVisualTools>visual_tools;
   rclcpp::Node::SharedPtr node_;
   rclcpp::Executor::SharedPtr executor_;
   std::thread executor_thread_;
@@ -88,7 +89,7 @@ private:
             bool success = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
     
             move_group->execute(my_plan);
-            sleep(5);
+            sleep(SLEEPTIME);
             // step 2
     
             // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
@@ -147,7 +148,7 @@ private:
           bool success = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
   
           move_group->execute(my_plan);
-          sleep(5);
+          sleep(SLEEPTIME);
           // step 2 Home
   
           // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
