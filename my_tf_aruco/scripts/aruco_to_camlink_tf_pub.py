@@ -119,7 +119,23 @@ class ArucoToCamlinkTF(Node):
             # The translation of the TF message is set to the current position of the robot.
             self.transform_stamped.transform.translation.x = 0.0
             self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0         
+            self.transform_stamped.transform.translation.z = 0.0      
+            R.from_matrix([[0, -1, 0],
+                   [1, 0, 0],
+                   [0, 0, 1]])   
+            quat = r.as_quat()   
+
+            # Quaternion format     
+            self.transform_rotation_x = quat[0] 
+            self.transform_rotation_y = quat[1] 
+            self.transform_rotation_z = quat[2] 
+            self.transform_rotation_w = quat[3] 
+
+            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
+            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
+            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
+            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
+            
             self.br.sendTransform(self.transform_stamped)
             self.get_logger().info("publishing tf to aruco_frame")
     
