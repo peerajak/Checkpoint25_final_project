@@ -36,7 +36,7 @@ WORKDIR /ros2_ws
 
 COPY universal_robot_ros2.tar /ros2_ws/src
 COPY Checkpoint25_final_project.tar /ros2_ws/src
-RUN cd /ros2_ws/src && tar xf universal_robot_ros2.tar && tar xf Checkpoint25_final_project.tar && git clone --branch humble https://github.com/ros-planning/moveit2_tutorials
+RUN cd /ros2_ws/src && tar xf universal_robot_ros2.tar && tar xf Checkpoint25_final_project.tar 
 
 #install moveit
 
