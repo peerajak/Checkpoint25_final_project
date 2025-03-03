@@ -5,8 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1
+        - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
-    Tree Height: 83
+    Tree Height: 81
   - Class: rviz_common/Help
     Name: Help
   - Class: rviz_common/Views
@@ -371,6 +373,115 @@ Visualization Manager:
         Show Robot Visual: true
       Value: true
       Velocity_Scaling_Factor: 0.1
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        aruco_frame:
+          Value: true
+        base:
+          Value: false
+        base_link:
+          Value: false
+        base_link_inertia:
+          Value: false
+        flange:
+          Value: false
+        forearm_link:
+          Value: false
+        ft_frame:
+          Value: false
+        rg2_gripper_aruco_link:
+          Value: false
+        rg2_gripper_base_link:
+          Value: false
+        rg2_gripper_left_finger:
+          Value: false
+        rg2_gripper_left_thumb:
+          Value: false
+        rg2_gripper_right_finger:
+          Value: false
+        rg2_gripper_right_thumb:
+          Value: false
+        shoulder_link:
+          Value: false
+        tool0:
+          Value: false
+        upper_arm_link:
+          Value: false
+        world:
+          Value: false
+        wrist_1_link:
+          Value: false
+        wrist_2_link:
+          Value: false
+        wrist_3_link:
+          Value: false
+        wrist_rgbd_camera_depth_frame:
+          Value: false
+        wrist_rgbd_camera_depth_optical_frame:
+          Value: true
+        wrist_rgbd_camera_fisheye_frame:
+          Value: false
+        wrist_rgbd_camera_fisheye_optical_frame:
+          Value: false
+        wrist_rgbd_camera_left_ir_frame:
+          Value: false
+        wrist_rgbd_camera_left_ir_optical_frame:
+          Value: false
+        wrist_rgbd_camera_link:
+          Value: false
+        wrist_rgbd_camera_right_ir_frame:
+          Value: false
+        wrist_rgbd_camera_right_ir_optical_frame:
+          Value: false
+      Marker Scale: 0.4000000059604645
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+        world:
+          base_link:
+            base:
+              {}
+            base_link_inertia:
+              shoulder_link:
+                upper_arm_link:
+                  forearm_link:
+                    wrist_1_link:
+                      wrist_2_link:
+                        wrist_3_link:
+                          flange:
+                            tool0:
+                              rg2_gripper_base_link:
+                                rg2_gripper_aruco_link:
+                                  {}
+                                rg2_gripper_left_finger:
+                                  rg2_gripper_left_thumb:
+                                    {}
+                                rg2_gripper_right_finger:
+                                  rg2_gripper_right_thumb:
+                                    {}
+                          ft_frame:
+                            {}
+            wrist_rgbd_camera_link:
+              wrist_rgbd_camera_depth_frame:
+                wrist_rgbd_camera_depth_optical_frame:
+                  aruco_frame:
+                    {}
+                wrist_rgbd_camera_fisheye_frame:
+                  wrist_rgbd_camera_fisheye_optical_frame:
+                    {}
+                wrist_rgbd_camera_left_ir_frame:
+                  wrist_rgbd_camera_left_ir_optical_frame:
+                    {}
+                wrist_rgbd_camera_right_ir_frame:
+                  wrist_rgbd_camera_right_ir_optical_frame:
+                    {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -389,25 +500,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.299694776535034
+      Distance: 2.1958155632019043
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.5681495666503906
-        Y: -0.04485517740249634
-        Z: 0.3058032691478729
+        X: -0.39734867215156555
+        Y: 0.10286004841327667
+        Z: -0.08846743404865265
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.45999979972839355
+      Pitch: 0.18479743599891663
       Target Frame: world
       Value: Orbit (rviz_default_plugins)
-      Yaw: 3.205183982849121
+      Yaw: 3.210179567337036
     Saved: ~
 Window Geometry:
   Displays:
@@ -421,11 +532,11 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002b4000002abfc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000003e000001830000017d00fffffffb000000100044006900730070006c00610079007301000001c7000000d7000000cb00fffffffb0000000800480065006c0070000000029a0000006e0000006f00fffffffb0000000a00560069006500770073020000038c000001de000002b4000000d9fb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000002a4000000450000004100ffffff000001f6000002ab00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b4000002acfc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000003d000001880000017d00fffffffb000000100044006900730070006c00610079007301000001cb000000d5000000c900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a00560069006500770073020000038c000001de000002b4000000d9fb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000002a6000000430000004100ffffff000001f6000002ac00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
   Views:
     collapsed: false
   Width: 1200
-  X: 0
-  Y: 0
+  X: 143
+  Y: 236

@@ -150,17 +150,18 @@ class ArucoToCamlinkTF(Node):
             return None
         
         # Load the camera parameters from the saved file
-        #cv_file = cv2.FileStorage( camera_calibration_parameters_filename, cv2.FILE_STORAGE_READ) 
-        #mtx = cv_file.getNode('K').mat()
-        #dst = cv_file.getNode('D').mat()
-        #cv_file.release()
-        #mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
-        #mtx = mtx_np
+        # cv_file = cv2.FileStorage( camera_calibration_parameters_filename, cv2.FILE_STORAGE_READ) 
+        # mtx = cv_file.getNode('K').mat()
+        # dst = cv_file.getNode('D').mat()
+        # cv_file.release()
+        mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
+        mtx = mtx_np
         #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
-        #prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
-        #                    [0.000000, 764.304443, 215.883204, 0.000000],\
-        #                    [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
-        #dst = dst_np
+        dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
+        prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
+                           [0.000000, 764.304443, 215.883204, 0.000000],\
+                           [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
+        dst = dst_np * 2
         # Load the ArUco dictionary
         # print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
@@ -185,6 +186,11 @@ class ArucoToCamlinkTF(Node):
         # as the video frame.
 
         detectingImage = self.cv_image.copy() 
+
+        # Detect ArUco markers in the video frame
+        # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
+        #     detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
+        #     cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
 
         # Detect ArUco markers in the video frame
         (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
@@ -221,7 +227,8 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 ## print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
@@ -277,8 +284,10 @@ class ArucoToCamlinkTF(Node):
                 #print(obj_points[i])
 
                 # Draw the axes on the marker
-                #cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k, dst, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05) 
+                #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
+                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
+                
         else:
             self.is_marker_detected = False
 
@@ -344,9 +353,9 @@ class ArucoToCamlinkTF(Node):
         self.projection_matrix_p[2,2] = msg.p[10]
         self.projection_matrix_p[2,3] = msg.p[11]
 
-        # print(self.distortion_params)
-        # print(self.projection_matrix_k)
-        # print(self.projection_matrix_p)
+        #print(self.distortion_params)
+        #print(self.projection_matrix_k)
+        #print(self.projection_matrix_p)
         
 
 
