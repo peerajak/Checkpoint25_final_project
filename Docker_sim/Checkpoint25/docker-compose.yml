@@ -70,6 +70,22 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix    
 
 
+  web-server:
+    image: ubuntu2004_webapp:v1
+    container_name: web-server
+    ports:
+      - 7000:8001 # Host:Container port
+    networks:
+      - test-bridge-network
+    depends_on:
+      - ros1_tf2_webbridge
+      - ros2_sim
+    environment:
+      - ROS_MASTER_URI=http://ros1_core:11311
+      - ROS_HOSTNAME=web-server
+    command: "entrypoint.sh"
+
+
 networks:
   test-bridge-network:
     driver: bridge  

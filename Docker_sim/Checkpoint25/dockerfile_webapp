@@ -1,0 +1,26 @@
+FROM ubuntu:20.04
+
+# Exporting a variable to install pkgs without any interactive questions
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Installing nginx
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nginx git  \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copying the local entrypoint.sh file to /entrypoint.sh in the docker image
+COPY ./entrypoint_webapp.sh /entrypoint.sh
+
+COPY cp25_webapp.tar /
+RUN tar xf cp25_webapp.tar
+RUN cd cp25_webapp && cp -r * /var/www/html
+
+
+RUN sed -i 's/80\ default_server/8001\ default_server/' /etc/nginx/sites-enabled/default
+
+
+# /bin/bash is the command we want to execute when running a docker container
+ENTRYPOINT ["/bin/bash"]
+
+# We want /bin/bash to execute our /entrypoint.sh when container starts
+# CMD ["/entrypoint.sh"]
