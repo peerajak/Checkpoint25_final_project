@@ -1,5 +1,9 @@
 docker build -t ros2_moveit_sim:v1 -f ./dockerfile_ros2_moveit_sim .
+docker build -t test:ros1_bridge -f Dockerfile_Ros1Bridge .
+docker build -t ros1_and_web_bridge:v1 -f ./Dockerfile_Ros1_Web_Bridge .
 docker build -t ubuntu2004_webapp:v1 -f ./dockerfile_webapp .
+
+
 docker context use default
 xhost +local:root
 docker run --rm -it --name ros2_sim -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:ro --runtime=nvidia --gpus all ros2_moveit_sim:v1 bash
