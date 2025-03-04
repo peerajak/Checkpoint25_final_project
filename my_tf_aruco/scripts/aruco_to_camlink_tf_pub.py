@@ -144,24 +144,37 @@ class ArucoToCamlinkTF(Node):
             self.br.sendTransform(self.transform_stamped)
             self.get_logger().info("publishing tf from base_link to aruco_frame")
         else:
-            self.transform_stamped.transform.translation.x = 0.0
-            self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0      
+            aruco_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
+            aruco_wrt_camera_pose.pose.position.x = 0.0
+            aruco_wrt_camera_pose.pose.position.y = 0.0
+            aruco_wrt_camera_pose.pose.position.z = 0.0
             r = R.from_matrix([[1, 0, 0],
                    [0, 1, 0],
                    [0, 0, 1]])          
-            quat = r.as_quat()   
+            quat = r.as_quat() 
+            aruco_wrt_camera_pose.pose.orientation.x = quat[0]
+            aruco_wrt_camera_pose.pose.orientation.y = quat[1]
+            aruco_wrt_camera_pose.pose.orientation.z = quat[2]   
+            aruco_wrt_camera_pose.pose.orientation.w = quat[3]      
+                 
+            transform_baselink_aruco_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(aruco_wrt_camera_pose,transform_baselink_camera)   
+            
+            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
-            # Quaternion format     
-            self.transform_rotation_x = quat[0] 
-            self.transform_rotation_y = quat[1] 
-            self.transform_rotation_z = quat[2] 
-            self.transform_rotation_w = quat[3] 
+            # Set the translation of the TF message.
+            # The translation of the TF message is set to the current position of the robot.
+            self.transform_stamped.transform.translation.x = transform_baselink_aruco_pose_stamped.pose.position.x
+            self.transform_stamped.transform.translation.y = transform_baselink_aruco_pose_stamped.pose.position.y
+            self.transform_stamped.transform.translation.z = transform_baselink_aruco_pose_stamped.pose.position.z
 
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w    
+            # Set the rotation of the TF message.
+            # The rotation of the TF message is set to the current orientation of the robot.
+            self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
+            self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
+            self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
+            self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
+
+            # Send (broadcast) the TF message.
             self.br.sendTransform(self.transform_stamped)
             self.get_logger().info("publishing identity tf from base_link to aruco_frame")
 
