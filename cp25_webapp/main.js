@@ -15,10 +15,13 @@ var app = new Vue({
         // 3D stuff
         viewer3d: null,
         tfClient: null,
+        //tfClient2: null,
         urdfClient: null,
-        //action server
-
-
+        tf_aruco: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
     },
     // helper methods to connect to ROS
     methods: {
@@ -28,14 +31,26 @@ var app = new Vue({
             this.ros = new ROSLIB.Ros({
                 url: this.rosbridge_address
             })
+            
             this.ros.on('connection', () => {
                 this.logs.unshift((new Date()).toTimeString() + ' - Connected!')
                 this.connected = true
                 this.loading = false                
                 this.showCamera()
                 this.showRobotModel()
-                this.pubInterval = setInterval(this.publish, 100)
                 this.callPlanningSceneService()
+                this.tfClient2 = new ROSLIB.TFClient({
+                    ros : this.ros,
+                    fixedFrame : 'world',
+                    angularThres : 0.01,
+                    transThres : 0.01
+                })
+                this.tfClient2.subscribe('aruco_frame', (tf) => {
+                    console.log(tf.translation.x)
+                    this.tf_aruco.x = tf.translation.x
+                    this.tf_aruco.y = tf.translation.y;
+                    this.tf_aruco.z = tf.translation.z;
+                })
             })
             this.ros.on('error', (error) => {
                 this.logs.unshift((new Date()).toTimeString() + ` - Error: ${error}`)
@@ -50,7 +65,6 @@ var app = new Vue({
                 clearInterval(this.pubInterval)         
             })
         },
-
 
         showCamera: function() {
             this.setCamera()

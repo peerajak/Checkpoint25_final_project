@@ -214,24 +214,24 @@
                                 <div id="div3DViewer"></div>
                             </div>
                         </div> 
-                        <div class="card mt-2">
+                        <!-- div class="card mt-2">
                             <div class="card">
                                 <div class="card-body">
                                     <h2 class="text-center">Aruco Pose w.r.t Base_link </h2>
                                     <p>x,y,z:</p>
-                                    <p>yaw,pitch,row: </p>
+                                    <p>{{ aruco_x }}</p>
                                 </div>
                             </div>                                
-                        </div>
-                        <!--div class="card mt-2">
+                        </div -->
+                        <div class="card mt-2">
                             <div class="card">
                                 <div class="card-body">
-                                    <h2 class="text-center">Aruco Pose w.r.t Camera </h2>
-                                    <p>x,y,z: {{ joystick.vertical.toFixed(3) }}</p>
-                                    <p>yaw,pitch,row: {{ joystick.horizontal.toFixed(3) }}</p>
+                                    <h2 class="text-center">Aruco Pose w.r.t World </h2>
+                                    <p>x,y,z: {{ tf_aruco.x.toFixed(3) }}, {{ tf_aruco.y.toFixed(3) }},{{ tf_aruco.z.toFixed(3) }}</p>
+                                    <!-- p>yaw,pitch,row: {{ tf_aruco.x.toFixed(3) }}, {{ tf_aruco.y.toFixed(3) }},{{ tf_aruco.z.toFixed(3) }} </p -->
                                 </div>
                             </div>                                
-                        </div-->   
+                        </div>   
                     </div>
 
                     <div class="col-4">                   
