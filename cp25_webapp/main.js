@@ -83,9 +83,10 @@ var app = new Vue({
 
             if(this.viewer == null){
                 // let without_wss = this.rosbridge_address.split('ws://')[1]
+                let without_ws = this.rosbridge_address.split('ws://')[1]
                 // console.log(without_wss)
                 // let domain = without_wss.split('/')[0] + '/' + without_wss.split('/')[1]
-                let domain = '127.0.0.1:11315'
+                let domain = without_ws.split(':')[0] + ':11315'
                 console.log(domain)
                 let host = domain //+ '/cameras'
                 this.viewer = new MJPEGCANVAS.Viewer({
