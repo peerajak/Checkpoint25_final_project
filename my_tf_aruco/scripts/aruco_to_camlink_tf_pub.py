@@ -53,7 +53,8 @@ class ArucoToCamlinkTF(Node):
         super().__init__('aruco_to_camlink_tf_node')
         self.is_marker_detected = False
         self.is_camera_info_set = False
-        self._aruco_frame = aruco_frame       
+        self._aruco_frame = aruco_frame 
+        self.publish_aruco_tf_to_camera = False # False would mean publish tf to base_link      
         
         # Create a new `TransformStamped` object.
         # A `TransformStamped` object is a ROS message that represents a transformation between two frames.
@@ -90,8 +91,10 @@ class ArucoToCamlinkTF(Node):
         
 
     def timer_callback(self):
-        # self.broadcast_new_tf_to_camera()
-        self.broadcast_new_tf_to_baselink()
+        if self.publish_aruco_tf_to_camera:
+            self.broadcast_new_tf_to_camera()
+        else:
+            self.broadcast_new_tf_to_baselink()
         
 
     def broadcast_new_tf_to_baselink(self):
@@ -132,10 +135,10 @@ class ArucoToCamlinkTF(Node):
 
             # Set the rotation of the TF message.
             # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = aruco_wrt_camera_pose.pose.orientation.x
-            self.transform_stamped.transform.rotation.y = aruco_wrt_camera_pose.pose.orientation.y
-            self.transform_stamped.transform.rotation.z = aruco_wrt_camera_pose.pose.orientation.z
-            self.transform_stamped.transform.rotation.w = aruco_wrt_camera_pose.pose.orientation.w
+            self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
+            self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
+            self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
+            self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
 
             # Send (broadcast) the TF message.
             self.br.sendTransform(self.transform_stamped)
