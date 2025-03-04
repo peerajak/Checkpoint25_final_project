@@ -36,33 +36,7 @@
     <script src="./libs/ros3d.min.js"></script>
 
     <style type="text/css">
-        #dragstartzone {
-            position: relative;
-            display: inline-block;
-            width: 200px;
-            height: 200px;
-            border: 1px solid #333;
-            border-radius: 50%;
-            z-index: 10;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
 
-        #dragCircle {
-            position: absolute;
-            z-index: 9;
-            border: 1px solid transparent;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 30%);
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-
-        #dragCircle:hover {
-            background-color: lightcoral;
-        }
 
         #divMap {
             transform: rotate(90deg) translateY(20px);
@@ -215,15 +189,6 @@
                         <button :disabled="loading" class="btn btn-success" @click="connect" v-else>Connect!</button>
                     </div>
                 </div>
-                <div class="card mt-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="text-center">Joystick values</h2>
-                            <p>Vertical: {{ joystick.vertical.toFixed(3) }}</p>
-                            <p>Horizontal: {{ joystick.horizontal.toFixed(3) }}</p>
-                        </div>
-                    </div>                                
-                </div>
 
                 <div class="card mt-2">
                     <div class="card-header">
@@ -238,7 +203,7 @@
 
 
             <div class="col-9">
-                <h3>Robot Arm Current State</h3>
+                <h3>Robot Arm State and Control</h3>
                 <div class="row">
                     <div class="col-4">
                         <div class="card mt-4">
@@ -249,6 +214,24 @@
                                 <div id="div3DViewer"></div>
                             </div>
                         </div> 
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="text-center">Aruco Pose w.r.t Base_link </h2>
+                                    <p>x,y,z:</p>
+                                    <p>yaw,pitch,row: </p>
+                                </div>
+                            </div>                                
+                        </div>
+                        <!--div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="text-center">Aruco Pose w.r.t Camera </h2>
+                                    <p>x,y,z: {{ joystick.vertical.toFixed(3) }}</p>
+                                    <p>yaw,pitch,row: {{ joystick.horizontal.toFixed(3) }}</p>
+                                </div>
+                            </div>                                
+                        </div-->   
                     </div>
 
                     <div class="col-4">                   
@@ -260,12 +243,12 @@
                                 <div class="row">                 
                                     <p>Click on the button to control the robot arm to the position shown in image</p>           
                                     <div class="image-container" >
-                                        <button class="waypoint_button" id="WP1" :disabled="!connected || service_busy" @click="callMoveitSimService('goHome')" v-if="!is_wp_array_reached[0]">Home Button</button>
+                                        <button class="waypoint_button" id="WP1" :disabled="!connected || service_busy" @click="callMoveitSimService('goHome')">Home Button</button>
                                         <p>Home Position</p>
                                        
                                     </div> 
                                     <div class="image-container" >
-                                        <button class="waypoint_button" id="WP2" :disabled="!connected || service_busy" @click="callMoveitSimService('goShow')"  v-if="!is_wp_array_reached[1]">Show Marker Button</button>
+                                        <button class="waypoint_button" id="WP2" :disabled="!connected || service_busy" @click="callMoveitSimService('goShow')">Show Marker Button</button>
                                         <p>Show marker position</p>
                                     </div>
                                 </div>  

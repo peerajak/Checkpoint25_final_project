@@ -12,51 +12,12 @@ var app = new Vue({
         service_busy: false,
         rosbridge_address: 'ws://localhost:9090',
         port: '9090',
-        // dragging data
-        dragging: false,
-        x: 'no',
-        y: 'no',
-        dragCircleStyle: {
-            margin: '0px',
-            top: '0px',
-            left: '0px',
-            display: 'none',
-            width: '75px',
-            height: '75px',
-        },
-        // joystick valules
-        joystick: {
-            vertical: 0,
-            horizontal: 0,
-        },
-        // publisher
-        pubInterval: null,
         // 3D stuff
         viewer3d: null,
         tfClient: null,
         urdfClient: null,
         //action server
-        goal: null,
-        action: {
-            goal: { position: {x: 0, y: 0, z: 0} },
-            feedback: { position: 0, state: 'idle' },
-            result: { success: false },
-            status: { status: 0, text: '' },
-        },
-        wp_array : [
-        [ 0.58, -0.48], // WP1
-        [ 0.58, 0.4], // WP2
-        [ 0.23105951276897543, 0.5368169079826496], // WP3
-        [ 0.1743, 0.0135], // WP4
-        [ -0.088,0.07436338290337982], // WP5
-        [ -0.18288059001897242, -0.43215748770886586], // WP6
-        [ -0.15489504057272618, 0.4629887743221526], // WP7
-        [ -0.5495752177522534, -0.5476146745173234], // WP8
-        [ -0.65, 0.49] // WP9
-                ],
-        is_wp_array_reached : [false,false,false,false,false,false,false,false,false],
-        isOnAction : false,
-        WPnum: 1
+
 
     },
     // helper methods to connect to ROS
@@ -123,44 +84,6 @@ var app = new Vue({
             })
             }
 
-        },
-        startDrag() {
-            this.dragging = true
-            this.x = this.y = 0
-        },
-        stopDrag() {
-            this.dragging = false
-            this.x = this.y = 'no'
-            this.dragCircleStyle.display = 'none'
-            this.resetJoystickVals()
-        },
-        doDrag(event) {
-            if (this.dragging) {
-                this.x = event.offsetX
-                this.y = event.offsetY
-                let ref = document.getElementById('dragstartzone')
-                this.dragCircleStyle.display = 'inline-block'
-
-                let minTop = ref.offsetTop - parseInt(this.dragCircleStyle.height) / 2
-                let maxTop = minTop + 200
-                let top = this.y + minTop
-                this.dragCircleStyle.top = `${top}px`
-
-                let minLeft = ref.offsetLeft - parseInt(this.dragCircleStyle.width) / 2
-                let maxLeft = minLeft + 200
-                let left = this.x + minLeft
-                this.dragCircleStyle.left = `${left}px`
-
-                this.setJoystickVals()
-            }
-        },
-        setJoystickVals() {
-            this.joystick.vertical = -1 * ((this.y / 200) - 0.5)
-            this.joystick.horizontal = -1 * ((this.x / 200) - 0.5)
-        },
-        resetJoystickVals() {
-            this.joystick.vertical = 0
-            this.joystick.horizontal = 0
         },
         disconnect: function() {
             this.ros.close()
@@ -251,34 +174,6 @@ var app = new Vue({
             document.getElementById('div3DViewer').innerHTML = ''
             this.viewer3d = null
         },
-        publish: function() {
-            let topic = new ROSLIB.Topic({
-                ros: this.ros,
-                name: '/cmd_vel',
-                messageType: 'geometry_msgs/Twist'
-            })
-            let message = new ROSLIB.Message({
-                linear: { x: this.joystick.vertical, y: 0, z: 0, },
-                angular: { x: 0, y: 0, z: this.joystick.horizontal, },
-            })
-            topic.publish(message)
-        },
-        sendCommand: function() {
-            let topic = new ROSLIB.Topic({
-                ros: this.ros,
-                name: '/cmd_vel',
-                messageType: 'geometry_msgs/Twist'
-            })
-            let message = new ROSLIB.Message({
-                linear: { x: 1, y: 0, z: 0, },
-                angular: { x: 0, y: 0, z: 0.5, },
-            })
-            topic.publish(message)
-        },
-        disconnect: function() {
-            this.ros.close()
-            this.goal = null
-        },
         callPlanningSceneService: function() {
             // service is busy
             this.service_busy = true
@@ -328,17 +223,5 @@ var app = new Vue({
                 console.error(error)
             })
         },
-
-        WP_button_clicked: function (wpname) {            
-            this.WPnum = parseInt(wpname.charAt(2))
-            let wpnum_idx = this.WPnum - 1
-            // this.logs.unshift(wpname + ": " + String(this.wp_array[wpnum_idx][0]) + ',' +  String(this.wp_array[wpnum_idx][1]))
-            this.action.goal.position.x = this.wp_array[wpnum_idx][0]
-            this.action.goal.position.y = this.wp_array[wpnum_idx][1]
-            this.sendGoal()
-        },
-    },
-    mounted() {
-        window.addEventListener('mouseup', this.stopDrag)
-    },
+    }
 })
