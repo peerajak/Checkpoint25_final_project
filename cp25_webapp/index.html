@@ -224,37 +224,7 @@
                         </div>
                     </div>                                
                 </div>
-                <div class="card mt-2">
-                     <div class="card">
-                        <div class="card-body">
-                            
-                            <h5>Action client data</h5>
-                              <div style="width: 40%; display: table-cell;">
-                                <div>
-                                    <label class="text-muted">Feedback</label>
-                                    <p>Position X: {{ parseFloat(action.feedback.position.x).toFixed(3) }}</p>
-                                    <p>Position Y: {{ parseFloat(action.feedback.position.y).toFixed(3) }}</p>
-                                    <p>State: {{ action.feedback.state }}</p>
-                                </div>
-                                <!-- div>
-                                <label class="text-muted">Result</label>
-                                    <p>Succeeded? {{ action.result.success }}</p>
-                                </div -->
-                              </div>
-                              <div style="display: table-cell;">
-                                <div>
-                                    <label class="text-muted">Status</label>
-                                    <p>{{ action.status.text }}</p>
-                                </div>
-                                <div>
-                                    <label class="text-muted">Reach Successfully</label>
-                                    <p>{{!isOnAction  && action.result.success }}</p>
-                                </div>
-                              </div>
-                            
-                        </div>
-                     </div>
-                </div>
+
                 <div class="card mt-2">
                     <div class="card-header">
                         <h4>Logs</h5>
