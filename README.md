@@ -1,5 +1,25 @@
 # Checkpoint25_final_project
 
+## Fast solutution
+
+
+```
+git clone <this repo git addr>
+cd Checkpoint25_final_project/Docker_sim/Checkpoint25
+docker compose up
+```
+then Open your web browser to 
+
+```
+localhost:7000
+```
+
+or 
+
+```
+<local ip address>:7000
+```
+
 ## Task 1. Simulation Moveit configuration
 
 
