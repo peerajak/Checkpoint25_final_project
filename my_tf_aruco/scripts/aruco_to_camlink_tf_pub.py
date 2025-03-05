@@ -179,12 +179,15 @@ class ArucoToCamlinkTF(Node):
             self.get_logger().info("publishing identity tf from base_link to aruco_frame")
             
         # Euler angle format in radians
-        roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                            self.transform_rotation_y, 
-                                                            self.transform_rotation_z, 
-                                                            self.transform_rotation_w)        
-        self.get_logger().info("TF base_link->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
-            self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
+        try:
+            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
+                                                                self.transform_rotation_y, 
+                                                                self.transform_rotation_z, 
+                                                                self.transform_rotation_w)        
+            self.get_logger().info("TF base_link->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
+        except AttributeError:
+            pass
 
 
 
@@ -247,12 +250,15 @@ class ArucoToCamlinkTF(Node):
             self.get_logger().info("publishing tf from camera to aruco_frame")
         
         # Euler angle format in radians
-        roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                            self.transform_rotation_y, 
-                                                            self.transform_rotation_z, 
-                                                            self.transform_rotation_w)        
-        self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
-            self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
+        try:
+            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
+                                                                self.transform_rotation_y, 
+                                                                self.transform_rotation_z, 
+                                                                self.transform_rotation_w)        
+            self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
+        except AttributeError:
+            pass
     
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
