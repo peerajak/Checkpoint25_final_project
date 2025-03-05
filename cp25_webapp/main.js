@@ -41,7 +41,7 @@ var app = new Vue({
                 this.callPlanningSceneService()
                 this.tfClient2 = new ROSLIB.TFClient({
                     ros : this.ros,
-                    fixedFrame : 'base_link',
+                    fixedFrame : 'world',
                     angularThres : 0.01,
                     transThres : 0.01
                 })
