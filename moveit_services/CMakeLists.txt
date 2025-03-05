@@ -32,7 +32,7 @@ ament_target_dependencies(planning_sim_scene_service rclcpp std_srvs moveit_msgs
 
 add_executable(moveit_sim_service src/moveit_sim_service.cpp)
 ament_target_dependencies(moveit_sim_service rclcpp std_srvs moveit_msgs moveit_core
-	moveit_ros_planning_interface moveit_ros_planning rviz_visual_tools)
+	moveit_ros_planning_interface moveit_ros_planning)
 
 
 
