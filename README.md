@@ -115,8 +115,14 @@ Terminal 3
 cd ~/ros2_ws/
 source install/setup.bash; ros2 launch moveit2_scripts move_real_arm_to_show_aruco_trajectory.launch.py
 ```
-
 Terminal 4
+
+```
+cd ~/ros2_ws/
+source install/setup.bash; ros2 run my_tf_aruco aruco_realrobot_to_camlink_tf_pub.py
+```
+
+Terminal 5
 
 ```
 cd ~/ros2_ws/src/Checkpoint25_final_project/
