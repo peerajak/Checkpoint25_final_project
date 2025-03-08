@@ -274,7 +274,7 @@ int main(int argc, char **argv) {
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
   bool success =
-      (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+      (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
   move_group.execute(my_plan);
    visual_tools.prompt(
@@ -291,7 +291,7 @@ int main(int argc, char **argv) {
    
 
    move_group.setJointValueTarget(joint_group_positions);
-   success =   (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+   success =   (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
    move_group.execute(my_plan);
 

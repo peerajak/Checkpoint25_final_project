@@ -253,7 +253,7 @@ int main(int argc, char **argv) {
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
   bool success =
-      (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+      (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
   move_group.execute(my_plan);
    visual_tools.prompt(
@@ -270,7 +270,7 @@ int main(int argc, char **argv) {
    
 
    move_group.setJointValueTarget(joint_group_positions);
-   success =   (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+   success =   (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
    move_group.execute(my_plan);
 
@@ -287,7 +287,7 @@ int main(int argc, char **argv) {
     joint_group_positions[4] = -0.348888; // Wrist 2
     joint_group_positions[5] = -2.9496;// Wrist 3
    move_group.setJointValueTarget(joint_group_positions);
-   success =   (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+   success =   (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
    move_group.execute(my_plan);
 

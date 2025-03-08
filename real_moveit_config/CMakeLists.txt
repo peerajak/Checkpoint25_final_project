@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.16)
 project(real_moveit_config)
 
 find_package(ament_cmake REQUIRED)

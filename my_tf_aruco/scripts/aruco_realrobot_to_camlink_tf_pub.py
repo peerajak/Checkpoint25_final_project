@@ -57,26 +57,18 @@ class ArucoToCamlinkTF(Node):
         self._aruco_frame = aruco_frame   
         self.publish_aruco_tf_to_camera = False # False would mean publish tf to base_link      
         
-        # Create a new `TransformStamped` object.
-        # A `TransformStamped` object is a ROS message that represents a transformation between two frames.
-        self.transform_stamped = tf2_geometry_msgs.TransformStamped()
-        # This line sets the `header.frame_id` attribute of the `TransformStamped` object.
-        # The `header.frame_id` attribute specifies the frame in which the transformation is defined.
-        # In this case, the transformation is defined in the `world` frame.
-        self.transform_stamped.header.frame_id = "D415_color_optical_frame"
-        # This line sets the `child_frame_id` attribute of the `TransformStamped` object.
-        # The `child_frame_id` attribute specifies the frame that is being transformed to.
-        # In this case, the robot's base frame is being transformed to the `world` frame.
-        self.transform_stamped.child_frame_id = self._aruco_frame
+
+        self.transform_camera_aruco_stamped = tf2_geometry_msgs.TransformStamped()
+        self.transform_camera_aruco_stamped.header.frame_id = "D415_color_optical_frame"
+        self.transform_camera_aruco_stamped.child_frame_id = self._aruco_frame
+        self.transform_camera_aruco_stamped.transform.translation.
+
+
 
         self.Timer = self.create_timer(
             1.0, self.timer_callback
         )
-        # This line creates a new `TransformBroadcaster` object.
-        # A `TransformBroadcaster` object is a ROS node that publishes TF messages.
-        # For the TF listener
-        self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
+
         self.br = TransformBroadcaster(self)
         self.subscription_image = self.create_subscription(
                 CompressedImage,
@@ -85,22 +77,23 @@ class ArucoToCamlinkTF(Node):
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/D415/color/camera_info', self.camera_info_callback, 10)
         self.publisher = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', 1)
         self.cv_bridge = CvBridge()
+
+        # This line creates a new `TransformBroadcaster` object.
+        # A `TransformBroadcaster` object is a ROS node that publishes TF messages.
+        # For the TF listener
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
         self.get_logger().info("aruco_realrobot_to_camlink_tf_node ready!")
-        
 
     def timer_callback(self):
-        if self.publish_aruco_tf_to_camera:
-            self.broadcast_new_tf_to_camera()
-        else:
-            self.broadcast_new_tf_to_baselink()
+        self.broadcast_new_tf_to_aruco_link()
 
-    def broadcast_new_tf_to_baselink(self):
-        self.transform_stamped.header.frame_id = "base_link"
+    def broadcast_new_tf_to_aruco_link(self):
         try:
             now = rclpy.time.Time()
-            dest_frame = "D415_color_optical_frame"
+            dest_frame = "aruco_link"
             origin_frame = "base_link"
-            transform_baselink_camera = self.tf_buffer.lookup_transform(
+            transform_baselink_arucolink = self.tf_buffer.lookup_transform(
                 origin_frame,
                 dest_frame,
                 now)
@@ -110,153 +103,77 @@ class ArucoToCamlinkTF(Node):
             return None
 
         if(self.is_marker_detected):
-            aruco_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
-            aruco_wrt_camera_pose.pose.position.x = self.transform_translation_x
-            aruco_wrt_camera_pose.pose.position.y = self.transform_translation_y
-            aruco_wrt_camera_pose.pose.position.z = self.transform_translation_z
-            
-            aruco_wrt_camera_pose.pose.orientation.x = self.transform_rotation_x
-            aruco_wrt_camera_pose.pose.orientation.y = self.transform_rotation_y
-            aruco_wrt_camera_pose.pose.orientation.z = self.transform_rotation_z     
-            aruco_wrt_camera_pose.pose.orientation.w = self.transform_rotation_w          
-                 
-            transform_baselink_aruco_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(aruco_wrt_camera_pose,transform_baselink_camera)   
-            
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+
+
+            self.transform_camera_aruco_stamped.header.stamp = self.get_clock().now().to_msg()
 
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = transform_baselink_aruco_pose_stamped.pose.position.x
-            self.transform_stamped.transform.translation.y = transform_baselink_aruco_pose_stamped.pose.position.y
-            self.transform_stamped.transform.translation.z = transform_baselink_aruco_pose_stamped.pose.position.z
+            self.transform_camera_aruco_stamped.transform.translation.x = self.transform_translation_camera_aruco_x.inverse()
+            self.transform_camera_aruco_stamped.transform.translation.y = self.transform_translation_camera_aruco_y.inverse()
+            self.transform_camera_aruco_stamped.transform.translation.z = self.transform_translation_camera_aruco_z.inverse()
 
             # Set the rotation of the TF message.
             # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
-            self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
-            self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
-            self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
+            self.transform_camera_aruco_stamped.transform.rotation.x = self.transform_rotation_camera_aruco_x.inverse()
+            self.transform_camera_aruco_stamped.transform.rotation.y = self.transform_rotation_camera_aruco_y.inverse()
+            self.transform_camera_aruco_stamped.transform.rotation.z = self.transform_rotation_camera_aruco_z.inverse()
+            self.transform_camera_aruco_stamped.transform.rotation.w = self.transform_rotation_camera_aruco_w.inverse()
+
+            #TODO inverse() does not work. Try lookup transfrom
+            self.transform_aruco_camera_stamped = self.transform_camera_aruco_stamped
+
+
+
+            camera_wrt_aruco_pose = geometry_msgs.msg.PoseStamped()
+            camera_wrt_aruco_pose.pose.position.x = self.transform_camera_aruco_stamped.pose.position.x
+            camera_wrt_aruco_pose.pose.position.y = self.transform_camera_aruco_stamped.pose.position.y
+            camera_wrt_aruco_pose.pose.position.z = self.transform_camera_aruco_stamped.pose.position.z
+            
+            camera_wrt_aruco_pose.pose.orientation.x = self.transform_camera_aruco_stamped.pose.orientation.x
+            camera_wrt_aruco_pose.pose.orientation.y = self.transform_camera_aruco_stamped.pose.orientation.y
+            camera_wrt_aruco_pose.pose.orientation.z = self.transform_camera_aruco_stamped.pose.orientation.z     
+            camera_wrt_aruco_pose.pose.orientation.w = self.transform_camera_aruco_stamped.pose.orientation.w          
+                 
+            transform_baselink_camera_stamped = tf2_geometry_msgs.do_transform_pose_stamped(camera_wrt_aruco_pose,transform_baselink_arucolink)            
+            transform_baselink_camera_stamped.header.stamp = self.get_clock().now().to_msg()
 
             # Send (broadcast) the TF message.
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing tf from base_link to aruco_frame")
+            self.br.sendTransform(transform_baselink_camera_stamped)
+            self.get_logger().info("publishing tf from base_link to camera")
         else:
-            aruco_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
-            aruco_wrt_camera_pose.pose.position.x = 0.0
-            aruco_wrt_camera_pose.pose.position.y = 0.0
-            aruco_wrt_camera_pose.pose.position.z = 0.0
+            camera_wrt_aruco_pose = geometry_msgs.msg.PoseStamped()
+            camera_wrt_aruco_pose.pose.position.x = 0.0
+            camera_wrt_aruco_pose.pose.position.y = 0.0
+            camera_wrt_aruco_pose.pose.position.z = 0.0
             r = R.from_matrix([[1, 0, 0],
                    [0, 1, 0],
                    [0, 0, 1]])          
             quat = r.as_quat() 
-            aruco_wrt_camera_pose.pose.orientation.x = quat[0]
-            aruco_wrt_camera_pose.pose.orientation.y = quat[1]
-            aruco_wrt_camera_pose.pose.orientation.z = quat[2]   
-            aruco_wrt_camera_pose.pose.orientation.w = quat[3]      
+            camera_wrt_aruco_pose.pose.orientation.x = quat[0]
+            camera_wrt_aruco_pose.pose.orientation.y = quat[1]
+            camera_wrt_aruco_pose.pose.orientation.z = quat[2]   
+            camera_wrt_aruco_pose.pose.orientation.w = quat[3]      
                  
-            transform_baselink_aruco_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(aruco_wrt_camera_pose,transform_baselink_camera)   
-            
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
-
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = transform_baselink_aruco_pose_stamped.pose.position.x
-            self.transform_stamped.transform.translation.y = transform_baselink_aruco_pose_stamped.pose.position.y
-            self.transform_stamped.transform.translation.z = transform_baselink_aruco_pose_stamped.pose.position.z
-
-            # Set the rotation of the TF message.
-            # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
-            self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
-            self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
-            self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
-
+            transform_baselink_camera_stamped = tf2_geometry_msgs.do_transform_pose_stamped(camera_wrt_aruco_pose,transform_baselink_arucolink)            
+            transform_baselink_camera_stamped.header.stamp = self.get_clock().now().to_msg()
             # Send (broadcast) the TF message.
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing identity tf from base_link to aruco_frame")
+            self.br.sendTransform(transform_baselink_camera_stamped)
+            self.get_logger().info("publishing tf from base_link to aruco_link, no aruco marker detected")
             
         # Euler angle format in radians
-        try:
-            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                                self.transform_rotation_y, 
-                                                                self.transform_rotation_z, 
-                                                                self.transform_rotation_w)        
-            self.get_logger().info("TF base_link->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
-                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
-        except AttributeError:
-            pass
+        # try:
+        #     roll_x, pitch_y, yaw_z = self.euler_from_quaternion(camera_wrt_aruco_pose.pose.orientation.x, 
+        #                                                         camera_wrt_aruco_pose.pose.orientation.y, 
+        #                                                         camera_wrt_aruco_pose.pose.orientation.z, 
+        #                                                         camera_wrt_aruco_pose.pose.orientation.w)        
+        #     self.get_logger().info("TF aruco_link->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+        #         self.transform_translation_camera_aruco_x, self.transform_translation_camera_aruco_y, self.transform_translation_camera_aruco_z,roll_x, pitch_y, yaw_z))
+        # except AttributeError:
+        #     pass
 
 
 
-    def broadcast_new_tf_to_camera(self):
-        """
-        This function broadcasts a new TF message to the TF network.
-        """
-        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
-        if(self.is_marker_detected):
-            # print('broadcast_new_tf')
-            # Get the current odometry data.
-            #position = self.cam_bot_odom.pose.pose.position
-            #orientation = self.cam_bot_odom.pose.pose.orientation
-
-            # Set the timestamp of the TF message.
-            # The timestamp of the TF message is set to the current time.
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
-
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = self.transform_translation_x
-            self.transform_stamped.transform.translation.y = self.transform_translation_y
-            self.transform_stamped.transform.translation.z = self.transform_translation_z
-
-            # Set the rotation of the TF message.
-            # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
-
-            # Send (broadcast) the TF message.
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing identity tf from camera to aruco_frame")
-        else:
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
-
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = 0.0
-            self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0      
-            r = R.from_matrix([[1, 0, 0],
-                   [0, 1, 0],
-                   [0, 0, 1]])          
-            quat = r.as_quat()   
-
-            # Quaternion format     
-            self.transform_rotation_x = quat[0] 
-            self.transform_rotation_y = quat[1] 
-            self.transform_rotation_z = quat[2] 
-            self.transform_rotation_w = quat[3] 
-
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
-            
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
-        
-        # Euler angle format in radians
-        try:
-            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                                self.transform_rotation_y, 
-                                                                self.transform_rotation_z, 
-                                                                self.transform_rotation_w)        
-            self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
-                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
-        except AttributeError:
-            pass
-    
     
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
@@ -353,9 +270,9 @@ class ArucoToCamlinkTF(Node):
                 # print('rvecs',rvecs)
                 # print('tvecs',tvecs)
                 # Store the translation (i.e. position) information
-                self.transform_translation_x = tvecs[0]
-                self.transform_translation_y = tvecs[1]
-                self.transform_translation_z = tvecs[2]
+                self.transform_translation_camera_aruco_x = tvecs[0]
+                self.transform_translation_camera_aruco_y = tvecs[1]
+                self.transform_translation_camera_aruco_z = tvecs[2]
 
                 # Store the rotation information
                 #rotation_matrix = np.eye(3)
@@ -364,26 +281,26 @@ class ArucoToCamlinkTF(Node):
                 quat = r.as_quat()   
 
                 # Quaternion format     
-                self.transform_rotation_x = quat[0] 
-                self.transform_rotation_y = quat[1] 
-                self.transform_rotation_z = quat[2] 
-                self.transform_rotation_w = quat[3] 
+                self.transform_rotation_camera_aruco_x = quat[0] 
+                self.transform_rotation_camera_aruco_y = quat[1] 
+                self.transform_rotation_camera_aruco_z = quat[2] 
+                self.transform_rotation_camera_aruco_w = quat[3] 
 
-                # Euler angle format in radians
-                roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                            self.transform_rotation_y, 
-                                                            self.transform_rotation_z, 
-                                                            self.transform_rotation_w)
-                self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
-                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
-                 self.transform_stamped.header.frame_id))
+                # # Euler angle format in radians
+                # roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_camera_aruco_x, 
+                #                                             self.transform_rotation_camera_aruco_y, 
+                #                                             self.transform_rotation_camera_aruco_z, 
+                #                                             self.transform_rotation_camera_aruco_w)
+                # self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
+                #  self.transform_translation_camera_aruco_x, self.transform_translation_camera_aruco_y, self.transform_translation_camera_aruco_z,roll_x, pitch_y, yaw_z,
+                #  self.transform_stamped.header.frame_id))
 
                 # roll_x = math.degrees(roll_x)
                 # pitch_y = math.degrees(pitch_y)
                 # yaw_z = math.degrees(yaw_z)
-                # print("transform_translation_x: {}".format(transform_translation_x))
-                # print("transform_translation_y: {}".format(transform_translation_y))
-                # print("transform_translation_z: {}".format(transform_translation_z))
+                # print("transform_translation_camera_aruco_x: {}".format(transform_translation_camera_aruco_x))
+                # print("transform_translation_camera_aruco_y: {}".format(transform_translation_camera_aruco_y))
+                # print("transform_translation_camera_aruco_z: {}".format(transform_translation_camera_aruco_z))
                 # print("roll_x: {}".format(roll_x))
                 # print("pitch_y: {}".format(pitch_y))
                 # print("yaw_z: {}".format(yaw_z))
@@ -399,7 +316,7 @@ class ArucoToCamlinkTF(Node):
                 #print("id {} ".format(marker_id))
                 #print("at image position ",[cX,cY])
                 #print("rotation matrix",rotation_matrix[0:3, 0:3] )
-                #print("translation matrix",[transform_translation_x ,transform_translation_y,transform_translation_z])
+                #print("translation matrix",[transform_translation_camera_aruco_x ,transform_translation_camera_aruco_y,transform_translation_camera_aruco_z])
                 #print(obj_points[i])
 
                 # Draw the axes on the marker

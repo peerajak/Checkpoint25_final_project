@@ -190,7 +190,7 @@ private:
     // plan the trajectory to target using kinematics
     plan_success_robot_ =
         (move_group_robot_->plan(kinematics_trajectory_plan_) ==
-         moveit::core::MoveItErrorCode::SUCCESS);
+         moveit::planning_interface::MoveItErrorCode::SUCCESS);
   }
 
   void execute_trajectory_kinematics() {

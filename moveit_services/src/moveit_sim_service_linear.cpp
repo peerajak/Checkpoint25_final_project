@@ -58,7 +58,7 @@ moveit::planning_interface::MoveGroupInterface *move_group_global_ptr;
     
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
     
-            bool success = (move_group_global_ptr->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+            bool success = (move_group_global_ptr->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group_global_ptr->execute(my_plan);
             sleep(5);
@@ -73,7 +73,7 @@ moveit::planning_interface::MoveGroupInterface *move_group_global_ptr;
             joint_group_positions[5] = -1.482777;  // Wrist 3
     
             move_group_global_ptr->setJointValueTarget(joint_group_positions);
-            bool success2 = (move_group_global_ptr->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+            bool success2 = (move_group_global_ptr->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group_global_ptr->execute(my_plan);
 

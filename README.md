@@ -79,6 +79,38 @@ cd ~/ros2_ws/src/Checkpoint25_final_project/
 rviz2 -d rviz/cp25_rviz.rviz
 ```
 
+Terminal 7
+
+```
+cd ~/ros2_ws/src/Checkpoint25_final_project/cp25_webapp
+python3 -m http.server 7000
+```
+
+Terminal 8
+
+```
+sudo apt install ros-humble-rosbridge-server
+```
+
+```
+cd ~/ros2_ws
+source install/setup.bash; ros2 launch rosbridge_server main_rosbridge_launch.py
+```
+
+Terminal 9
+
+```
+cd ~/ros2_ws
+source install/setup.bash; ros2 launch moveit_services moveit_sim_service.launch.py
+```
+
+Terminal 10
+
+```
+cd ~/ros2_ws
+source install/setup.bash; ros2 launch moveit_services planning_sim_scene_service.launch.py
+```
+
 
 ### Important files
 

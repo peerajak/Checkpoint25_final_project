@@ -36,161 +36,172 @@
     <script src="./libs/ros3d.min.js"></script>
 
     <style type="text/css">
-        #dragstartzone {
-            position: relative;
-            display: inline-block;
-            width: 200px;
-            height: 200px;
-            border: 1px solid #333;
-            border-radius: 50%;
-            z-index: 10;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-
-        #dragCircle {
-            position: absolute;
-            z-index: 9;
-            border: 1px solid transparent;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 30%);
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-        }
-
-        #dragCircle:hover {
-            background-color: lightcoral;
-        }
-
         #divMap {
             transform: rotate(90deg) translateY(20px);
             float: right;
-            height: 320px;  
+            height: 320px;
         }
 
         .grid-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
         }
+
         .image-container {
-        position: relative; /* set container to a relative position */
-        width: 192px; /* set your desired width */
-        height: 240px; /* set your desired height */
-        padding-left: 0px;
-        img{
-            max-width: 80%;
-            height: auto;
+            position: relative;
+            /* set container to a relative position */
+            width: 192px;
+            /* set your desired width */
+            height: 240px;
+            /* set your desired height */
+            padding-left: 0px;
+
+            img {
+                max-width: 80%;
+                height: auto;
             }
         }
 
-        .cancel_waypoint_button {  
-        position: absolute;
-        top: 98%; 
-        left: 50%; 
-        transform: translate(-50%, -50%); 
-        font-size: 12px;
-        z-index: 2; /* set a higher z-index than the image */
-        background-color: blue; /* set your desired background color */
-        color: #fff; /* set your desired text color */
-        border: none; /* remove button border */
-        padding: 8px 8px; /* set your desired padding */
-        box-shadow: 0 2px 4px darkslategray;
-        cursor: pointer; /* change mouse cursor on hover */
-        transition: all 0.2s ease;
-        /* border-radius: 10%; */
+        .cancel_waypoint_button {
+            position: absolute;
+            top: 98%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            z-index: 2;
+            /* set a higher z-index than the image */
+            background-color: blue;
+            /* set your desired background color */
+            color: #fff;
+            /* set your desired text color */
+            border: none;
+            /* remove button border */
+            padding: 8px 8px;
+            /* set your desired padding */
+            box-shadow: 0 2px 4px darkslategray;
+            cursor: pointer;
+            /* change mouse cursor on hover */
+            transition: all 0.2s ease;
+            /* border-radius: 10%; */
         }
 
         .cancel_waypoint_button:disabled,
-        button[disabled]{
-        border: 1px solid #999999;
-        background-color: #cccccc;
-        color: #666666;
+        button[disabled] {
+            border: 1px solid #999999;
+            background-color: #cccccc;
+            color: #666666;
         }
 
-        .waypoint_button {  
-        /*position: absolute; /* set button to an absolute position 
+        .waypoint_button {
+            /*position: absolute; /* set button to an absolute position 
         top: 50%; /* adjust the top position of the button 
         left: 50%; /* adjust the left position of the button 
         transform: translate(-50%, -50%); /* center the button */
-        font-size: 24px;
-        z-index: 2; /* set a higher z-index than the image */
-        background-color: red; /* set your desired background color */
-        color: #f5f10f; /* set your desired text color */
-        border: 10px; /* remove button border */
-        text-align: bottom;
-        text-decoration: none;
-        padding: 10px 10px; /* set your desired padding */
-        box-shadow: inset 0px 1px 0px #b2f17f, 0px 6px 0px #0c4c66;        
-        cursor: pointer; /* change mouse cursor on hover */
-        transition: all 0.2s ease;
-        width: 192px; /* set your desired width */
-        height: 240px; /* set your desired height */
-        padding-left: 0px;
-        border-radius: 10%;
+            font-size: 24px;
+            z-index: 2;
+            /* set a higher z-index than the image */
+            background-color: red;
+            /* set your desired background color */
+            color: #f5f10f;
+            /* set your desired text color */
+            border: 10px;
+            /* remove button border */
+            text-align: bottom;
+            text-decoration: none;
+            padding: 10px 10px;
+            /* set your desired padding */
+            box-shadow: inset 0px 1px 0px #b2f17f, 0px 6px 0px #0c4c66;
+            cursor: pointer;
+            /* change mouse cursor on hover */
+            transition: all 0.2s ease;
+            width: 192px;
+            /* set your desired width */
+            height: 240px;
+            /* set your desired height */
+            padding-left: 0px;
+            border-radius: 10%;
         }
-        .waypoint_button_done {  
-        /*position: absolute; /* set button to an absolute position 
+
+        .waypoint_button_done {
+            /*position: absolute; /* set button to an absolute position 
         top: 50%; /* adjust the top position of the button 
         left: 50%; /* adjust the left position of the button 
         transform: translate(-50%, -50%); /* center the button */
-        font-size: 12px;
-        z-index: 2; /* set a higher z-index than the image */
-        background-color: lime; /* set your desired background color */
-        color: #aef803; /* set your desired text color */
-        border: 10px; /* remove button border */
-        text-align: center;
-        text-decoration: none;
-        padding: 10px 10px; /* set your desired padding */
-        box-shadow: 0 20px 40px darkslategray;
-        cursor: pointer; /* change mouse cursor on hover */
-        transition: all 0.2s ease;
-        width: 192px; /* set your desired width */
-        height: 240px; /* set your desired height */
-        padding-left: 0px;        
-        border-radius: 10%;
-       
+            font-size: 12px;
+            z-index: 2;
+            /* set a higher z-index than the image */
+            background-color: lime;
+            /* set your desired background color */
+            color: #aef803;
+            /* set your desired text color */
+            border: 10px;
+            /* remove button border */
+            text-align: center;
+            text-decoration: none;
+            padding: 10px 10px;
+            /* set your desired padding */
+            box-shadow: 0 20px 40px darkslategray;
+            cursor: pointer;
+            /* change mouse cursor on hover */
+            transition: all 0.2s ease;
+            width: 192px;
+            /* set your desired width */
+            height: 240px;
+            /* set your desired height */
+            padding-left: 0px;
+            border-radius: 10%;
+
         }
 
         .waypoint_button:active {
-        background-color: #48abe0;
-        box-shadow: 0 0 20px darkslategray;
-        /* transform: translateX(1px); */
-        outline: none;
-        background-image: url("");
+            background-color: #48abe0;
+            box-shadow: 0 0 20px darkslategray;
+            /* transform: translateX(1px); */
+            outline: none;
+            background-image: url("");
         }
 
         .waypoint_button:disabled,
-        button[disabled]{
-        border: 1px solid #999999;
-        background-color: #cccccc;
-        color: #666666;
-        background-image: url("");
-        }
-
-        .waypoint_button#WP1 {             
-            color: #f5f10f; /* set your desired text color */
-            background-image: url("Button_MoveArm_Home.png");
-        }
-        .waypoint_button#WP1:active {             
-            color: #f5f10f; /* set your desired text color */
-            background-image: url("");
-        }
-        .waypoint_button#WP1:disabled, button[disabled]{             
+        button[disabled] {
+            border: 1px solid #999999;
+            background-color: #cccccc;
             color: #666666;
             background-image: url("");
         }
-        .waypoint_button#WP2 {
-            color: #f5f10f; /* set your desired text color */  
-            background-image: url("Button_MoveArm_ShowAruco.png");
+
+        .waypoint_button#WP1 {
+            color: #f5f10f;
+            /* set your desired text color */
+            background-image: url("Button_MoveArm_Home.png");
         }
-        .waypoint_button#WP2:active {             
-            color: #f5f10f; /* set your desired text color */
+
+        .waypoint_button#WP1:active {
+            color: #f5f10f;
+            /* set your desired text color */
             background-image: url("");
         }
-        .waypoint_button#WP2:disabled, button[disabled]{             
+
+        .waypoint_button#WP1:disabled,
+        button[disabled] {
+            color: #666666;
+            background-image: url("");
+        }
+
+        .waypoint_button#WP2 {
+            color: #f5f10f;
+            /* set your desired text color */
+            background-image: url("Button_MoveArm_ShowAruco.png");
+        }
+
+        .waypoint_button#WP2:active {
+            color: #f5f10f;
+            /* set your desired text color */
+            background-image: url("");
+        }
+
+        .waypoint_button#WP2:disabled,
+        button[disabled] {
             color: #666666;
             background-image: url("");
         }
@@ -215,46 +226,7 @@
                         <button :disabled="loading" class="btn btn-success" @click="connect" v-else>Connect!</button>
                     </div>
                 </div>
-                <div class="card mt-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="text-center">Joystick values</h2>
-                            <p>Vertical: {{ joystick.vertical.toFixed(3) }}</p>
-                            <p>Horizontal: {{ joystick.horizontal.toFixed(3) }}</p>
-                        </div>
-                    </div>                                
-                </div>
-                <div class="card mt-2">
-                     <div class="card">
-                        <div class="card-body">
-                            
-                            <h5>Action client data</h5>
-                              <div style="width: 40%; display: table-cell;">
-                                <div>
-                                    <label class="text-muted">Feedback</label>
-                                    <p>Position X: {{ parseFloat(action.feedback.position.x).toFixed(3) }}</p>
-                                    <p>Position Y: {{ parseFloat(action.feedback.position.y).toFixed(3) }}</p>
-                                    <p>State: {{ action.feedback.state }}</p>
-                                </div>
-                                <!-- div>
-                                <label class="text-muted">Result</label>
-                                    <p>Succeeded? {{ action.result.success }}</p>
-                                </div -->
-                              </div>
-                              <div style="display: table-cell;">
-                                <div>
-                                    <label class="text-muted">Status</label>
-                                    <p>{{ action.status.text }}</p>
-                                </div>
-                                <div>
-                                    <label class="text-muted">Reach Successfully</label>
-                                    <p>{{!isOnAction  && action.result.success }}</p>
-                                </div>
-                              </div>
-                            
-                        </div>
-                     </div>
-                </div>
+
                 <div class="card mt-2">
                     <div class="card-header">
                         <h4>Logs</h5>
@@ -268,7 +240,7 @@
 
 
             <div class="col-9">
-                <h3>Robot Arm Current State</h3>
+                <h3>Robot Arm State and Control</h3>
                 <div class="row">
                     <div class="col-4">
                         <div class="card mt-4">
@@ -278,32 +250,44 @@
                             <div class="card-body" id="robotModel">
                                 <div id="div3DViewer"></div>
                             </div>
-                        </div> 
-                    </div>
-
-                    <div class="col-4">                   
-                        <div class="card mt-4">
-                            <div class="card-header">
-                                <h4>Control</h4>
-                            </div>
-                            <div class="card-body">  
-                                <div class="row">                 
-                                    <p>Click on the button to control the robot arm to the position shown in image</p>           
-                                    <div class="image-container" >
-                                        <button class="waypoint_button" id="WP1" :disabled="!connected || service_busy" @click="callMoveitSimService('goHome')" v-if="!is_wp_array_reached[0]">Home Button</button>
-                                        <p>Home Position</p>
-                                       
-                                    </div> 
-                                    <div class="image-container" >
-                                        <button class="waypoint_button" id="WP2" :disabled="!connected || service_busy" @click="callMoveitSimService('goShow')"  v-if="!is_wp_array_reached[1]">Show Marker Button</button>
-                                        <p>Show marker position</p>
-                                    </div>
-                                </div>  
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="text-center">Aruco Pose w.r.t base_link </h2>
+                                    <p>x,y,z: {{ tf_aruco.x.toFixed(3) }}, {{ tf_aruco.y.toFixed(3) }},{{
+                                        tf_aruco.z.toFixed(3) }}</p>
+                                    <!-- p>yaw,pitch,row: {{ tf_aruco.x.toFixed(3) }}, {{ tf_aruco.y.toFixed(3) }},{{ tf_aruco.z.toFixed(3) }} </p -->
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-4">                   
+                    <div class="col-4">
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h4>Control</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <p>Click on the button to control the robot arm to the position shown in image</p>
+                                    <div class="image-container">
+                                        <button class="waypoint_button" id="WP1" :disabled="!connected || service_busy"
+                                            @click="callMoveitSimService('goHome')">Home Button</button>
+                                        <p>Home Position</p>
+
+                                    </div>
+                                    <div class="image-container">
+                                        <button class="waypoint_button" id="WP2" :disabled="!connected || service_busy"
+                                            @click="callMoveitSimService('goShow')">Show Marker Button</button>
+                                        <p>Show marker position</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
                         <div class="card mt-4">
                             <div class="card-header">
                                 <h4>Camera</h4>
@@ -313,9 +297,9 @@
                                     <div id="divCamera"></div>
                                 </div>
                             </div>
-                        </div>                    
+                        </div>
                     </div>
-                    
+
                 </div>
 
 
@@ -323,22 +307,22 @@
 
             </div>
 
-        </div>       
+        </div>
 
 
     </div>
 
-        <script type="text/javascript">
-            // We could have loaded main.js simply with:
-            //  <script type="text/javascript" src="main.js">
-            //
-            // BUT we were having caching-related problems.
-            // Loading main.js with a Date.now() in the URL we avoid using cache
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'main.js?v=11.' + Date.now();
-            document.head.appendChild(script);
-        </script>
+    <script type="text/javascript">
+        // We could have loaded main.js simply with:
+        //  <script type="text/javascript" src="main.js">
+        //
+        // BUT we were having caching-related problems.
+        // Loading main.js with a Date.now() in the URL we avoid using cache
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'main.js?v=11.' + Date.now();
+        document.head.appendChild(script);
+    </script>
 </body>
 
 </html>

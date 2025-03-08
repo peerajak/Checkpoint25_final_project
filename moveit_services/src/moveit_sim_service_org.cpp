@@ -76,7 +76,7 @@ private:
     
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
     
-            bool success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+            bool success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group.execute(my_plan);
             sleep(5);
@@ -91,7 +91,7 @@ private:
             joint_group_positions[5] = -1.482777;  // Wrist 3
     
             move_group.setJointValueTarget(joint_group_positions);
-            bool success2 = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+            bool success2 = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group.execute(my_plan);
 
