@@ -88,7 +88,7 @@ var app = new Vue({
                 let domain = without_wss.split('/')[0] + '/' + without_wss.split('/')[1]
                 //let domain = without_ws.split(':')[0] + ':11315'
                 console.log(domain)
-                let host = domain //+ '/cameras'
+                let host = domain + '/cameras'
                 this.viewer = new MJPEGCANVAS.Viewer({
                 divID: 'divCamera',
                 host: host,

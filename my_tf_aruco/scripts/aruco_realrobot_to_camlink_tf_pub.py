@@ -109,16 +109,16 @@ class ArucoToCamlinkTF(Node):
 
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
-            self.transform_camera_aruco_stamped.transform.translation.x = self.transform_translation_camera_aruco_x.inverse()
-            self.transform_camera_aruco_stamped.transform.translation.y = self.transform_translation_camera_aruco_y.inverse()
-            self.transform_camera_aruco_stamped.transform.translation.z = self.transform_translation_camera_aruco_z.inverse()
+            self.transform_camera_aruco_stamped.transform.translation.x = self.transform_translation_camera_aruco_x
+            self.transform_camera_aruco_stamped.transform.translation.y = self.transform_translation_camera_aruco_y
+            self.transform_camera_aruco_stamped.transform.translation.z = self.transform_translation_camera_aruco_z
 
             # Set the rotation of the TF message.
             # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_camera_aruco_stamped.transform.rotation.x = self.transform_rotation_camera_aruco_x.inverse()
-            self.transform_camera_aruco_stamped.transform.rotation.y = self.transform_rotation_camera_aruco_y.inverse()
-            self.transform_camera_aruco_stamped.transform.rotation.z = self.transform_rotation_camera_aruco_z.inverse()
-            self.transform_camera_aruco_stamped.transform.rotation.w = self.transform_rotation_camera_aruco_w.inverse()
+            self.transform_camera_aruco_stamped.transform.rotation.x = self.transform_rotation_camera_aruco_x
+            self.transform_camera_aruco_stamped.transform.rotation.y = self.transform_rotation_camera_aruco_y
+            self.transform_camera_aruco_stamped.transform.rotation.z = self.transform_rotation_camera_aruco_z
+            self.transform_camera_aruco_stamped.transform.rotation.w = self.transform_rotation_camera_aruco_w
 
             #TODO inverse() does not work. Try lookup transfrom
             self.transform_aruco_camera_stamped = self.transform_camera_aruco_stamped
