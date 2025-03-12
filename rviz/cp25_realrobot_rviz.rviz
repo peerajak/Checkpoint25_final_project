@@ -14,7 +14,6 @@ Panels:
         - /Image2
         - /Image2/Topic1
         - /RobotModel2
-        - /RobotModel2/Status1
       Splitter Ratio: 0.5
     Tree Height: 216
   - Class: rviz_common/Selection
@@ -85,8 +84,6 @@ Visualization Manager:
           Value: false
         D415_link:
           Value: false
-        aruco_frame:
-          Value: true
         aruco_link:
           Value: false
         base:
@@ -134,8 +131,7 @@ Visualization Manager:
         D415_link:
           D415_color_frame:
             D415_color_optical_frame:
-              aruco_frame:
-                {}
+              {}
           D415_depth_frame:
             D415_depth_optical_frame:
               {}
@@ -318,7 +314,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: D415_color_optical_frame
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -361,25 +357,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.587622880935669
+      Distance: 3.133686065673828
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.16676926612854004
-        Y: 0.11702042073011398
-        Z: -0.09352681785821915
+        X: -1.7670061588287354
+        Y: -0.16337670385837555
+        Z: -0.22842353582382202
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6803980469703674
+      Pitch: 0.2147967517375946
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.3603980541229248
+      Yaw: 0.13039229810237885
     Saved: ~
 Window Geometry:
   Displays:

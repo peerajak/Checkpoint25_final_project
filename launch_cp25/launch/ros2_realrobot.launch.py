@@ -29,7 +29,7 @@ def generate_launch_description():
             moveit_config.to_dict(),
             {"trajectory_execution.allowed_execution_duration_scaling": 2.0,},
             {"publish_robot_description_semantic": True},
-            {"use_sim_time": True},
+            {"use_sim_time": False},
         ],
     )
 
@@ -37,19 +37,15 @@ def generate_launch_description():
     moveit_rviz_launch = generate_moveit_rviz_launch(moveit_config) 
 
     # my_tf_aruco
-    aruco_tf_pub = Node(
-        package="my_tf_aruco",
-        executable="aruco_to_camlink_tf_pub.py",
-        output="screen",
-    )
+
     aruco_tf_pub_send_to_tf2_pub = Node(
         package="my_tf_aruco",
-        executable="aruco_to_camlink_send_to_tf2_pub.py",
+        executable="aruco_realrobot_to_camlink_send_to_tf2_pub.py",
         output="screen",
     )
     aruco_tf_pub_tf2_pub = Node(
         package="my_tf_aruco",
-        executable="tf2_pub_node",
+        executable="tf2_realrobot_pub_node",
         output="screen",
     )
 
@@ -68,7 +64,7 @@ def generate_launch_description():
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
             moveit_config.robot_description_kinematics,
-            {'use_sim_time': True},
+            {'use_sim_time': False},
         ],
     )
 
@@ -87,7 +83,6 @@ def generate_launch_description():
     return LaunchDescription([
         move_group_launch ,
         moveit_rviz_launch,
-        aruco_tf_pub,
         aruco_tf_pub_send_to_tf2_pub,
         aruco_tf_pub_tf2_pub,
         planning_sim_scene_service_launch,

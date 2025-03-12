@@ -22,9 +22,26 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+
+
+add_executable(tf2_pub_node src/tf2_pub.cpp)
+ament_target_dependencies(tf2_pub_node rclcpp geometry_msgs tf2 tf2_ros)
+
+add_executable(tf2_realrobot_pub_node src/tf2_realrobot_pub.cpp)
+ament_target_dependencies(tf2_realrobot_pub_node rclcpp geometry_msgs tf2 tf2_ros)
+
+install(TARGETS
+   tf2_pub_node
+   tf2_realrobot_pub_node
+   DESTINATION lib/${PROJECT_NAME}
+)
+
+
 install(PROGRAMS
   scripts/aruco_to_camlink_tf_pub.py
+  scripts/aruco_to_camlink_send_to_tf2_pub.py
   scripts/aruco_realrobot_to_camlink_tf_pub.py
+  scripts/aruco_realrobot_to_camlink_send_to_tf2_pub.py
   scripts/test_cv_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
