@@ -70,7 +70,7 @@ def generate_launch_description():
 
     #rviz2
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("launch_cp25"), "rviz", "cp25_rviz.rviz"]
+        [FindPackageShare("launch_cp25"), "rviz", "cp25_realrobot_rviz.rviz"]
     )
 
     rviz_node = Node(
