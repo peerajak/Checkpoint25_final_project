@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <cmath>
 
-#define FROM_BASE_TO_FAKE_CAMERA  // uncomment this to link fake_camera frame to baselink
+#define FROM_BASE_TO_FAKE_CAMERA  // ifdef = base_link to fake_camera_frame, ifndef = aruco_frame to fake_camera_frame 
 
 /*
 run together with 
