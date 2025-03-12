@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <cmath>
 
-//#define FROM_BASE_TO_FAKE_CAMERA  // uncomment this to link fake_camera frame to baselink
+#define FROM_BASE_TO_FAKE_CAMERA  // uncomment this to link fake_camera frame to baselink
 
 /*
 run together with 
