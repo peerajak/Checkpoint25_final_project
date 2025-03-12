@@ -132,43 +132,43 @@ class ArucoToCamlinkTF(Node):
             # Send (broadcast) the TF message.
             self.publisher_to_tf2_pub.publish(self.transform_stamped)
             self.get_logger().info("publishing identity tf from camera to aruco_frame")
-        else:
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+        # else:
+        #     self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = 0.0
-            self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0      
-            r = R.from_matrix([[1, 0, 0],
-                   [0, 1, 0],
-                   [0, 0, 1]])          
-            quat = r.as_quat()   
+        #     # Set the translation of the TF message.
+        #     # The translation of the TF message is set to the current position of the robot.
+        #     self.transform_stamped.transform.translation.x = 0.0
+        #     self.transform_stamped.transform.translation.y = 0.0
+        #     self.transform_stamped.transform.translation.z = 0.0      
+        #     r = R.from_matrix([[1, 0, 0],
+        #            [0, 1, 0],
+        #            [0, 0, 1]])          
+        #     quat = r.as_quat()   
 
-            # Quaternion format     
-            self.transform_rotation_x = quat[0] 
-            self.transform_rotation_y = quat[1] 
-            self.transform_rotation_z = quat[2] 
-            self.transform_rotation_w = quat[3] 
+        #     # Quaternion format     
+        #     self.transform_rotation_x = quat[0] 
+        #     self.transform_rotation_y = quat[1] 
+        #     self.transform_rotation_z = quat[2] 
+        #     self.transform_rotation_w = quat[3] 
 
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
+        #     self.transform_stamped.transform.rotation.x = self.transform_rotation_x
+        #     self.transform_stamped.transform.rotation.y = self.transform_rotation_y
+        #     self.transform_stamped.transform.rotation.z = self.transform_rotation_z
+        #     self.transform_stamped.transform.rotation.w = self.transform_rotation_w
             
-            self.publisher_to_tf2_pub.publish(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
+        #     self.publisher_to_tf2_pub.publish(self.transform_stamped)
+        #     self.get_logger().info("publishing tf from camera to aruco_frame")
         
-        # Euler angle format in radians
-        try:
-            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                                self.transform_rotation_y, 
-                                                                self.transform_rotation_z, 
-                                                                self.transform_rotation_w)        
-            self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
-                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
-        except AttributeError:
-            pass
+        # # Euler angle format in radians
+        # try:
+        #     roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
+        #                                                         self.transform_rotation_y, 
+        #                                                         self.transform_rotation_z, 
+        #                                                         self.transform_rotation_w)        
+        #     self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+        #         self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
+        # except AttributeError:
+        #     pass
     
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
