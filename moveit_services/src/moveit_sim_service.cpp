@@ -104,7 +104,7 @@ private:
             bool success2 = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group->execute(my_plan);
-
+            sleep(SLEEPTIME);
             if(success && success2){
                 response->success = true;
                 response->message = "moveit to show: success";
@@ -163,7 +163,7 @@ private:
           bool success2 = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   
           move_group->execute(my_plan);
-
+          sleep(SLEEPTIME);
           if(success && success2){
               response->success = true;
               response->message = "moveit to show: success";

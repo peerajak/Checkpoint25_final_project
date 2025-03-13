@@ -46,10 +46,10 @@ def generate_launch_description():
         executable='planning_sim_scene_service',
         output='screen'
     )
-    moveit_sim_service_launch = Node(
+    moveit_realrobot_service_launch = Node(
         #name="moveit_sim_service",
         package="moveit_services",
-        executable="moveit_sim_service",
+        executable="moveit_realrobot_service",
         output="screen",
         parameters=[
             moveit_config.robot_description,
@@ -77,7 +77,7 @@ def generate_launch_description():
         aruco_tf_pub_send_to_tf2_pub,
         aruco_tf_pub_tf2_pub,
         planning_sim_scene_service_launch,
-        moveit_sim_service_launch,
+        moveit_realrobot_service_launch,
         rviz_node 
 
     ])

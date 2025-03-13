@@ -34,11 +34,14 @@ add_executable(moveit_sim_service src/moveit_sim_service.cpp)
 ament_target_dependencies(moveit_sim_service rclcpp std_srvs moveit_msgs moveit_core
 	moveit_ros_planning_interface moveit_ros_planning )
 
-
+add_executable(moveit_realrobot_service src/moveit_realrobot_service.cpp)
+ament_target_dependencies(moveit_realrobot_service rclcpp std_srvs moveit_msgs moveit_core
+	moveit_ros_planning_interface moveit_ros_planning )
 
 install(TARGETS
    planning_sim_scene_service
    moveit_sim_service
+   moveit_realrobot_service 
    DESTINATION lib/${PROJECT_NAME}
  )
 
