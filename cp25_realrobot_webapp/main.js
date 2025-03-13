@@ -10,7 +10,7 @@ var app = new Vue({
         isShowCamera: true,
         isShowRobotModel: true,
         service_busy: false,
-        rosbridge_address: 'wss://i-085a1df7c42f2495d.robotigniteacademy.com/a4b4c519-01fc-4dae-b102-b3848baf5158/rosbridge/',
+        rosbridge_address: 'wss://i-0b8256538c86880b2.robotigniteacademy.com/ded73fcd-f933-442a-9434-4dfcd4802b6d/rosbridge/',
         port: '9090',
         // 3D stuff
         viewer3d: null,
@@ -94,7 +94,7 @@ var app = new Vue({
                 host: host,
                 width: 400,
                 height: 300,
-                topic: '/D415/color/image_aruco/compressed',
+                topic: '/D415/color/image_aruco_raw',
                 ssl: false,
             })
             }

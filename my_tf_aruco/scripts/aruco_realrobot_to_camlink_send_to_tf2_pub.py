@@ -4,7 +4,7 @@ import sys
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, DurabilityPolicy, QoSProfile
-from sensor_msgs.msg import Image
+# from sensor_msgs.msg import Image
 from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import CameraInfo
 from tf2_ros import TransformException
@@ -90,7 +90,7 @@ class ArucoToCamlinkTF(Node):
                 '/D415/color/image_raw/compressed', 
                 self.image_callback,1)
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/D415/color/camera_info', self.camera_info_callback, 10)
-        self.publisher = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', 10)
+        self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', 10)
         self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("aruco_realrobot_to_camlink_send_to_tf2_pub ready!!")
@@ -345,8 +345,9 @@ class ArucoToCamlinkTF(Node):
         
         if detectingImage is not None:
             try:
-                image_message = self.cv_bridge.cv2_to_compressed_imgmsg(detectingImage)
-                self.publisher.publish(image_message)
+                image_message_compressed = self.cv_bridge.cv2_to_compressed_imgmsg(detectingImage)
+                self.publisher_compressed.publish(image_message_compressed)
+
             except Exception as e:
                 print(e)
 
