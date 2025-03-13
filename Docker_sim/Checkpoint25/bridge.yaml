@@ -28,10 +28,10 @@ topics:
     queue_size: 1
 
 
-services_2_to_1:
+services_1_to_2:
   -
-    service: /moveit_sim_service # ROS 1 service name
-    type: std_srvs/SetBool  # The ROS 1 service type name
+    service: /moveit_sim_service # ROS 2 service name
+    type: std_srvs/srv/SetBool  # The ROS 2 service type name
   -
-    service: /planning_scene_cp25 # ROS 1 service name
-    type: std_srvs/Empty  # The ROS 1 service type name
+    service: /planning_scene_cp25 # ROS 2 service name
+    type: std_srvs/srv/Empty  # The ROS 2 service type name
