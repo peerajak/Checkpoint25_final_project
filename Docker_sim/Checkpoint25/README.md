@@ -79,6 +79,7 @@ step 1. From ros1_bridge docker, create ros1_and_web_bridge docker, and install 
 
 ```
 docker build -t ros1_and_web_bridge:v1 -f ./Dockerfile_Ros1_Web_Bridge .
+docker run --rm -it --net=host -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:ro --runtime=nvidia --gpus all --name ros1_webbridge ros1_and_web_bridge:v1 bash
 ```
 
 step 2. ROS2 camera topic --> ros1_bridge (topic selection) --> ROS1 rosbridge, web_video_server --> WEBPage {connect, show camera images on web}
