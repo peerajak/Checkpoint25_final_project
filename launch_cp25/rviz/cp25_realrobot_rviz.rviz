@@ -84,8 +84,10 @@ Visualization Manager:
           Value: false
         D415_link:
           Value: false
+        aruco_frame:
+          Value: true
         aruco_link:
-          Value: false
+          Value: true
         base:
           Value: false
         base_link:
@@ -142,7 +144,7 @@ Visualization Manager:
           Value: false
         wrist_rgbd_camera_right_ir_optical_frame:
           Value: false
-      Marker Scale: 1
+      Marker Scale: 0.4000000059604645
       Name: TF
       Show Arrows: true
       Show Axes: true
@@ -151,7 +153,8 @@ Visualization Manager:
         world:
           base_link:
             D415_color_optical_frame:
-              {}
+              aruco_frame:
+                {}
             base:
               {}
             base_link_inertia:
@@ -387,25 +390,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.133686065673828
+      Distance: 1.2958569526672363
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -1.7670061588287354
-        Y: -0.16337670385837555
-        Z: -0.22842353582382202
+        X: -0.22955361008644104
+        Y: -0.14408694207668304
+        Z: 0.07470525801181793
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2097967565059662
+      Pitch: 0.0697971060872078
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.233577728271484
+      Yaw: 4.858576774597168
     Saved: ~
 Window Geometry:
   Displays:
