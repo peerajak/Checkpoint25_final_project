@@ -95,7 +95,7 @@ var app = new Vue({
                 width: 400,
                 height: 300,
                 topic: '/wrist_rgbd_depth_sensor/image_aruco_frame',
-                ssl: false,
+                ssl: true,
             })
             }
 

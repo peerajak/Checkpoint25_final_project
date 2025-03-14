@@ -10,7 +10,7 @@ var app = new Vue({
         isShowCamera: true,
         isShowRobotModel: true,
         service_busy: false,
-        rosbridge_address: 'wss://i-0b8256538c86880b2.robotigniteacademy.com/ded73fcd-f933-442a-9434-4dfcd4802b6d/rosbridge/',
+        rosbridge_address: 'wss://i-085a1df7c42f2495d.robotigniteacademy.com/a4b4c519-01fc-4dae-b102-b3848baf5158/rosbridge/',
         port: '9090',
         // 3D stuff
         viewer3d: null,
@@ -95,7 +95,7 @@ var app = new Vue({
                 width: 400,
                 height: 300,
                 topic: '/D415/color/image_aruco_raw',
-                ssl: false,
+                ssl: true,
             })
             }
 
@@ -158,25 +158,25 @@ var app = new Vue({
                 rootObject : this.viewer3d.scene,
             });
 
-            var tfAxes2 = new ROS3D.TFAxes({
-                frame_id: "D415_color_optical_frame",
-                shaftRadius : 0.02,
-                headRaidus : 0.07,
-                headLength : 0.2,
-                scale : 0.1,
-                tfClient : this.tfClient,
-                rootObject : this.viewer3d.scene,
-            });
+            // var tfAxes2 = new ROS3D.TFAxes({
+            //     frame_id: "wrist_2_link",
+            //     shaftRadius : 0.02,
+            //     headRaidus : 0.07,
+            //     headLength : 0.2,
+            //     scale : 0.1,
+            //     tfClient : this.tfClient,
+            //     rootObject : this.viewer3d.scene,
+            // });
 
-            var tfAxes3 = new ROS3D.TFAxes({
-                frame_id: "aruco_frame",
-                shaftRadius : 0.02,
-                headRaidus : 0.07,
-                headLength : 0.2,
-                scale : 0.1,
-                tfClient : this.tfClient,
-                rootObject : this.viewer3d.scene,
-            });
+            // var tfAxes3 = new ROS3D.TFAxes({
+            //     frame_id: "aruco_frame",
+            //     shaftRadius : 0.02,
+            //     headRaidus : 0.07,
+            //     headLength : 0.2,
+            //     scale : 0.1,
+            //     tfClient : this.tfClient,
+            //     rootObject : this.viewer3d.scene,
+            // });
 
 
         },

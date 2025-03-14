@@ -98,6 +98,8 @@ Visualization Manager:
           Value: false
         ft_frame:
           Value: false
+        rg2_gripper_aruco_link:
+          Value: false
         rg2_gripper_base_link:
           Value: false
         rg2_gripper_left_finger:
@@ -122,21 +124,34 @@ Visualization Manager:
           Value: false
         wrist_3_link:
           Value: false
+        wrist_rgbd_camera_depth_frame:
+          Value: false
+        wrist_rgbd_camera_depth_optical_frame:
+          Value: false
+        wrist_rgbd_camera_fisheye_frame:
+          Value: false
+        wrist_rgbd_camera_fisheye_optical_frame:
+          Value: false
+        wrist_rgbd_camera_left_ir_frame:
+          Value: false
+        wrist_rgbd_camera_left_ir_optical_frame:
+          Value: false
+        wrist_rgbd_camera_link:
+          Value: false
+        wrist_rgbd_camera_right_ir_frame:
+          Value: false
+        wrist_rgbd_camera_right_ir_optical_frame:
+          Value: false
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        D415_link:
-          D415_color_frame:
-            D415_color_optical_frame:
-              {}
-          D415_depth_frame:
-            D415_depth_optical_frame:
-              {}
         world:
           base_link:
+            D415_color_optical_frame:
+              {}
             base:
               {}
             base_link_inertia:
@@ -151,6 +166,8 @@ Visualization Manager:
                               rg2_gripper_base_link:
                                 aruco_link:
                                   {}
+                                rg2_gripper_aruco_link:
+                                  {}
                                 rg2_gripper_left_finger:
                                   rg2_gripper_left_thumb:
                                     {}
@@ -159,6 +176,19 @@ Visualization Manager:
                                     {}
                           ft_frame:
                             {}
+            wrist_rgbd_camera_link:
+              wrist_rgbd_camera_depth_frame:
+                wrist_rgbd_camera_depth_optical_frame:
+                  {}
+                wrist_rgbd_camera_fisheye_frame:
+                  wrist_rgbd_camera_fisheye_optical_frame:
+                    {}
+                wrist_rgbd_camera_left_ir_frame:
+                  wrist_rgbd_camera_left_ir_optical_frame:
+                    {}
+                wrist_rgbd_camera_right_ir_frame:
+                  wrist_rgbd_camera_right_ir_optical_frame:
+                    {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -372,10 +402,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2147967517375946
+      Pitch: 0.2097967565059662
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.13039229810237885
+      Yaw: 6.233577728271484
     Saved: ~
 Window Geometry:
   Displays:
