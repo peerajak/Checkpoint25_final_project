@@ -124,12 +124,12 @@ private:
       sleep(SLEEPTIME);
       // step 3
 
-      joint_group_positions[0] = 2.808555;   // Shoulder Pan
-      joint_group_positions[1] = -0.0697777; // Shoulder Lift
-      joint_group_positions[2] = 1.604888;   // Elbow
-      joint_group_positions[3] = -1.849111;  // Wrist 1
-      joint_group_positions[4] = -0.348888;  // Wrist 2
-      joint_group_positions[5] = -2.9496;    // Wrist 3
+      joint_group_positions[0] = 2.618;   // Shoulder Pan
+      joint_group_positions[1] = -0.4363; // Shoulder Lift
+      joint_group_positions[2] = 1.5533;  // Elbow
+      joint_group_positions[3] = -1.5533; // Wrist 1
+      joint_group_positions[4] = -0.5585; // Wrist 2
+      joint_group_positions[5] = -2.8623; // Wrist 3
       move_group->setJointValueTarget(joint_group_positions);
       bool success3 = (move_group->plan(my_plan) ==
                        moveit::planning_interface::MoveItErrorCode::SUCCESS);

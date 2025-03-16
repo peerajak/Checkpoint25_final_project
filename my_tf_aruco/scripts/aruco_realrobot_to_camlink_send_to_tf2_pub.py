@@ -105,7 +105,7 @@ class ArucoToCamlinkTF(Node):
         """
         This function broadcasts a new TF message to the TF network.
         """
-        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
+        self.transform_stamped.header.frame_id = "D415_color_optical_frame"
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.
@@ -165,7 +165,7 @@ class ArucoToCamlinkTF(Node):
                                                                 self.transform_rotation_y, 
                                                                 self.transform_rotation_z, 
                                                                 self.transform_rotation_w)        
-            self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+            self.get_logger().info("TF D415_color_optical_frame->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
         except AttributeError:
             pass
@@ -218,6 +218,14 @@ class ArucoToCamlinkTF(Node):
 
         detectingImage = self.cv_image.copy() 
 
+        detectingImage_np = np.zeros(detectingImage.shape, detectingImage.dtype)
+        alpha = 5.2 #float  Simple contrast control
+        beta = 70   #integer Simple brightness control
+        for y in range(detectingImage.shape[0]):
+            for x in range(detectingImage.shape[1]):
+                for c in range(detectingImage.shape[2]):
+                    detectingImage_np[y,x,c] = np.clip(alpha*detectingImage[y,x,c] + beta, 0, 255)
+
         # Detect ArUco markers in the video frame
         # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
         #     detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
@@ -225,7 +233,7 @@ class ArucoToCamlinkTF(Node):
 
         # Detect ArUco markers in the video frame
         (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
-            detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
+            detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
             cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
 
         # Check that at least one ArUco marker was detected
@@ -236,7 +244,7 @@ class ArucoToCamlinkTF(Node):
             # print('corners ',corners)
             # print('marker_ids', marker_ids)
             # Draw a square around detected markers in the video frame
-            cv2.aruco.drawDetectedMarkers(detectingImage , corners, marker_ids)
+            cv2.aruco.drawDetectedMarkers(detectingImage_np , corners, marker_ids)
             #print(marker_ids)
             #print(corners)
 
@@ -316,7 +324,7 @@ class ArucoToCamlinkTF(Node):
 
                 # Draw the axes on the marker
                 #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+                detectingImage_np = cv2.drawFrameAxes(detectingImage_np, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
                 # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
                 
         else:
@@ -326,7 +334,7 @@ class ArucoToCamlinkTF(Node):
 
         #cv2.imshow('frame',detectingImage )
         #cv2.waitKey(3)
-        return detectingImage
+        return detectingImage_np
                     
 
     def image_callback(self, msg: CompressedImage) -> None:

@@ -17,7 +17,7 @@ and
 ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
 to create fake_camera_frame from aruco_frame
 */
-#define ARUCO_TO_CAM
+//#define ARUCO_TO_CAM
 
 using namespace std::chrono_literals;
 
@@ -34,11 +34,12 @@ public:
         this->create_subscription<geometry_msgs::msg::TransformStamped>(
             "aruco_point_wrt_camera", 10,
             std::bind(&Tf2Pub::aruco_geometry_callback, this, _1));
-    timer_ = this->create_wall_timer(500ms,
-                                     std::bind(&Tf2Pub::timer_callback, this));
-#ifdef ARUCO_TO_CAM
-    is_aruco_to_cam_callback_ = false;
-#endif
+    // timer_ = this->create_wall_timer(500ms,
+    //                                  std::bind(&Tf2Pub::timer_callback,
+    //                                  this));
+    // #ifdef ARUCO_TO_CAM
+    //     //is_aruco_to_cam_callback_ = false;
+    // #endif
   }
 
 private:
@@ -47,24 +48,19 @@ private:
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-  rclcpp::TimerBase::SharedPtr timer_;
-#ifdef ARUCO_TO_CAM
-  geometry_msgs::msg::TransformStamped msg_aruco_camera_;
-  bool is_aruco_to_cam_callback_;
-#endif
+  // rclcpp::TimerBase::SharedPtr timer_;
+  //  #ifdef ARUCO_TO_CAM
+  //  //   geometry_msgs::msg::TransformStamped msg_aruco_camera_;
+  //  //   bool is_aruco_to_cam_callback_;
+  //  #endif
 
-
-
-  void timer_callback() {
-#ifdef ARUCO_TO_CAM
-    if (is_aruco_to_cam_callback_)
-      tf_broadcaster_->sendTransform(msg_aruco_camera_);
-     RCLCPP_INFO(this->get_logger(), "msg_aruco_camera_ sent");
-#endif
-  }
-
-
-
+  //   void timer_callback() {
+  // #ifdef ARUCO_TO_CAM
+  //     if (is_aruco_to_cam_callback_)
+  //       tf_broadcaster_->sendTransform(msg_aruco_camera_);
+  //      RCLCPP_INFO(this->get_logger(), "msg_aruco_camera_ sent");
+  // #endif
+  //   }
 
   void aruco_geometry_callback(
       const geometry_msgs::msg::TransformStamped::SharedPtr msg) {
@@ -130,8 +126,8 @@ private:
     msg_aruco_camera_.transform.rotation.y = q_aruco_camera.getY();
     msg_aruco_camera_.transform.rotation.z = q_aruco_camera.getZ();
     msg_aruco_camera_.transform.rotation.w = q_aruco_camera.getW();
-    // tf_broadcaster_->sendTransform(msg_aruco_camera);
-    is_aruco_to_cam_callback_ = true;
+    tf_broadcaster_->sendTransform(msg_aruco_camera);
+    // is_aruco_to_cam_callback_ = true;
 #else
     std::string fromFrameRel1 = "base_link"; // from parent to child
     std::string toFrameRel1 = "D415_color_optical_frame"; // child
@@ -147,7 +143,7 @@ private:
     msg_base_camera.transform.rotation.y = q_base_camera.getY();
     msg_base_camera.transform.rotation.z = q_base_camera.getZ();
     msg_base_camera.transform.rotation.w = q_base_camera.getW();
-    // tf_broadcaster_->sendTransform(msg_base_camera);
+    tf_broadcaster_->sendTransform(msg_base_camera);
 #endif
     // std::string fromFrameRel2 =
     //     "D415_color_optical_frame";          // from parent to child

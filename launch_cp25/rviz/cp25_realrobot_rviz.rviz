@@ -84,10 +84,8 @@ Visualization Manager:
           Value: false
         D415_link:
           Value: false
-        aruco_frame:
-          Value: true
         aruco_link:
-          Value: true
+          Value: false
         base:
           Value: false
         base_link:
@@ -99,8 +97,6 @@ Visualization Manager:
         forearm_link:
           Value: false
         ft_frame:
-          Value: false
-        rg2_gripper_aruco_link:
           Value: false
         rg2_gripper_base_link:
           Value: false
@@ -126,24 +122,6 @@ Visualization Manager:
           Value: false
         wrist_3_link:
           Value: false
-        wrist_rgbd_camera_depth_frame:
-          Value: false
-        wrist_rgbd_camera_depth_optical_frame:
-          Value: false
-        wrist_rgbd_camera_fisheye_frame:
-          Value: false
-        wrist_rgbd_camera_fisheye_optical_frame:
-          Value: false
-        wrist_rgbd_camera_left_ir_frame:
-          Value: false
-        wrist_rgbd_camera_left_ir_optical_frame:
-          Value: false
-        wrist_rgbd_camera_link:
-          Value: false
-        wrist_rgbd_camera_right_ir_frame:
-          Value: false
-        wrist_rgbd_camera_right_ir_optical_frame:
-          Value: false
       Marker Scale: 0.4000000059604645
       Name: TF
       Show Arrows: true
@@ -152,9 +130,6 @@ Visualization Manager:
       Tree:
         world:
           base_link:
-            D415_color_optical_frame:
-              aruco_frame:
-                {}
             base:
               {}
             base_link_inertia:
@@ -169,8 +144,6 @@ Visualization Manager:
                               rg2_gripper_base_link:
                                 aruco_link:
                                   {}
-                                rg2_gripper_aruco_link:
-                                  {}
                                 rg2_gripper_left_finger:
                                   rg2_gripper_left_thumb:
                                     {}
@@ -179,19 +152,6 @@ Visualization Manager:
                                     {}
                           ft_frame:
                             {}
-            wrist_rgbd_camera_link:
-              wrist_rgbd_camera_depth_frame:
-                wrist_rgbd_camera_depth_optical_frame:
-                  {}
-                wrist_rgbd_camera_fisheye_frame:
-                  wrist_rgbd_camera_fisheye_optical_frame:
-                    {}
-                wrist_rgbd_camera_left_ir_frame:
-                  wrist_rgbd_camera_left_ir_optical_frame:
-                    {}
-                wrist_rgbd_camera_right_ir_frame:
-                  wrist_rgbd_camera_right_ir_optical_frame:
-                    {}
       Update Interval: 0
       Value: true
     - Alpha: 1
