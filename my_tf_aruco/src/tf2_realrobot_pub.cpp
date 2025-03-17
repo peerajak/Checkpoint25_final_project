@@ -145,22 +145,22 @@ private:
     msg_base_camera.transform.rotation.w = q_base_camera.getW();
     tf_broadcaster_->sendTransform(msg_base_camera);
 #endif
-    // std::string fromFrameRel2 =
-    //     "D415_color_optical_frame";          // from parent to child
-    // std::string toFrameRel2 = "aruco_frame"; // child
-    // geometry_msgs::msg::TransformStamped msg_camera_aruco;
-    // rclcpp::Time now2 = this->get_clock()->now();
-    // msg_camera_aruco.header.stamp = now2;
-    // msg_camera_aruco.header.frame_id = fromFrameRel2;
-    // msg_camera_aruco.child_frame_id = toFrameRel2;
-    // msg_camera_aruco.transform.translation.x = p_camera_aruco.getX();
-    // msg_camera_aruco.transform.translation.y = p_camera_aruco.getY();
-    // msg_camera_aruco.transform.translation.z = p_camera_aruco.getZ();
-    // msg_camera_aruco.transform.rotation.x = q_camera_aruco.getX();
-    // msg_camera_aruco.transform.rotation.y = q_camera_aruco.getY();
-    // msg_camera_aruco.transform.rotation.z = q_camera_aruco.getZ();
-    // msg_camera_aruco.transform.rotation.w = q_camera_aruco.getW();
-    // tf_broadcaster_->sendTransform(msg_camera_aruco);
+    std::string fromFrameRel2 =
+        "D415_color_optical_frame";          // from parent to child
+    std::string toFrameRel2 = "aruco_frame"; // child
+    geometry_msgs::msg::TransformStamped msg_camera_aruco;
+    rclcpp::Time now2 = this->get_clock()->now();
+    msg_camera_aruco.header.stamp = now2;
+    msg_camera_aruco.header.frame_id = fromFrameRel2;
+    msg_camera_aruco.child_frame_id = toFrameRel2;
+    msg_camera_aruco.transform.translation.x = p_camera_aruco.getX();
+    msg_camera_aruco.transform.translation.y = p_camera_aruco.getY();
+    msg_camera_aruco.transform.translation.z = p_camera_aruco.getZ();
+    msg_camera_aruco.transform.rotation.x = q_camera_aruco.getX();
+    msg_camera_aruco.transform.rotation.y = q_camera_aruco.getY();
+    msg_camera_aruco.transform.rotation.z = q_camera_aruco.getZ();
+    msg_camera_aruco.transform.rotation.w = q_camera_aruco.getW();
+    tf_broadcaster_->sendTransform(msg_camera_aruco);
   }
 };
 
