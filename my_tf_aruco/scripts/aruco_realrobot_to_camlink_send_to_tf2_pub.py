@@ -324,7 +324,7 @@ class ArucoToCamlinkTF(Node):
 
                 # Draw the axes on the marker
                 #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
-                detectingImage_np = cv2.drawFrameAxes(detectingImage_np, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
                 # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
                 
         else:
@@ -334,7 +334,7 @@ class ArucoToCamlinkTF(Node):
 
         #cv2.imshow('frame',detectingImage )
         #cv2.waitKey(3)
-        return detectingImage_np
+        return detectingImage
                     
 
     def image_callback(self, msg: CompressedImage) -> None:

@@ -41,7 +41,8 @@ var app = new Vue({
                 this.callPlanningSceneService()
                 this.tfClient2 = new ROSLIB.TFClient({
                     ros : this.ros,
-                    fixedFrame : 'world',
+                    fixedFrame : 'base_link',
+                    rate : 0.5,
                     angularThres : 0.01,
                     transThres : 0.01
                 })
@@ -168,15 +169,15 @@ var app = new Vue({
             //     rootObject : this.viewer3d.scene,
             // });
 
-            // var tfAxes3 = new ROS3D.TFAxes({
-            //     frame_id: "aruco_frame",
-            //     shaftRadius : 0.02,
-            //     headRaidus : 0.07,
-            //     headLength : 0.2,
-            //     scale : 0.1,
-            //     tfClient : this.tfClient,
-            //     rootObject : this.viewer3d.scene,
-            // });
+            var tfAxes3 = new ROS3D.TFAxes({
+                frame_id: "aruco_frame",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient,
+                rootObject : this.viewer3d.scene,
+            });
 
 
         },
