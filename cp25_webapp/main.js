@@ -15,7 +15,7 @@ var app = new Vue({
         // 3D stuff
         viewer3d: null,
         tfClient: null,
-        //tfClient2: null,
+        tfClient2: null,
         urdfClient: null,
         tf_aruco: {
             x: 0,
@@ -39,18 +39,7 @@ var app = new Vue({
                 this.showCamera()
                 this.showRobotModel()
                 this.callPlanningSceneService()
-                this.tfClient2 = new ROSLIB.TFClient({
-                    ros : this.ros,
-                    fixedFrame : 'world',
-                    angularThres : 0.01,
-                    transThres : 0.01
-                })
-                this.tfClient2.subscribe('aruco_frame', (tf) => {
-                    console.log(tf.translation.x)
-                    this.tf_aruco.x = tf.translation.x
-                    this.tf_aruco.y = tf.translation.y;
-                    this.tf_aruco.z = tf.translation.z;
-                })
+
             })
             this.ros.on('error', (error) => {
                 this.logs.unshift((new Date()).toTimeString() + ` - Error: ${error}`)
@@ -134,6 +123,19 @@ var app = new Vue({
                 rate: 10.0
             })
 
+            this.tfClient2 = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'world',
+                angularThres : 0.01,
+                transThres : 0.01
+            })
+            this.tfClient2.subscribe('aruco_frame', (tf) => {
+                console.log(tf.translation.x)
+                this.tf_aruco.x = tf.translation.x
+                this.tf_aruco.y = tf.translation.y;
+                this.tf_aruco.z = tf.translation.z;
+            })
+
             // Setup the URDF client.
             this.urdfClient = new ROS3D.UrdfClient({
                 ros: this.ros,
@@ -154,7 +156,7 @@ var app = new Vue({
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient,
+                tfClient : this.tfClient2,
                 rootObject : this.viewer3d.scene,
             });
 
@@ -164,7 +166,7 @@ var app = new Vue({
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient,
+                tfClient : this.tfClient2,
                 rootObject : this.viewer3d.scene,
             });
 
@@ -174,7 +176,7 @@ var app = new Vue({
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient,
+                tfClient : this.tfClient2,
                 rootObject : this.viewer3d.scene,
             });
 

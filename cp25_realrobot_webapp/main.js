@@ -15,7 +15,7 @@ var app = new Vue({
         // 3D stuff
         viewer3d: null,
         tfClient: null,
-        //tfClient2: null,
+        tfClient2: null,
         urdfClient: null,
         tf_aruco: {
             x: 0,
@@ -39,19 +39,7 @@ var app = new Vue({
                 this.showCamera()
                 this.showRobotModel()
                 this.callPlanningSceneService()
-                this.tfClient2 = new ROSLIB.TFClient({
-                    ros : this.ros,
-                    fixedFrame : 'base_link',
-                    rate : 0.5,
-                    angularThres : 0.01,
-                    transThres : 0.01
-                })
-                this.tfClient2.subscribe('aruco_frame', (tf) => {
-                    console.log(tf.translation.x)
-                    this.tf_aruco.x = tf.translation.x
-                    this.tf_aruco.y = tf.translation.y;
-                    this.tf_aruco.z = tf.translation.z;
-                })
+
             })
             this.ros.on('error', (error) => {
                 this.logs.unshift((new Date()).toTimeString() + ` - Error: ${error}`)
@@ -130,11 +118,24 @@ var app = new Vue({
             // Setup a client to listen to TFs.
             this.tfClient = new ROSLIB.TFClient({
                 ros: this.ros,
+                rate : 1.0,
                 angularThres: 0.01,
                 transThres: 0.01,
-                rate: 10.0
             })
-
+            this.tfClient2 = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'base_link',
+                rate : 1.0,
+                updateDelay : 1,
+                angularThres : 0.01,
+                transThres : 0.01
+            })
+            this.tfClient2.subscribe('tool0', (tf) => {
+                console.log(tf.translation.x)
+                this.tf_aruco.x = tf.translation.x
+                this.tf_aruco.y = tf.translation.y;
+                this.tf_aruco.z = tf.translation.z;
+            })
             // Setup the URDF client.
             this.urdfClient = new ROS3D.UrdfClient({
                 ros: this.ros,
@@ -155,27 +156,27 @@ var app = new Vue({
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient,
+                tfClient : this.tfClient2,
                 rootObject : this.viewer3d.scene,
             });
 
-            // var tfAxes2 = new ROS3D.TFAxes({
-            //     frame_id: "wrist_2_link",
-            //     shaftRadius : 0.02,
-            //     headRaidus : 0.07,
-            //     headLength : 0.2,
-            //     scale : 0.1,
-            //     tfClient : this.tfClient,
-            //     rootObject : this.viewer3d.scene,
-            // });
-
-            var tfAxes3 = new ROS3D.TFAxes({
-                frame_id: "aruco_frame",
+            var tfAxes2 = new ROS3D.TFAxes({
+                frame_id: "wrist_2_link",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient,
+                tfClient : this.tfClient2,
+                rootObject : this.viewer3d.scene,
+            });
+
+            var tfAxes3 = new ROS3D.TFAxes({
+                frame_id: "aruco_link",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient2,
                 rootObject : this.viewer3d.scene,
             });
 
