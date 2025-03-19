@@ -43,6 +43,8 @@ var app = new Vue({
             })
             this.ros.on('error', (error) => {
                 this.logs.unshift((new Date()).toTimeString() + ` - Error: ${error}`)
+                tfClient.updateGoal()//FIXME undertesting
+                tfClient2.updateGoal()
             })
             this.ros.on('close', () => {
                 this.logs.unshift((new Date()).toTimeString() + ' - Disconnected!')
@@ -118,19 +120,21 @@ var app = new Vue({
             // Setup a client to listen to TFs.
             this.tfClient = new ROSLIB.TFClient({
                 ros: this.ros,
-                rate : 1.0,
-                angularThres: 0.01,
-                transThres: 0.01,
+                rate : 10.0,
+                updateDelay : 10,
+                republisherUpdateRequested : true, //Fixme try this
+                angularThres: 0.001,
+                transThres: 0.001,
             })
             this.tfClient2 = new ROSLIB.TFClient({
                 ros : this.ros,
                 fixedFrame : 'base_link',
-                rate : 1.0,
-                updateDelay : 1,
-                angularThres : 0.01,
-                transThres : 0.01
+                rate : 10.0,
+                updateDelay : 10,
+                angularThres : 0.001,
+                transThres : 0.001
             })
-            this.tfClient2.subscribe('tool0', (tf) => {
+            this.tfClient2.subscribe('aruco_frame', (tf) => {
                 console.log(tf.translation.x)
                 this.tf_aruco.x = tf.translation.x
                 this.tf_aruco.y = tf.translation.y;
@@ -156,27 +160,28 @@ var app = new Vue({
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient2,
+                tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });
 
             var tfAxes2 = new ROS3D.TFAxes({
-                frame_id: "wrist_2_link",
+                frame_id: "D415_color_optical_frame",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
-                scale : 0.1,
-                tfClient : this.tfClient2,
+                scale : 0.2,
+                lineType : 'dashed',
+                tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });
 
             var tfAxes3 = new ROS3D.TFAxes({
-                frame_id: "aruco_link",
+                frame_id: "aruco_frame",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient2,
+                tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });
 
