@@ -77,7 +77,7 @@ class ArucoToCamlinkTF(Node):
 
         self.group = MutuallyExclusiveCallbackGroup()
         self.Timer = self.create_timer(
-            0.1, self.timer_callback, callback_group=self.group
+            0.05, self.timer_callback, callback_group=self.group
         )
 
 
@@ -116,46 +116,52 @@ class ArucoToCamlinkTF(Node):
 
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = self.transform_translation_x
-            self.transform_stamped.transform.translation.y = self.transform_translation_y
-            self.transform_stamped.transform.translation.z = self.transform_translation_z
+            try:
+                self.transform_stamped.transform.translation.x = self.transform_translation_x
+                self.transform_stamped.transform.translation.y = self.transform_translation_y
+                self.transform_stamped.transform.translation.z = self.transform_translation_z
 
-            # Set the rotation of the TF message.
-            # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
+                # Set the rotation of the TF message.
+                # The rotation of the TF message is set to the current orientation of the robot.
+                self.transform_stamped.transform.rotation.x = self.transform_rotation_x
+                self.transform_stamped.transform.rotation.y = self.transform_rotation_y
+                self.transform_stamped.transform.rotation.z = self.transform_rotation_z
+                self.transform_stamped.transform.rotation.w = self.transform_rotation_w
+                # Send (broadcast) the TF message.
+                self.publisher_to_tf2_pub.publish(self.transform_stamped)
+                self.get_logger().info("publishing tf from camera to aruco_frame")
+            except AttributeError:
+                pass
 
-            # Send (broadcast) the TF message.
-            self.publisher_to_tf2_pub.publish(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
+
         else:
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = 0.0
-            self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0      
-            r = R.from_matrix([[1, 0, 0],
-                   [0, 1, 0],
-                   [0, 0, 1]])          
-            quat = r.as_quat()   
+            try:
+                self.transform_stamped.transform.translation.x = 0.0
+                self.transform_stamped.transform.translation.y = 0.0
+                self.transform_stamped.transform.translation.z = 0.0      
+                r = R.from_matrix([[1, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 1]])          
+                quat = r.as_quat()   
 
-            # Quaternion format     
-            self.transform_rotation_x = quat[0] 
-            self.transform_rotation_y = quat[1] 
-            self.transform_rotation_z = quat[2] 
-            self.transform_rotation_w = quat[3] 
+                # Quaternion format     
+                self.transform_rotation_x = quat[0] 
+                self.transform_rotation_y = quat[1] 
+                self.transform_rotation_z = quat[2] 
+                self.transform_rotation_w = quat[3] 
 
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
-            
-            self.publisher_to_tf2_pub.publish(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
+                self.transform_stamped.transform.rotation.x = self.transform_rotation_x
+                self.transform_stamped.transform.rotation.y = self.transform_rotation_y
+                self.transform_stamped.transform.rotation.z = self.transform_rotation_z
+                self.transform_stamped.transform.rotation.w = self.transform_rotation_w
+                self.publisher_to_tf2_pub.publish(self.transform_stamped)
+                self.get_logger().info("publishing tf from camera to aruco_frame")
+            except AttributeError:
+                pass
         
         # Euler angle format in radians
         try:

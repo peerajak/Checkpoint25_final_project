@@ -145,7 +145,13 @@ private:
     msg_base_camera.transform.rotation.y = q_base_camera.getY();
     msg_base_camera.transform.rotation.z = q_base_camera.getZ();
     msg_base_camera.transform.rotation.w = q_base_camera.getW();
-    tf_broadcaster_->sendTransform(msg_base_camera);
+    // FIXME Should I do this? Meaning, if non detect, remove the TF
+    // if !(p_base_camera.getX() ==  transform_base_to_aruco.inverse().translation.x && 
+    //     p_base_camera.getY() ==  transform_base_to_aruco.inverse().translation.y &&
+    //     p_base_camera.getZ() ==  transform_base_to_aruco.inverse().translation.z){
+    //         tf_broadcaster_->sendTransform(msg_base_camera);
+    //     }
+    tf_broadcaster_->sendTransform(msg_base_camera);    
 #endif
     std::string fromFrameRel2 =
         "D415_color_optical_frame";          // from parent to child

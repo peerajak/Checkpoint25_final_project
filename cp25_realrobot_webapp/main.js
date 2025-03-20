@@ -17,10 +17,14 @@ var app = new Vue({
         tfClient: null,
         tfClient2: null,
         urdfClient: null,
-        tf_aruco: {
+        tf_camera: {
             x: 0,
             y: 0,
-            z: 0
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
         },
     },
     // helper methods to connect to ROS
@@ -134,11 +138,15 @@ var app = new Vue({
                 angularThres : 0.001,
                 transThres : 0.001
             })
-            this.tfClient2.subscribe('aruco_frame', (tf) => {
+            this.tfClient2.subscribe('D415_color_optical_frame', (tf) => {
                 console.log(tf.translation.x)
-                this.tf_aruco.x = tf.translation.x
-                this.tf_aruco.y = tf.translation.y;
-                this.tf_aruco.z = tf.translation.z;
+                this.tf_camera.x = tf.translation.x;
+                this.tf_camera.y = tf.translation.y;
+                this.tf_camera.z = tf.translation.z;
+                this.tf_camera.ax = tf.rotation.x
+                this.tf_camera.ay = tf.rotation.y;
+                this.tf_camera.az = tf.rotation.z;
+                this.tf_camera.aw = tf.rotation.w;
             })
             // Setup the URDF client.
             this.urdfClient = new ROS3D.UrdfClient({
