@@ -59,17 +59,10 @@ class ArucoToCamlinkTF(Node):
         super().__init__('aruco_to_camlink_tf_node')
         self.is_marker_detected = False
         self.is_camera_info_set = False
-        self._aruco_frame = aruco_frame 
- 
-        
-        # Create a new `TransformStamped` object.
-        # A `TransformStamped` object is a ROS message that represents a transformation between two frames.
-        self.transform_stamped = tf2_geometry_msgs.TransformStamped()
+        self._aruco_frame = aruco_frame        
 
-        # This line sets the `child_frame_id` attribute of the `TransformStamped` object.
-        # The `child_frame_id` attribute specifies the frame that is being transformed to.
-        # In this case, the robot's base frame is being transformed to the `world` frame.
-        self.transform_stamped.child_frame_id = self._aruco_frame
+
+
 
         # For the TF listener
         self.tf_buffer = Buffer()
@@ -103,7 +96,7 @@ class ArucoToCamlinkTF(Node):
         """
         This function broadcasts a new TF message to the TF network.
         """
-        self.transform_stamped.header.frame_id = "D415_color_optical_frame"
+        
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.
@@ -112,6 +105,9 @@ class ArucoToCamlinkTF(Node):
 
             # Set the timestamp of the TF message.
             # The timestamp of the TF message is set to the current time.
+            self.transform_stamped = tf2_geometry_msgs.TransformStamped()
+            self.transform_stamped.header.frame_id = "D415_color_optical_frame" #if marker detected, header frame is D415
+            self.transform_stamped.child_frame_id = self._aruco_frame
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
             # Set the translation of the TF message.
@@ -135,6 +131,9 @@ class ArucoToCamlinkTF(Node):
 
 
         else:
+            self.transform_stamped = tf2_geometry_msgs.TransformStamped()
+            self.transform_stamped.header.frame_id = "base_link" #if marker not detected, header frame is base_link
+            self.transform_stamped.child_frame_id = "D415_color_optical_frame"
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
             # Set the translation of the TF message.
