@@ -17,7 +17,7 @@ and
 ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
 to create fake_camera_frame from aruco_frame
 */
-//#define CAM_TO_ARUCO
+#define CAM_TO_ARUCO
 
 using namespace std::chrono_literals;
 
@@ -107,45 +107,63 @@ private:
     tf2::Quaternion q_camera_aruco =
         transform_arucoFrame_camera.inverse().getRotation();
 
-    tf2::Vector3 p_camera_base = transform_aruco_to_base * p_camera_aruco;
-    tf2::Quaternion q_camera_base = transform_aruco_to_base * q_camera_aruco;
+    tf2::Vector3 p_base_camera = transform_aruco_to_base * p_camera_aruco;
+    tf2::Quaternion q_base_camera = transform_aruco_to_base * q_camera_aruco;
 
     /*------------ broadcast TF----*/
 #ifdef CAM_TO_ARUCO
 
-    std::string fromFrameRel0 = "D415_link_answer"; // from parent to child
-    std::string toFrameRel0 = "aruco_frame";        // child
-    geometry_msgs::msg::TransformStamped msg_arucoFrame_camera;
+    // std::string fromFrameRel0 = "D415_link_answer"; // from parent to child
+    // std::string toFrameRel0 = "aruco_frame";        // child
+    // geometry_msgs::msg::TransformStamped msg_arucoFrame_camera;
+    // rclcpp::Time now0 = this->get_clock()->now();
+    // msg_arucoFrame_camera.header.stamp = now0;
+    // msg_arucoFrame_camera.header.frame_id = fromFrameRel0;
+    // msg_arucoFrame_camera.child_frame_id = toFrameRel0;
+    // msg_arucoFrame_camera.transform.translation.x =
+    // p_arucoFrame_camera.getX(); msg_arucoFrame_camera.transform.translation.y
+    // = p_arucoFrame_camera.getY();
+    // msg_arucoFrame_camera.transform.translation.z =
+    // p_arucoFrame_camera.getZ(); msg_arucoFrame_camera.transform.rotation.x =
+    // q_arucoFrame_camera.getX(); msg_arucoFrame_camera.transform.rotation.y =
+    // q_arucoFrame_camera.getY(); msg_arucoFrame_camera.transform.rotation.z =
+    // q_arucoFrame_camera.getZ(); msg_arucoFrame_camera.transform.rotation.w =
+    // q_arucoFrame_camera.getW();
+    // tf_broadcaster_->sendTransform(msg_arucoFrame_camera);
+
+    std::string fromFrameRel0 = "aruco_link"; // from parent to child
+    std::string toFrameRel0 = "D415_color_optical_frame"; // child
+    geometry_msgs::msg::TransformStamped msg_camera_aruco;
     rclcpp::Time now0 = this->get_clock()->now();
-    msg_arucoFrame_camera.header.stamp = now0;
-    msg_arucoFrame_camera.header.frame_id = fromFrameRel0;
-    msg_arucoFrame_camera.child_frame_id = toFrameRel0;
-    msg_arucoFrame_camera.transform.translation.x = p_arucoFrame_camera.getX();
-    msg_arucoFrame_camera.transform.translation.y = p_arucoFrame_camera.getY();
-    msg_arucoFrame_camera.transform.translation.z = p_arucoFrame_camera.getZ();
-    msg_arucoFrame_camera.transform.rotation.x = q_arucoFrame_camera.getX();
-    msg_arucoFrame_camera.transform.rotation.y = q_arucoFrame_camera.getY();
-    msg_arucoFrame_camera.transform.rotation.z = q_arucoFrame_camera.getZ();
-    msg_arucoFrame_camera.transform.rotation.w = q_arucoFrame_camera.getW();
-    tf_broadcaster_->sendTransform(msg_arucoFrame_camera);
+    msg_camera_aruco.header.stamp = now0;
+    msg_camera_aruco.header.frame_id = fromFrameRel0;
+    msg_camera_aruco.child_frame_id = toFrameRel0;
+    msg_camera_aruco.transform.translation.x = -p_camera_aruco.getX();
+    msg_camera_aruco.transform.translation.y = -p_camera_aruco.getY();
+    msg_camera_aruco.transform.translation.z = p_camera_aruco.getZ();
+    msg_camera_aruco.transform.rotation.x = q_camera_aruco.getX();
+    msg_camera_aruco.transform.rotation.y = q_camera_aruco.getY();
+    msg_camera_aruco.transform.rotation.z = q_camera_aruco.getZ();
+    msg_camera_aruco.transform.rotation.w = q_camera_aruco.getW();
+    tf_broadcaster_->sendTransform(msg_camera_aruco);
 #else
     if (msg->header.frame_id ==
         "D415_color_optical_frame") {          // meaning aruco marker detected
       std::string fromFrameRel1 = "base_link"; // from parent to child
       std::string toFrameRel1 = "D415_color_optical_frame"; // child
-      geometry_msgs::msg::TransformStamped msg_camera_base;
+      geometry_msgs::msg::TransformStamped msg_base_camera;
       rclcpp::Time now1 = this->get_clock()->now();
-      msg_camera_base.header.stamp = now1;
-      msg_camera_base.header.frame_id = fromFrameRel1;
-      msg_camera_base.child_frame_id = toFrameRel1;
-      msg_camera_base.transform.translation.x = p_camera_base.getX();
-      msg_camera_base.transform.translation.y = p_camera_base.getY();
-      msg_camera_base.transform.translation.z = p_camera_base.getZ();
-      msg_camera_base.transform.rotation.x = q_camera_base.getX();
-      msg_camera_base.transform.rotation.y = q_camera_base.getY();
-      msg_camera_base.transform.rotation.z = q_camera_base.getZ();
-      msg_camera_base.transform.rotation.w = q_camera_base.getW();
-      tf_broadcaster_->sendTransform(msg_camera_base);
+      msg_base_camera.header.stamp = now1;
+      msg_base_camera.header.frame_id = fromFrameRel1;
+      msg_base_camera.child_frame_id = toFrameRel1;
+      msg_base_camera.transform.translation.x = p_base_camera.getX();
+      msg_base_camera.transform.translation.y = p_base_camera.getY();
+      msg_base_camera.transform.translation.z = p_base_camera.getZ();
+      msg_base_camera.transform.rotation.x = q_base_camera.getX();
+      msg_base_camera.transform.rotation.y = q_base_camera.getY();
+      msg_base_camera.transform.rotation.z = q_base_camera.getZ();
+      msg_base_camera.transform.rotation.w = q_base_camera.getW();
+      tf_broadcaster_->sendTransform(msg_base_camera);
     } else {
       std::string fromFrameRel1 = "base_link"; // from parent to child
       std::string toFrameRel1 = "D415_color_optical_frame"; // child

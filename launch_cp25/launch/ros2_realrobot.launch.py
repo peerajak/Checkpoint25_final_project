@@ -64,8 +64,12 @@ def generate_launch_description():
     D415_link_answer_TF = Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            arguments = ['-0.415', '-0.375', '0.31', '1.57', '1.197', '0', 'base_link', 'D415_link_answer'] #Answer
-            #arguments = ['-0.415', '-0.375', '0.31', '0.03', '-0.989', '-0.094','0.11', 'base_link', 'D415_link_answer'] #wrong delete this
+            arguments = ['-0.415', '-0.375', '0.31', '1.57', '1.197', '0', 'base_link', 'D415_link_answer'] #Answer (xyz,ypr)
+            #arguments = ['-0.415', '-0.375', '0.31', '1.57', '2.7678', '0', 'base_link', 'D415_link_answer'] 
+            #arguments = ['-0.415', '-0.375', '0.31', '1.57', '2.7678', '0', 'base_link', 'D415_link_answer'] 
+            #arguments = ['-0.415', '-0.375', '0.31', '0.03', '-0.989', '-0.094', '0.11', 'base_link', 'D415_link_answer'] 
+            #arguments = ['-0.415', '-0.375', '0.31', '-0.181', '-2.927', '-0.080', 'base_link', 'D415_link_answer'] 
+            #arguments = ['-0.415', '-0.375', '0.31', '2.96', '0.6889', '3.0615', 'base_link', 'D415_link_answer'] 
     )
 
     #rviz2
