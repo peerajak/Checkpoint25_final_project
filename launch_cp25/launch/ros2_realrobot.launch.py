@@ -59,6 +59,15 @@ def generate_launch_description():
         ],
     )
 
+    # Answer D415 TF position
+
+    D415_link_answer_TF = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['-0.415', '-0.375', '0.31', '1.57', '1.197', '0', 'base_link', 'D415_link_answer'] #Answer
+            #arguments = ['-0.415', '-0.375', '0.31', '0.03', '-0.989', '-0.094','0.11', 'base_link', 'D415_link_answer'] #wrong delete this
+    )
+
     #rviz2
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare("launch_cp25"), "rviz", "cp25_realrobot_rviz.rviz"]
@@ -78,6 +87,7 @@ def generate_launch_description():
         aruco_tf_pub_tf2_pub,
         planning_sim_scene_service_launch,
         moveit_realrobot_service_launch,
+        D415_link_answer_TF,
         rviz_node 
 
     ])

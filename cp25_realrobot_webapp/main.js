@@ -140,6 +140,7 @@ var app = new Vue({
             })
             this.tfClient2.subscribe('D415_color_optical_frame', (tf) => {
                 console.log(tf.translation.x)
+                const quaternion = new THREE.Quaternion();
                 this.tf_camera.x = tf.translation.x;
                 this.tf_camera.y = tf.translation.y;
                 this.tf_camera.z = tf.translation.z;
