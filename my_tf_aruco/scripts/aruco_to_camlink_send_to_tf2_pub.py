@@ -184,14 +184,15 @@ class ArucoToCamlinkTF(Node):
         # mtx = cv_file.getNode('K').mat()
         # dst = cv_file.getNode('D').mat()
         # cv_file.release()
-        mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
+        #mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
+        mtx_np = np.array([ [456.16, 0.000000, 312.753105],[0.000000, 456.16, 214.923553], [0., 0., 1.]], np.float32)
         mtx = mtx_np
         #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
         dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
         prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
                            [0.000000, 764.304443, 215.883204, 0.000000],\
                            [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
-        dst = dst_np * 2
+        dst = dst_np 
         # Load the ArUco dictionary
         # print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
@@ -255,10 +256,10 @@ class ArucoToCamlinkTF(Node):
                 realign_corners[3] = corners[i][:,3,:].flatten()
                 # print(realign_corners)  
                 image_points = realign_corners.reshape(4,1,2)
-                ## print(image_points)
+                ##print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)# intentionally make it wrong to solve real robot
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params) # correct one
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
@@ -285,8 +286,8 @@ class ArucoToCamlinkTF(Node):
                                                             self.transform_rotation_y, 
                                                             self.transform_rotation_z, 
                                                             self.transform_rotation_w)
-                self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
-                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
+                self.get_logger().info("marker id {} detected at xy=({:.3f},{:.3f}) xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
+                image_points[0,0,0], image_points[0,0,1],self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
                  self.transform_stamped.header.frame_id))
 
                 # roll_x = math.degrees(roll_x)
@@ -313,10 +314,10 @@ class ArucoToCamlinkTF(Node):
                 #print("translation matrix",[transform_translation_x ,transform_translation_y,transform_translation_z])
                 #print(obj_points[i])
 
-                # Draw the axes on the marker
-                #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
-                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
+                # Draw the axes on the marker                
+                detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx ,dst, rvecs, tvecs, 0.05)# Intentionally make it wrong, to solve the real robot
+                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)#Correct one 
+                #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
                 
         else:
             self.is_marker_detected = False

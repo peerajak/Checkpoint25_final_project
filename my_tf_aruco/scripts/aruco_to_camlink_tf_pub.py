@@ -348,8 +348,8 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 ## print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
@@ -406,8 +406,8 @@ class ArucoToCamlinkTF(Node):
 
                 # Draw the axes on the marker
                 #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
-                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+                #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
                 
         else:
             self.is_marker_detected = False

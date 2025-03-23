@@ -32,7 +32,7 @@ from numpy.linalg import inv
 class ArucoToCamlinkTF(Node):
     # Dictionary that was used to generate the ArUco marker
     aruco_dictionary_name = "DICT_4X4_50"
-    aruco_marker_side_length = 0.045 
+    aruco_marker_side_length = 0.045 #correct value is 0.045 
 
     # The different ArUco dictionaries built into the OpenCV library. 
     ARUCO_DICT = {
@@ -89,14 +89,113 @@ class ArucoToCamlinkTF(Node):
     def timer_callback(self):
         self.get_logger().info("timer_callback")
         self.broadcast_new_tf_to_camera()
+        #self.broadcast_new_tf_to_baselink()
 
-        
+
+    def broadcast_new_tf_to_baselink(self):
+        self.transform_stamped = tf2_geometry_msgs.TransformStamped()
+        try:
+            now = rclpy.time.Time()
+            dest_frame = "D415_color_optical_frame"
+            origin_frame = "base_link"
+            transform_baselink_camera = self.tf_buffer.lookup_transform(
+                origin_frame,
+                dest_frame,
+                now)
+        except TransformException as ex:
+            self.get_logger().error(
+                f'Could not transform {origin_frame} to {dest_frame}: {ex}')
+            return None        
+        if(self.is_marker_detected):
+            try:
+                aruco_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
+                aruco_wrt_camera_pose.pose.position.x = self.transform_translation_x
+                aruco_wrt_camera_pose.pose.position.y = self.transform_translation_y
+                aruco_wrt_camera_pose.pose.position.z = self.transform_translation_z
+                
+                aruco_wrt_camera_pose.pose.orientation.x = self.transform_rotation_x
+                aruco_wrt_camera_pose.pose.orientation.y = self.transform_rotation_y
+                aruco_wrt_camera_pose.pose.orientation.z = self.transform_rotation_z     
+                aruco_wrt_camera_pose.pose.orientation.w = self.transform_rotation_w          
+                    
+                transform_baselink_aruco_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(aruco_wrt_camera_pose,transform_baselink_camera)   
+                self.transform_stamped.header.frame_id = "base_link" #if marker detected, header frame is D415
+                self.transform_stamped.child_frame_id = self._aruco_frame
+                self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+
+                # Set the translation of the TF message.
+                # The translation of the TF message is set to the current position of the robot.
+                self.transform_stamped.transform.translation.x = transform_baselink_aruco_pose_stamped.pose.position.x
+                self.transform_stamped.transform.translation.y = transform_baselink_aruco_pose_stamped.pose.position.y
+                self.transform_stamped.transform.translation.z = transform_baselink_aruco_pose_stamped.pose.position.z
+
+                # Set the rotation of the TF message.
+                # The rotation of the TF message is set to the current orientation of the robot.
+                self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
+                self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
+                self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
+                self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
+
+                # Send (broadcast) the TF message.
+                self.publisher_to_tf2_pub.publish(self.transform_stamped)
+                self.get_logger().info("publishing tf from base_link to aruco_frame")
+            except AttributeError:
+                pass
+        else:
+            try:
+                aruco_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
+                aruco_wrt_camera_pose.pose.position.x = 0.0
+                aruco_wrt_camera_pose.pose.position.y = 0.0
+                aruco_wrt_camera_pose.pose.position.z = 0.0
+                r = R.from_matrix([[1, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 1]])          
+                quat = r.as_quat() 
+                aruco_wrt_camera_pose.pose.orientation.x = quat[0]
+                aruco_wrt_camera_pose.pose.orientation.y = quat[1]
+                aruco_wrt_camera_pose.pose.orientation.z = quat[2]   
+                aruco_wrt_camera_pose.pose.orientation.w = quat[3]      
+                    
+                transform_baselink_aruco_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(aruco_wrt_camera_pose,transform_baselink_camera)   
+                self.transform_stamped.header.frame_id = "base_link" #if marker not detected, header frame is base_link
+                self.transform_stamped.child_frame_id = self._aruco_frame
+                self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+
+                # Set the translation of the TF message.
+                # The translation of the TF message is set to the current position of the robot.
+                self.transform_stamped.transform.translation.x = transform_baselink_aruco_pose_stamped.pose.position.x
+                self.transform_stamped.transform.translation.y = transform_baselink_aruco_pose_stamped.pose.position.y
+                self.transform_stamped.transform.translation.z = transform_baselink_aruco_pose_stamped.pose.position.z
+
+                # Set the rotation of the TF message.
+                # The rotation of the TF message is set to the current orientation of the robot.
+                self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
+                self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
+                self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
+                self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
+
+                # Send (broadcast) the TF message.
+                self.publisher_to_tf2_pub.publish(self.transform_stamped)
+                self.get_logger().info("publishing identity tf from base_link to aruco_frame")
+            except AttributeError:
+                pass
+            
+        # Euler angle format in radians
+        try:
+            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
+                                                                self.transform_rotation_y, 
+                                                                self.transform_rotation_z, 
+                                                                self.transform_rotation_w)        
+            self.get_logger().info("TF base_link->aruco_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
+        except AttributeError:
+            pass      
 
     def broadcast_new_tf_to_camera(self):
         """
         This function broadcasts a new TF message to the TF network.
         """
-        
+        self.transform_stamped = tf2_geometry_msgs.TransformStamped()
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.
@@ -104,8 +203,7 @@ class ArucoToCamlinkTF(Node):
             #orientation = self.cam_bot_odom.pose.pose.orientation
 
             # Set the timestamp of the TF message.
-            # The timestamp of the TF message is set to the current time.
-            self.transform_stamped = tf2_geometry_msgs.TransformStamped()
+            # The timestamp of the TF message is set to the current time.            
             self.transform_stamped.header.frame_id = "D415_color_optical_frame" #if marker detected, header frame is D415
             self.transform_stamped.child_frame_id = self._aruco_frame
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
@@ -130,10 +228,9 @@ class ArucoToCamlinkTF(Node):
                 pass
 
 
-        else:
-            self.transform_stamped = tf2_geometry_msgs.TransformStamped()
+        else:            
             self.transform_stamped.header.frame_id = "base_link" #if marker not detected, header frame is base_link
-            self.transform_stamped.child_frame_id = "D415_color_optical_frame"
+            self.transform_stamped.child_frame_id = self._aruco_frame
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
             # Set the translation of the TF message.
@@ -183,19 +280,17 @@ class ArucoToCamlinkTF(Node):
         if not self.is_camera_info_set:
             return None
         
-        # Load the camera parameters from the saved file
-        # cv_file = cv2.FileStorage( camera_calibration_parameters_filename, cv2.FILE_STORAGE_READ) 
-        # mtx = cv_file.getNode('K').mat()
-        # dst = cv_file.getNode('D').mat()
-        # cv_file.release()
-        mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
-        mtx = mtx_np
+        mtx_real= np.array([ [306.80584716796875, 0.000000,214.4418487548828],[0.000000, 306.80584716796875, 124.9103012084961], [0., 0., 1.]], np.float32)
+        mtx_test= np.array([ [306.80584716796875*0.85, 0.000000,214.4418487548828],[0.000000, 306.80584716796875*0.85, 124.9103012084961], [0., 0., 1.]], np.float32)
+        mtx = mtx_test
         #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
         dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
         prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
                            [0.000000, 764.304443, 215.883204, 0.000000],\
                            [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
-        dst = dst_np * 2
+        #dst = dst_np 
+        dst = np.zeros((5,), np.float32)  
+
         # Load the ArUco dictionary
         # print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
@@ -269,8 +364,9 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 ## print(image_points)
             
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                #flag, rvecs, tvecs = cv2.solveP3P(object_points, image_points, self.projection_matrix_k,self.distortion_params,cv2.SOLVEPNP_P3P)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
@@ -326,9 +422,9 @@ class ArucoToCamlinkTF(Node):
                 #print(obj_points[i])
 
                 # Draw the axes on the marker
-                #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
-                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
+                detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx,dst, rvecs, tvecs, 0.05)
+                #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+                #detectingImage = cv2.drawFrameAxes(detectingImage, mtx, dst, rvecs, tvecs, 0.05)  
                 
         else:
             self.is_marker_detected = False

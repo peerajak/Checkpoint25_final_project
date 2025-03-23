@@ -138,7 +138,7 @@ var app = new Vue({
                 angularThres : 0.001,
                 transThres : 0.001
             })
-            this.tfClient2.subscribe('D415_color_optical_frame', (tf) => {
+            this.tfClient2.subscribe('aruco_frame', (tf) => {
                 console.log(tf.translation.x)
                 const quaternion = new THREE.Quaternion();
                 this.tf_camera.x = tf.translation.x;

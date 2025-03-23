@@ -30,9 +30,13 @@ ament_target_dependencies(tf2_pub_node rclcpp geometry_msgs tf2 tf2_ros)
 add_executable(tf2_realrobot_pub_node src/tf2_realrobot_pub.cpp)
 ament_target_dependencies(tf2_realrobot_pub_node rclcpp geometry_msgs tf2 tf2_ros)
 
+add_executable(tf2_realrobot_yaw180_aruco_pub_node src/tf2_realrobot_yaw180_aruco_pub.cpp)
+ament_target_dependencies(tf2_realrobot_yaw180_aruco_pub_node rclcpp geometry_msgs tf2 tf2_ros)
+
 install(TARGETS
    tf2_pub_node
    tf2_realrobot_pub_node
+   tf2_realrobot_yaw180_aruco_pub_node
    DESTINATION lib/${PROJECT_NAME}
 )
 
