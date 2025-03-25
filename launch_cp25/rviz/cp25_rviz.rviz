@@ -114,8 +114,6 @@ Visualization Manager:
           Value: true
         base_link_inertia:
           Value: false
-        fake_camera_frame_from_base:
-          Value: true
         flange:
           Value: false
         forearm_link:
@@ -123,7 +121,7 @@ Visualization Manager:
         ft_frame:
           Value: false
         rg2_gripper_aruco_link:
-          Value: false
+          Value: true
         rg2_gripper_base_link:
           Value: false
         rg2_gripper_left_finger:
@@ -198,8 +196,6 @@ Visualization Manager:
                                     {}
                           ft_frame:
                             {}
-            fake_camera_frame_from_base:
-              {}
             wrist_rgbd_camera_link:
               wrist_rgbd_camera_depth_frame:
                 wrist_rgbd_camera_depth_optical_frame:
@@ -428,10 +424,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 0.06979631632566452
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.9735838174819946
+      Yaw: 2.473583698272705
     Saved: ~
 Window Geometry:
   Displays:

@@ -28,11 +28,11 @@ def generate_launch_description():
     moveit_rviz_launch = generate_moveit_rviz_launch(moveit_config) 
 
     # my_tf_aruco
-    aruco_tf_pub = Node(
-        package="my_tf_aruco",
-        executable="aruco_realrobot_to_camlink_tf_pub.py",
-        output="screen",
-    )
+    # aruco_tf_pub = Node(
+    #     package="my_tf_aruco",
+    #     executable="aruco_realrobot_to_camlink_tf_pub.py",
+    #     output="screen",
+    # )
     aruco_tf_pub_send_to_tf2_pub = Node(
         package="my_tf_aruco",
         executable="aruco_realrobot_to_camlink_send_to_tf2_pub.py",
@@ -43,11 +43,7 @@ def generate_launch_description():
         executable="tf2_realrobot_pub_node",
         output="screen",
     )
-    aruco_yaw180_tf_pub_tf2_pub = Node(
-        package="my_tf_aruco",
-        executable="tf2_realrobot_yaw180_aruco_pub_node",
-        output="screen",
-    )
+
 
 
     # moveit_services
@@ -75,11 +71,7 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments = ['-0.415', '-0.375', '0.31', '1.57', '1.197', '0', 'base_link', 'D415_link'] #Answer (xyz,ypr)
-            #arguments = ['-0.415', '-0.375', '0.31', '1.57', '2.7678', '0', 'base_link', 'D415_link_answer'] 
-            #arguments = ['-0.415', '-0.375', '0.31', '1.57', '2.7678', '0', 'base_link', 'D415_link_answer'] 
-            #arguments = ['-0.415', '-0.375', '0.31', '0.03', '-0.989', '-0.094', '0.11', 'base_link', 'D415_link_answer'] 
-            #arguments = ['-0.415', '-0.375', '0.31', '-0.181', '-2.927', '-0.080', 'base_link', 'D415_link_answer'] 
-            #arguments = ['-0.415', '-0.375', '0.31', '2.96', '0.6889', '3.0615', 'base_link', 'D415_link_answer'] 
+
     )
 
     #rviz2
@@ -99,8 +91,7 @@ def generate_launch_description():
         moveit_rviz_launch,
         #aruco_tf_pub,
         aruco_tf_pub_send_to_tf2_pub,
-        #aruco_tf_pub_tf2_pub,
-        aruco_yaw180_tf_pub_tf2_pub,
+        aruco_tf_pub_tf2_pub,
         planning_sim_scene_service_launch,
         moveit_realrobot_service_launch,
         D415_link_answer_TF,

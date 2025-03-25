@@ -168,7 +168,7 @@ var app = new Vue({
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
-                scale : 0.1,
+                scale : 0.3,
                 tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });

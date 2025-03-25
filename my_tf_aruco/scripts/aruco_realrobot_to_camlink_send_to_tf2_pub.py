@@ -58,7 +58,7 @@ class ArucoToCamlinkTF(Node):
     def __init__(self, aruco_frame="aruco_frame"):
         super().__init__('aruco_to_camlink_tf_node')
         self.is_marker_detected = False
-        self.is_camera_info_set = False
+        self.is_camera_info_set = False 
         self._aruco_frame = aruco_frame        
 
 
@@ -88,8 +88,8 @@ class ArucoToCamlinkTF(Node):
 
     def timer_callback(self):
         self.get_logger().info("timer_callback")
-        self.broadcast_new_tf_to_camera()
-        #self.broadcast_new_tf_to_baselink()
+        #self.broadcast_new_tf_to_camera()
+        self.broadcast_new_tf_to_baselink()
 
 
     def broadcast_new_tf_to_baselink(self):
@@ -163,16 +163,16 @@ class ArucoToCamlinkTF(Node):
 
                 # Set the translation of the TF message.
                 # The translation of the TF message is set to the current position of the robot.
-                self.transform_stamped.transform.translation.x = transform_baselink_aruco_pose_stamped.pose.position.x
-                self.transform_stamped.transform.translation.y = transform_baselink_aruco_pose_stamped.pose.position.y
-                self.transform_stamped.transform.translation.z = transform_baselink_aruco_pose_stamped.pose.position.z
+                self.transform_stamped.transform.translation.x = aruco_wrt_camera_pose.pose.position.x 
+                self.transform_stamped.transform.translation.y = aruco_wrt_camera_pose.pose.position.y
+                self.transform_stamped.transform.translation.z = aruco_wrt_camera_pose.pose.position.z 
 
                 # Set the rotation of the TF message.
                 # The rotation of the TF message is set to the current orientation of the robot.
-                self.transform_stamped.transform.rotation.x = transform_baselink_aruco_pose_stamped.pose.orientation.x
-                self.transform_stamped.transform.rotation.y = transform_baselink_aruco_pose_stamped.pose.orientation.y
-                self.transform_stamped.transform.rotation.z = transform_baselink_aruco_pose_stamped.pose.orientation.z
-                self.transform_stamped.transform.rotation.w = transform_baselink_aruco_pose_stamped.pose.orientation.w
+                self.transform_stamped.transform.rotation.x = aruco_wrt_camera_pose.pose.orientation.x 
+                self.transform_stamped.transform.rotation.y = aruco_wrt_camera_pose.pose.orientation.y
+                self.transform_stamped.transform.rotation.z = aruco_wrt_camera_pose.pose.orientation.z
+                self.transform_stamped.transform.rotation.w = aruco_wrt_camera_pose.pose.orientation.w
 
                 # Send (broadcast) the TF message.
                 self.publisher_to_tf2_pub.publish(self.transform_stamped)
@@ -281,10 +281,10 @@ class ArucoToCamlinkTF(Node):
             return None
         
         mtx_real= np.array([ [306.80584716796875, 0.000000,214.4418487548828],[0.000000, 306.80584716796875, 124.9103012084961], [0., 0., 1.]], np.float32)
-        mtx_test= np.array([ [306.80584716796875*0.85, 0.000000,214.4418487548828],[0.000000, 306.80584716796875*0.85, 124.9103012084961], [0., 0., 1.]], np.float32)
+        mtx_test= np.array([ [306.80584716796875*0.9, 0.000000,214.4418487548828*1.05],[0.000000, 306.80584716796875*0.9, 124.9103012084961*1.25], [0., 0., 1.]], np.float32)
         mtx = mtx_test
-        #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
-        dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
+        dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
+        #dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
         prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
                            [0.000000, 764.304443, 215.883204, 0.000000],\
                            [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
@@ -299,10 +299,10 @@ class ArucoToCamlinkTF(Node):
         # Start the video stream
         # TODO change cap to the topic image (self.cv_image)
 
-        object_points = np.array([(-self.aruco_marker_side_length/2., self.aruco_marker_side_length/2., 0),\
-                                    (self.aruco_marker_side_length/2., self.aruco_marker_side_length/2., 0),\
-                                    (self.aruco_marker_side_length/2., -self.aruco_marker_side_length/2., 0),\
-                                    (-self.aruco_marker_side_length/2., -self.aruco_marker_side_length/2., 0)],\
+        object_points = np.array([  (self.aruco_marker_side_length/2., -self.aruco_marker_side_length/2., 0),\
+                                    (-self.aruco_marker_side_length/2., -self.aruco_marker_side_length/2., 0),\
+                                    (-self.aruco_marker_side_length/2., self.aruco_marker_side_length/2., 0),\
+                                    (self.aruco_marker_side_length/2., self.aruco_marker_side_length/2., 0)],\
                                 dtype=np.float32).reshape(4,1,3)
         if self.cv_image is None:
                 print("failed to capture videos")
@@ -437,6 +437,7 @@ class ArucoToCamlinkTF(Node):
                     
 
     def image_callback(self, msg: CompressedImage) -> None:
+        self.get_logger().info("image_callback")
         try:
             self.cv_image = self.cv_bridge.compressed_imgmsg_to_cv2(msg)
         except Exception as e:
@@ -446,8 +447,8 @@ class ArucoToCamlinkTF(Node):
         (rows,cols,channels) = self.cv_image.shape
 
 
-        #cv2.imshow("Image window", self.cv_image)
-        #cv2.waitKey(3)
+        ##cv2.imshow("Image window", self.cv_image)
+        ##cv2.waitKey(3)
         detectingImage = self.detect_pose_return_tf()
         
         if detectingImage is not None:

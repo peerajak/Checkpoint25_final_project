@@ -60,13 +60,12 @@ private:
     myQuaternion.setRPY(0, 0, -3.14);
     tf2::Vector3 myVector(0, 0, 0);
     tf2::Transform myTransform(myQuaternion, myVector);
-    tf2::Quaternion q_yaw180_aruco_camera =
-       myTransform * q_aruco_camera;
+    tf2::Quaternion q_yaw180_aruco_camera = myTransform * q_aruco_camera;
 
     //------------ broadcast TF
 
-    std::string fromFrameRel = msg->header.frame_id ;  // from parent to child
-    std::string toFrameRel = msg->child_frame_id;// child
+    std::string fromFrameRel = msg->header.frame_id; // from parent to child
+    std::string toFrameRel = msg->child_frame_id;    // child
 
     geometry_msgs::msg::TransformStamped msg_aruco_camera;
     rclcpp::Time now2 = this->get_clock()->now();

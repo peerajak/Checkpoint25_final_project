@@ -5,6 +5,7 @@ from __future__ import print_function
 import sys
 import rclpy
 from rclpy.node import Node
+from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from scipy.spatial.transform import Rotation as R
@@ -41,11 +42,12 @@ class image_converter(Node):
 
   def __init__(self):
     super().__init__('bgr_publisher')
-    self.subscription = self.create_subscription(
-            Image,
-            '/wrist_rgbd_depth_sensor/image_raw',  
-            self.image_callback, 10)
-    self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_bgr', 10)
+
+    self.subscription_image = self.create_subscription(
+                CompressedImage,
+                '/D415/color/image_raw/compressed', 
+                self.image_callback, 10)
+    self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', 10)
     self.cv_bridge = CvBridge()
 
 
@@ -188,12 +190,12 @@ class image_converter(Node):
     return detectingImage
                 
 
-  def image_callback(self, msg: Image) -> None:
+  def image_callback(self, msg: CompressedImage) -> None:
     self.get_logger().info("image_callback")
     try:
-      self.cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        self.cv_image = self.cv_bridge.compressed_imgmsg_to_cv2(msg)
     except Exception as e:
-        self.get_logger().error("Error converting ROS Image to OpenCV format: {0}".format(e))
+        self.get_logger().error("Error converting CompressedImage Image to OpenCV format: {0}".format(e))
         return
 
     (rows,cols,channels) = self.cv_image.shape
@@ -204,10 +206,13 @@ class image_converter(Node):
     #cv2.waitKey(3)
     #detectingImage = self.detect_pose_return_tf()
 
-    try:
-      self.publisher.publish(self.cv_bridge.cv2_to_imgmsg(detectingImage))
-    except Exception as e:
-      print(e)
+    # if detectingImage is not None:
+    #     try:
+    #         image_message_compressed = self.cv_bridge.cv2_to_compressed_imgmsg(detectingImage)
+    #         self.publisher_compressed.publish(image_message_compressed)
+
+    #     except Exception as e:
+    #         print(e)
 
   def euler_from_quaternion(self, x, y, z, w):
     """
