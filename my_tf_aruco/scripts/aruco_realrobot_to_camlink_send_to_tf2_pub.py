@@ -14,7 +14,7 @@ from tf2_ros.transform_listener import TransformListener
 import geometry_msgs
 import tf2_geometry_msgs 
 from nav_msgs.msg import Odometry
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 import cv2 # Import the OpenCV library
 import numpy as np # Import Numpy library
@@ -58,7 +58,7 @@ class ArucoToCamlinkTF(Node):
     def __init__(self, aruco_frame="aruco_frame"):
         super().__init__('aruco_to_camlink_tf_node')
         self.is_marker_detected = False
-        self.is_camera_info_set = False 
+        self.is_camera_info_set = False
         self._aruco_frame = aruco_frame        
 
 
@@ -68,19 +68,23 @@ class ArucoToCamlinkTF(Node):
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        self.group = MutuallyExclusiveCallbackGroup()
+        self.group_timer = MutuallyExclusiveCallbackGroup()
         self.Timer = self.create_timer(
-            0.05, self.timer_callback, callback_group=self.group
+            0.05, self.timer_callback, callback_group=self.group_timer
         )
 
-
-
+        self.group_image = MutuallyExclusiveCallbackGroup()
         self.subscription_image = self.create_subscription(
                 CompressedImage,
                 '/D415/color/image_raw/compressed', 
-                self.image_callback, 10)
-        self.subscription_camera_info = self.create_subscription( CameraInfo, '/D415/color/camera_info', self.camera_info_callback, 10)
-        self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', 10)
+                self.image_callback, qos_profile=1,callback_group=self.group_image)
+
+        self.group_camera_info = MutuallyExclusiveCallbackGroup()
+        self.subscription_camera_info = self.create_subscription( CameraInfo, '/D415/color/camera_info', self.camera_info_callback,\
+             qos_profile=1, callback_group=self.group_camera_info)
+
+        self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', \
+            qos_profile=1, )
         self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("aruco_realrobot_to_camlink_send_to_tf2_pub ready!!")
@@ -203,14 +207,13 @@ class ArucoToCamlinkTF(Node):
             #orientation = self.cam_bot_odom.pose.pose.orientation
 
             # Set the timestamp of the TF message.
-            # The timestamp of the TF message is set to the current time.            
-            self.transform_stamped.header.frame_id = "D415_color_optical_frame" #if marker detected, header frame is D415
-            self.transform_stamped.child_frame_id = self._aruco_frame
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
-
+            # The timestamp of the TF message is set to the current time.   
+            try:         
+                self.transform_stamped.header.frame_id = "D415_color_optical_frame" #if marker detected, header frame is D415
+                self.transform_stamped.child_frame_id = self._aruco_frame
+                self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
-            try:
                 self.transform_stamped.transform.translation.x = self.transform_translation_x
                 self.transform_stamped.transform.translation.y = self.transform_translation_y
                 self.transform_stamped.transform.translation.z = self.transform_translation_z
@@ -229,13 +232,14 @@ class ArucoToCamlinkTF(Node):
 
 
         else:            
-            self.transform_stamped.header.frame_id = "base_link" #if marker not detected, header frame is base_link
-            self.transform_stamped.child_frame_id = self._aruco_frame
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+
 
             # Set the translation of the TF message.
             # The translation of the TF message is set to the current position of the robot.
             try:
+                self.transform_stamped.header.frame_id = "base_link" #if marker not detected, header frame is base_link
+                self.transform_stamped.child_frame_id = self._aruco_frame
+                self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
                 self.transform_stamped.transform.translation.x = 0.0
                 self.transform_stamped.transform.translation.y = 0.0
                 self.transform_stamped.transform.translation.z = 0.0      
@@ -274,7 +278,6 @@ class ArucoToCamlinkTF(Node):
         # Check that we have a valid ArUco marker
         if self.ARUCO_DICT.get(self.aruco_dictionary_name, None) is None:
             print("[INFO] ArUCo tag of is not supported")
-            #sys.exit(0)
             return None
         
         if not self.is_camera_info_set:
@@ -292,7 +295,6 @@ class ArucoToCamlinkTF(Node):
         dst = np.zeros((5,), np.float32)  
 
         # Load the ArUco dictionary
-        # print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
         this_aruco_parameters = cv2.aruco.DetectorParameters_create()
         
@@ -308,14 +310,9 @@ class ArucoToCamlinkTF(Node):
                 print("failed to capture videos")
                 return
 
-        
-        
-        # Capture frame-by-frame
-        # This method returns True/False as well
-        # as the video frame.
-
         detectingImage = self.cv_image.copy() 
 
+        # Image brightness adjustment for better detection
         detectingImage_np = np.zeros(detectingImage.shape, detectingImage.dtype)
         alpha = 5.2 #float  Simple contrast control
         beta = 70   #integer Simple brightness control
@@ -323,11 +320,6 @@ class ArucoToCamlinkTF(Node):
             for x in range(detectingImage.shape[1]):
                 for c in range(detectingImage.shape[2]):
                     detectingImage_np[y,x,c] = np.clip(alpha*detectingImage[y,x,c] + beta, 0, 255)
-
-        # Detect ArUco markers in the video frame
-        # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
-        #     detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
-        #     cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
 
         # Detect ArUco markers in the video frame
         (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
@@ -339,13 +331,9 @@ class ArucoToCamlinkTF(Node):
             self.is_marker_detected = True
             self.had_detected_marker = True
             num_markers = len(marker_ids)
-            # print('corners ',corners)
-            # print('marker_ids', marker_ids)
-            # Draw a square around detected markers in the video frame
             cv2.aruco.drawDetectedMarkers(detectingImage_np , corners, marker_ids)
             #print(marker_ids)
             #print(corners)
-
             
             # Print the pose for the ArUco marker
             # The pose of the marker is with respect to the camera lens frame.
@@ -366,18 +354,16 @@ class ArucoToCamlinkTF(Node):
             
                 flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
-                #flag, rvecs, tvecs = cv2.solveP3P(object_points, image_points, self.projection_matrix_k,self.distortion_params,cv2.SOLVEPNP_P3P)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
-                # print('rvecs',rvecs)
                 # print('tvecs',tvecs)
+
                 # Store the translation (i.e. position) information
                 self.transform_translation_x = tvecs[0]
                 self.transform_translation_y = tvecs[1]
                 self.transform_translation_z = tvecs[2]
 
                 # Store the rotation information
-                #rotation_matrix = np.eye(3)
                 rotation_matrix = cv2.Rodrigues(np.array(rvecs))[0]
                 r = R.from_matrix(rotation_matrix)
                 quat = r.as_quat()   
@@ -393,20 +379,14 @@ class ArucoToCamlinkTF(Node):
                                                             self.transform_rotation_y, 
                                                             self.transform_rotation_z, 
                                                             self.transform_rotation_w)
-                self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
+                try:
+                    self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
                  self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
                  self.transform_stamped.header.frame_id))
+                except AttributeError:
+                    pass
 
-                # roll_x = math.degrees(roll_x)
-                # pitch_y = math.degrees(pitch_y)
-                # yaw_z = math.degrees(yaw_z)
-                # print("transform_translation_x: {}".format(transform_translation_x))
-                # print("transform_translation_y: {}".format(transform_translation_y))
-                # print("transform_translation_z: {}".format(transform_translation_z))
-                # print("roll_x: {}".format(roll_x))
-                # print("pitch_y: {}".format(pitch_y))
-                # print("yaw_z: {}".format(yaw_z))
-                # print()
+
                 (topLeft, topRight, bottomRight, bottomLeft) = corners[i].reshape((4, 2))
                 # convert each of the (x, y)-coordinate pairs to integers
                 topRight = (int(topRight[0]), int(topRight[1]))
@@ -415,16 +395,11 @@ class ArucoToCamlinkTF(Node):
                 topLeft = (int(topLeft[0]), int(topLeft[1]))
                 cX = int((topLeft[0] + bottomRight[0]) / 2.0)
                 cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-                #print("id {} ".format(marker_id))
-                #print("at image position ",[cX,cY])
-                #print("rotation matrix",rotation_matrix[0:3, 0:3] )
-                #print("translation matrix",[transform_translation_x ,transform_translation_y,transform_translation_z])
-                #print(obj_points[i])
+
 
                 # Draw the axes on the marker
                 detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx,dst, rvecs, tvecs, 0.05)
                 #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
-                #detectingImage = cv2.drawFrameAxes(detectingImage, mtx, dst, rvecs, tvecs, 0.05)  
                 
         else:
             self.is_marker_detected = False
@@ -447,8 +422,8 @@ class ArucoToCamlinkTF(Node):
         (rows,cols,channels) = self.cv_image.shape
 
 
-        ##cv2.imshow("Image window", self.cv_image)
-        ##cv2.waitKey(3)
+        #cv2.imshow("Image window", self.cv_image)
+        #cv2.waitKey(3)
         detectingImage = self.detect_pose_return_tf()
         
         if detectingImage is not None:
@@ -542,13 +517,10 @@ def main(args=None):
     rclpy.init()
 
     aruco_to_cam_tf_obj = ArucoToCamlinkTF()
-    executor = MultiThreadedExecutor(num_threads=3)
+    executor = MultiThreadedExecutor()
     executor.add_node(aruco_to_cam_tf_obj)
     executor.spin()
 
-    #TODO
-    # - add subscription to /camera_info topic and get all camera parameters, instead of mock up camera param currently use
-    # - fix the value to be correct value, and expect correct aruco_frame's TF
 
 if __name__ == '__main__':
     main()

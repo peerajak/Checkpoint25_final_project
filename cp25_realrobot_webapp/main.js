@@ -26,6 +26,15 @@ var app = new Vue({
             az: 0,
             aw: 0
         },
+        tf_error_cal: {
+            x: 0,
+            y: 0,
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
+        },
     },
     // helper methods to connect to ROS
     methods: {
@@ -148,6 +157,25 @@ var app = new Vue({
                 this.tf_camera.ay = tf.rotation.y;
                 this.tf_camera.az = tf.rotation.z;
                 this.tf_camera.aw = tf.rotation.w;
+            })
+            this.tfClient3 = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'rg2_gripper_aruco_link',
+                rate : 10.0,
+                updateDelay : 10,
+                angularThres : 0.001,
+                transThres : 0.001
+            })
+            this.tfClient3.subscribe('aruco_frame', (tf) => {
+                console.log(tf.translation.x)
+                const quaternion = new THREE.Quaternion();
+                this.tf_error_cal.x = tf.translation.x;
+                this.tf_error_cal.y = tf.translation.y;
+                this.tf_error_cal.z = tf.translation.z;
+                this.tf_error_cal.ax = tf.rotation.x
+                this.tf_error_cal.ay = tf.rotation.y;
+                this.tf_error_cal.az = tf.rotation.z;
+                this.tf_error_cal.aw = tf.rotation.w;
             })
             // Setup the URDF client.
             this.urdfClient = new ROS3D.UrdfClient({

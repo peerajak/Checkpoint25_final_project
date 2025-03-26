@@ -257,7 +257,8 @@
                                     <h2 class="text-center">Aruco_frame w.r.t base_link </h2>
                                     <p>x,y,z: {{ tf_camera.x.toFixed(3) }}, {{ tf_camera.y.toFixed(3) }},{{
                                         tf_camera.z.toFixed(3) }}</p>
-                                    <p>Quotanion x,y,z,w: {{ tf_camera.ax.toFixed(3) }}, {{ tf_camera.ay.toFixed(3) }},{{ tf_camera.az.toFixed(3) }},{{ tf_camera.aw.toFixed(3) }}  </p>
+                                    <p>Quotanion x,y,z,w: {{ tf_camera.ax.toFixed(3) }}, {{ tf_camera.ay.toFixed(3)
+                                        }},{{ tf_camera.az.toFixed(3) }},{{ tf_camera.aw.toFixed(3) }} </p>
                                 </div>
                             </div>
                         </div>
@@ -282,6 +283,18 @@
                                             @click="callMoveitSimService('goShow')">Show Marker Button</button>
                                         <p>Show marker position</p>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="text-center">Aruco_frame w.r.t rg2_gripper_aruco_link </h2>
+                                    <p>x,y,z: {{ tf_error_cal.x.toFixed(3) }}, {{ tf_error_cal.y.toFixed(3) }},{{
+                                        tf_error_cal.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_error_cal.ax.toFixed(3) }}, {{
+                                        tf_error_cal.ay.toFixed(3) }},{{ tf_error_cal.az.toFixed(3) }},{{
+                                        tf_error_cal.aw.toFixed(3) }} </p>
                                 </div>
                             </div>
                         </div>
