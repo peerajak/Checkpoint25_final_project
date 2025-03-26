@@ -324,14 +324,17 @@ class ArucoToCamlinkTF(Node):
         # Detect ArUco markers in the video frame
         (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
             detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
-            cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
+            cameraMatrix=mtx, distCoeff=dst)
+        # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
+        #     detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
+        #     cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
 
         # Check that at least one ArUco marker was detected
         if marker_ids is not None: 
             self.is_marker_detected = True
             self.had_detected_marker = True
             num_markers = len(marker_ids)
-            cv2.aruco.drawDetectedMarkers(detectingImage_np , corners, marker_ids)
+            detectingImage = cv2.aruco.drawDetectedMarkers(detectingImage , corners)
             #print(marker_ids)
             #print(corners)
             
@@ -352,7 +355,8 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 ## print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx, dst, useExtrinsicGuess=False,flags=cv2.SOLVEPNP_ITERATIVE)
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
