@@ -63,7 +63,7 @@ private:
     pose_top.orientation.w = 0.0;
 
     pose_wall.position.x = 0.3;
-    pose_wall.position.y = -0.64;
+    pose_wall.position.y = -0.52;
     pose_wall.position.z = -0.032;
 
     pose_wall.orientation.x = 0.0;

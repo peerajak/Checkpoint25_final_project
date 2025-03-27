@@ -97,7 +97,7 @@ Visualization Manager:
         aruco_frame:
           Value: true
         aruco_link:
-          Value: true
+          Value: false
         base:
           Value: false
         base_link:
@@ -384,7 +384,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.0463114976882935
+      Distance: 2.3747031688690186
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -399,10 +399,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2197970747947693
+      Pitch: 1.279797077178955
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.468574523925781
+      Yaw: 3.403573989868164
     Saved: ~
 Window Geometry:
   Displays:
