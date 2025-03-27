@@ -314,14 +314,15 @@ class ArucoToCamlinkTF(Node):
 
         # Image brightness adjustment for better detection
         detectingImage_np = np.zeros(detectingImage.shape, detectingImage.dtype)
-        alpha = 5.2 #float  Simple contrast control
-        beta = 70   #integer Simple brightness control
+        alpha = 4.2 #great value at 4.2#float  Simple contrast control 
+        beta = 60  #great value at 60  #integer Simple brightness control
         for y in range(detectingImage.shape[0]):
             for x in range(detectingImage.shape[1]):
                 for c in range(detectingImage.shape[2]):
                     detectingImage_np[y,x,c] = np.clip(alpha*detectingImage[y,x,c] + beta, 0, 255)
 
         # Detect ArUco markers in the video frame
+
         (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
             detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
             cameraMatrix=mtx, distCoeff=dst)
