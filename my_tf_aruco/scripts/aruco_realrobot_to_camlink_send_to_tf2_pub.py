@@ -284,10 +284,11 @@ class ArucoToCamlinkTF(Node):
             return None
         
         mtx_real= np.array([ [306.80584716796875, 0.000000,214.4418487548828],[0.000000, 306.80584716796875, 124.9103012084961], [0., 0., 1.]], np.float32)
-        mtx_test= np.array([ [306.80584716796875*0.9, 0.000000,214.4418487548828*1.05],[0.000000, 306.80584716796875*0.9, 124.9103012084961*1.25], [0., 0., 1.]], np.float32)
+        mtx_test= np.array([ [306.80584716796875*0.9, 0.000000,214.4418487548828*1.1],[0.000000, 306.80584716796875*0.86, 124.9103012084961*1.1], [0., 0., 1.]], np.float32)
         mtx = mtx_test
-        dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
+        #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
         #dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
+        dst_np = np.array([ 0.05,0.0, 0.00, 0.0, 0.0], np.float32)  
         prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
                            [0.000000, 764.304443, 215.883204, 0.000000],\
                            [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
@@ -323,12 +324,15 @@ class ArucoToCamlinkTF(Node):
 
         # Detect ArUco markers in the video frame
 
-        (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
-            detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
-            cameraMatrix=mtx, distCoeff=dst)
+        # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
+        #     detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
+        #     cameraMatrix=mtx, distCoeff=dst)
         # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
         #     detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
         #     cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
+        (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
+            detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
+            cameraMatrix=self.projection_matrix_k, distCoeff=dst)
 
         # Check that at least one ArUco marker was detected
         if marker_ids is not None: 
@@ -356,8 +360,8 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 ## print(image_points)
             
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx, dst, useExtrinsicGuess=False,flags=cv2.SOLVEPNP_ITERATIVE)
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx, dst, useExtrinsicGuess=False,flags=cv2.SOLVEPNP_ITERATIVE)
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
@@ -403,8 +407,9 @@ class ArucoToCamlinkTF(Node):
 
 
                 # Draw the axes on the marker
-                detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx,dst, rvecs, tvecs, 0.05)
+                #detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx,dst, rvecs, tvecs, 0.05)
                 #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)
                 
         else:
             self.is_marker_detected = False
@@ -449,12 +454,12 @@ class ArucoToCamlinkTF(Node):
         self.distortion_params[4] = msg.d[4] 
 
         self.projection_matrix_k = np.zeros((3,3), np.float32)
-        self.projection_matrix_k[0,0] = msg.k[0]
+        self.projection_matrix_k[0,0] = msg.k[0] * 0.86 #fx   best at 0.85
         self.projection_matrix_k[0,1] = msg.k[1]
-        self.projection_matrix_k[0,2] = msg.k[2]
+        self.projection_matrix_k[0,2] = msg.k[2] * 1.05 #cx  best at 1.05
         self.projection_matrix_k[1,0] = msg.k[3]
-        self.projection_matrix_k[1,1] = msg.k[4]
-        self.projection_matrix_k[1,2] = msg.k[5]
+        self.projection_matrix_k[1,1] = msg.k[4] * 0.86 #fy   best at 0.85
+        self.projection_matrix_k[1,2] = msg.k[5] * 1.225 #cy  best at 1.225
         self.projection_matrix_k[2,0] = msg.k[6]
         self.projection_matrix_k[2,1] = msg.k[7]
         self.projection_matrix_k[2,2] = msg.k[8]
