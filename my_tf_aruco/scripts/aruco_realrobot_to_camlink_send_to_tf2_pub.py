@@ -56,7 +56,7 @@ class ArucoToCamlinkTF(Node):
     }
 
     def __init__(self, aruco_frame="aruco_frame"):
-        super().__init__('aruco_to_camlink_tf_node')
+        super().__init__('aruco_realrobot_to_camlink_send_to_tf_node')
         self.is_marker_detected = False
         self.is_camera_info_set = False
         self._aruco_frame = aruco_frame        

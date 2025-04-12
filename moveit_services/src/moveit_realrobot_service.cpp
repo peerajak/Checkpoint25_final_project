@@ -23,7 +23,7 @@ public:
   MoveitSimServerNode(rclcpp::NodeOptions &node_options)
       : Node("moveit_realrobot_service_node", node_options) {
 
-    node_ = std::make_shared<rclcpp::Node>("example_group_node");
+    node_ = std::make_shared<rclcpp::Node>("moveit_realrobot_service");
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     srv_ = create_service<SetBool>(
         "moveit_sim_service",

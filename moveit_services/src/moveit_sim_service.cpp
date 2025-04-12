@@ -27,7 +27,7 @@ public:
   {
 
 
-    node_ = std::make_shared<rclcpp::Node>("example_group_node");
+    node_ = std::make_shared<rclcpp::Node>("moveit_sim_service");
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     srv_ = create_service<SetBool>("moveit_sim_service", std::bind(&MoveitSimServerNode::moveit_sim_callback, this, _1, _2));
    

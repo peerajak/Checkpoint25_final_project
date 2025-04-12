@@ -54,7 +54,7 @@ class ArucoToCamlinkTF(Node):
     }
 
     def __init__(self, aruco_frame="aruco_frame"):
-        super().__init__('aruco_to_camlink_tf_node')
+        super().__init__('aruco_to_camlink_send_to_tf_node')
         self.is_marker_detected = False
         self.is_camera_info_set = False
         self._aruco_frame = aruco_frame 
@@ -90,9 +90,9 @@ class ArucoToCamlinkTF(Node):
                 self.image_callback, 10)
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
         self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 1)
-        self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 1)
+        self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 10)
         self.cv_bridge = CvBridge()
-        self.get_logger().info("aruco_to_camlink_tf_node ready!!")
+        self.get_logger().info("aruco_to_camlink_send_to_tf_node ready!!")
         
 
     def timer_callback(self):
@@ -105,6 +105,7 @@ class ArucoToCamlinkTF(Node):
         This function broadcasts a new TF message to the TF network.
         """
         self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
+        self.transform_stamped.child_frame_id = "aruco_frame"
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.
@@ -128,9 +129,10 @@ class ArucoToCamlinkTF(Node):
             self.transform_stamped.transform.rotation.z = self.transform_rotation_z
             self.transform_stamped.transform.rotation.w = self.transform_rotation_w
 
-            # Send (broadcast) the TF message.
+            # Send (broadcast) the TF message.\
+            self.get_logger().info("publishing tf from camera to aruco_frame1")
             self.publisher_to_tf2_pub.publish(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
+            self.get_logger().info("publishing tf from camera to aruco_frame2")
         # else:
         #     self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
@@ -258,8 +260,8 @@ class ArucoToCamlinkTF(Node):
                 image_points = realign_corners.reshape(4,1,2)
                 ##print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)# intentionally make it wrong to solve real robot
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params) # correct one
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)# intentionally make it wrong to solve real robot
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params) # correct one
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
@@ -315,8 +317,8 @@ class ArucoToCamlinkTF(Node):
                 #print(obj_points[i])
 
                 # Draw the axes on the marker                
-                detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx ,dst, rvecs, tvecs, 0.05)# Intentionally make it wrong, to solve the real robot
-                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)#Correct one 
+                #detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx ,dst, rvecs, tvecs, 0.05)# Intentionally make it wrong, to solve the real robot
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)#Correct one 
                 #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
                 
         else:
