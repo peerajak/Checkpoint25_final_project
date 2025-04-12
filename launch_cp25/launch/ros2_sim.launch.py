@@ -47,11 +47,17 @@ def generate_launch_description():
         executable="aruco_to_camlink_send_to_tf2_pub.py",
         output="screen",
     )
-    aruco_tf_pub_tf2_pub = Node(
+    # aruco_tf_pub_tf2_pub = Node(
+    #     package="my_tf_aruco",
+    #     executable="tf2_pub_node",
+    #     output="screen",
+    # )
+    aruco_tf_pub_tf2_pub_service = Node(
         package="my_tf_aruco",
-        executable="tf2_pub_node",
+        executable="tf2_pub_service",
         output="screen",
     )
+    
 
     # moveit_services
     planning_sim_scene_service_launch = Node(
@@ -89,7 +95,8 @@ def generate_launch_description():
         moveit_rviz_launch,
         aruco_tf_pub,
         aruco_tf_pub_send_to_tf2_pub,
-        aruco_tf_pub_tf2_pub,
+        #aruco_tf_pub_tf2_pub,
+        aruco_tf_pub_tf2_pub_service,
         planning_sim_scene_service_launch,
         moveit_sim_service_launch,
         rviz_node 

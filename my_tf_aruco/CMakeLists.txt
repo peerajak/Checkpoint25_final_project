@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -30,13 +31,17 @@ ament_target_dependencies(tf2_pub_node rclcpp geometry_msgs tf2 tf2_ros)
 add_executable(tf2_realrobot_pub_node src/tf2_realrobot_pub.cpp)
 ament_target_dependencies(tf2_realrobot_pub_node rclcpp geometry_msgs tf2 tf2_ros)
 
-add_executable(tf2_realrobot_yaw180_aruco_pub_node src/tf2_realrobot_yaw180_aruco_pub.cpp)
-ament_target_dependencies(tf2_realrobot_yaw180_aruco_pub_node rclcpp geometry_msgs tf2 tf2_ros)
+#add_executable(tf2_realrobot_yaw180_aruco_pub_node src/tf2_realrobot_yaw180_aruco_pub.cpp)
+#ament_target_dependencies(tf2_realrobot_yaw180_aruco_pub_node rclcpp geometry_msgs tf2 tf2_ros)
+
+add_executable(tf2_pub_service src/tf2_pub_service.cpp)
+ament_target_dependencies(tf2_pub_service rclcpp std_srvs geometry_msgs tf2 tf2_ros)
 
 install(TARGETS
    tf2_pub_node
    tf2_realrobot_pub_node
-   tf2_realrobot_yaw180_aruco_pub_node
+   #tf2_realrobot_yaw180_aruco_pub_node
+   tf2_pub_service 
    DESTINATION lib/${PROJECT_NAME}
 )
 
