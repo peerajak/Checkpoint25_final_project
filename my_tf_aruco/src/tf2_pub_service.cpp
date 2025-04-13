@@ -21,6 +21,13 @@ using std::placeholders::_2;
 
 using namespace std::chrono_literals;
 
+/*  USAGE
+ *   - To change to calibrating mode
+ *   ros2 service call tf2_pub_service std_srvs/srv/SetBool data:\ true
+ *   - To change to publish calibrated camera TF mode
+ *   ros2 service call tf2_pub_service std_srvs/srv/SetBool data:\ false
+ **/
+
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("tf2_pub_service_node");
 
 class Tf2PubServiceNode : public rclcpp::Node {
@@ -28,6 +35,7 @@ public:
   Tf2PubServiceNode(rclcpp::NodeOptions &node_options)
       : Node("tf2_pub_service_node", node_options) {
     this->is_calibrating = CALIBRATING;
+    this->was_calibrated_before = false;
     node_ = std::make_shared<rclcpp::Node>("tf2_pub_service");
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     srv_ = create_service<SetBool>(
@@ -65,6 +73,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 
   bool is_calibrating;
+  bool was_calibrated_before;
 
   rclcpp::Node::SharedPtr node_;
   rclcpp::Executor::SharedPtr executor_;
@@ -86,21 +95,42 @@ private:
   void aruco_geometry_service_callback(
       const geometry_msgs::msg::TransformStamped::SharedPtr msg) {
     RCLCPP_INFO(this->get_logger(), "aruco_geometry_service_callback");
+
     if (this->is_calibrating) { // CALIBRATING
-      rclcpp::Time now = this->get_clock()->now();
-      std::string fromFrame = "aruco_frame";
-      std::string toFrame = "base_link";
+
+      // 1. Let rg2_gripper_aruco_link be a known avalue, find transformation
+      // from base to rg2_gripper_aruco_link
+      std::string fromFrame = "base_link";            // parent
+      std::string toFrame = "rg2_gripper_aruco_link"; // child
 
       geometry_msgs::msg::TransformStamped tf_aruco_to_base_link;
       try {
         tf_aruco_to_base_link =
-            tf_buffer_->lookupTransform(toFrame, fromFrame, tf2::TimePointZero);
+            tf_buffer_->lookupTransform(fromFrame, toFrame, tf2::TimePointZero);
       } catch (const tf2::TransformException &ex) {
         RCLCPP_INFO(this->get_logger(), "Could not transform %s to %s: %s",
                     toFrame.c_str(), fromFrame.c_str(), ex.what());
         return;
-      }
+      } // checked passed
 
+      // 2. find the inverse transformation of aruco_camera, ie. camera_aruco
+      // (child_parent format)
+      tf2::Quaternion q_aruco_camera( // arrow from child to parent
+          msg->transform.rotation.x, msg->transform.rotation.y,
+          msg->transform.rotation.z, msg->transform.rotation.w);
+      tf2::Vector3 p_aruco_camera(msg->transform.translation.x,
+                                  msg->transform.translation.y,
+                                  msg->transform.translation.z);
+      tf2::Transform transform_aruco_camera(q_aruco_camera, p_aruco_camera);
+      tf2::Vector3 p_camera_aruco =
+          transform_aruco_camera.inverse().getOrigin();
+      tf2::Quaternion q_camera_aruco =
+          transform_aruco_camera.inverse().getRotation();
+
+      // tf2::Quaternion q_camera_aruco = q_aruco_camera.inverse();// this is
+      // also ok
+
+      // 3. prepare p,q base_camera from 1) and 2)
       tf2::Quaternion q_aruco_to_base_link(
           tf_aruco_to_base_link.transform.rotation.x,
           tf_aruco_to_base_link.transform.rotation.y,
@@ -112,66 +142,30 @@ private:
           tf_aruco_to_base_link.transform.translation.z);
       tf2::Transform transform_aruco_to_base(q_aruco_to_base_link,
                                              p_aruco_to_base_link);
-
-      // This q, and p together form a Pose. This is aruco w.r.t camera Pose.
-      tf2::Quaternion q_aruco_camera(
-          msg->transform.rotation.x, msg->transform.rotation.y,
-          msg->transform.rotation.z, msg->transform.rotation.w);
-      tf2::Vector3 p_aruco_camera(msg->transform.translation.x,
-                                  msg->transform.translation.y,
-                                  msg->transform.translation.z);
-
-      tf2::Transform transform_aruco_camera(q_aruco_camera, p_aruco_camera);
-      tf2::Vector3 p_camera_aruco =
-          transform_aruco_camera.inverse().getOrigin();
-      tf2::Quaternion q_camera_aruco =
-          transform_aruco_camera.inverse().getRotation();
-
       tf2::Vector3 p_base_camera = transform_aruco_to_base * p_camera_aruco;
       tf2::Quaternion q_base_camera = transform_aruco_to_base * q_camera_aruco;
 
-      //------------ broadcast TF
-
-      std::string fromFrameRel = "base_link";
-      std::string toFrameRel =
-          "fake_camera_frame_from_base"; // TODO change Camera link name
-      //geometry_msgs::msg::TransformStamped msg_base_camera;
-      rclcpp::Time now2 = this->get_clock()->now();
-      calibrated_msg_base_camera_->header.stamp = now2;
-      calibrated_msg_base_camera_->header.frame_id = fromFrameRel;
-      calibrated_msg_base_camera_->child_frame_id = toFrameRel;
+      // 4. broadcast new TF camera_solution_frame from 3)
+      std::string fromFrameRel1 =
+          "base_link"; // rg2_gripper_aruco_link from parent to child
+      std::string toFrameRel1 =
+          "camera_solution_frame"; //"camera_solution_frame"; // child
+      rclcpp::Time now1 = this->get_clock()->now();
+      calibrated_msg_base_camera_->header.stamp = now1;
+      calibrated_msg_base_camera_->header.frame_id = fromFrameRel1.c_str();
+      calibrated_msg_base_camera_->child_frame_id = toFrameRel1.c_str();
       calibrated_msg_base_camera_->transform.translation.x =
-      p_base_camera.getX();
+          p_base_camera.getX();
       calibrated_msg_base_camera_->transform.translation.y =
-      p_base_camera.getY();
+          p_base_camera.getY();
       calibrated_msg_base_camera_->transform.translation.z =
-      p_base_camera.getZ(); calibrated_msg_base_camera_->transform.rotation.x
-      = q_base_camera.getX();
-      calibrated_msg_base_camera_->transform.rotation.y =
-      q_base_camera.getY(); calibrated_msg_base_camera_->transform.rotation.z
-      = q_base_camera.getZ();
-      calibrated_msg_base_camera_->transform.rotation.w =
-      q_base_camera.getW();
+          p_base_camera.getZ();
+      calibrated_msg_base_camera_->transform.rotation.x = q_base_camera.getX();
+      calibrated_msg_base_camera_->transform.rotation.y = q_base_camera.getY();
+      calibrated_msg_base_camera_->transform.rotation.z = q_base_camera.getZ();
+      calibrated_msg_base_camera_->transform.rotation.w = q_base_camera.getW();
       tf_broadcaster_->sendTransform(*calibrated_msg_base_camera_);
-
-    //   std::string fromFrameRel =  msg->header.frame_id; //parent
-    //   std::string toFrameRel = msg->child_frame_id; //child
-    //   //geometry_msgs::msg::TransformStamped msg_base_camera;
-    //   rclcpp::Time now2 = this->get_clock()->now();
-    //   calibrated_msg_base_camera_->header.stamp = now2;
-    //   calibrated_msg_base_camera_->header.frame_id = fromFrameRel;
-    //   calibrated_msg_base_camera_->child_frame_id = toFrameRel;
-    //   calibrated_msg_base_camera_->transform.translation.x =
-    //       p_aruco_camera.getX();
-    //   calibrated_msg_base_camera_->transform.translation.y =
-    //       p_aruco_camera.getY();
-    //   calibrated_msg_base_camera_->transform.translation.z =
-    //       p_aruco_camera.getZ();
-    //   calibrated_msg_base_camera_->transform.rotation.x = q_aruco_camera.getX();
-    //   calibrated_msg_base_camera_->transform.rotation.y = q_aruco_camera.getY();
-    //   calibrated_msg_base_camera_->transform.rotation.z = q_aruco_camera.getZ();
-    //   calibrated_msg_base_camera_->transform.rotation.w = q_aruco_camera.getW();
-    //   tf_broadcaster_->sendTransform(*calibrated_msg_base_camera_);
+      was_calibrated_before = true;
 
     } else { // PUBLISING_CALIBRATED
 
@@ -180,24 +174,26 @@ private:
   }
 
   void timer_callback() {
-    try {
-      rclcpp::Time now3 = this->get_clock()->now();
-      calibrated_msg_base_camera_->header.stamp = now3;
-      tf_broadcaster_->sendTransform(*calibrated_msg_base_camera_);
-    } catch (...) {
-      if (this->is_calibrating)
-        RCLCPP_INFO(this->get_logger(), "publishing calibrating TF failed");
-      else
-        RCLCPP_INFO(this->get_logger(),
-                    "publishing previously calibrated TF failed");
+    if(was_calibrated_before){
+        try {
+            rclcpp::Time now3 = this->get_clock()->now();
+            calibrated_msg_base_camera_->header.stamp = now3;
+            tf_broadcaster_->sendTransform(*calibrated_msg_base_camera_);
+        } catch (...) {
+            if (this->is_calibrating)
+                RCLCPP_INFO(this->get_logger(), "publishing calibrating TF failed");
+            else
+                RCLCPP_INFO(this->get_logger(),
+                            "publishing previously calibrated TF failed");
+            return;
+        }
+        if (this->is_calibrating)
+            RCLCPP_INFO(this->get_logger(), "publishing calibrating TF succeed");
+        else
+            RCLCPP_INFO(this->get_logger(), "publishing previously calibrated TF succeed");
+        
+        }
 
-      return;
-    }
-    if (this->is_calibrating)
-      RCLCPP_INFO(this->get_logger(), "publishing calibrating TF succeed");
-    else
-      RCLCPP_INFO(this->get_logger(),
-                  "publishing previously calibrated TF succeed");
   }
 };
 

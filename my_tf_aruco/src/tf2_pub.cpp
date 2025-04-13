@@ -29,15 +29,15 @@ public:
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
-    /*subscription_2_aruco_geometry =
+    subscription_2_aruco_geometry =
       this->create_subscription<geometry_msgs::msg::TransformStamped>(
       "aruco_point_wrt_camera", 10,
-      std::bind(&Tf2Pub::aruco_geometry_callback_aruco_camera, this, _1));*/
+      std::bind(&Tf2Pub::aruco_geometry_callback_aruco_camera, this, _1));
 
-    subscription_2_aruco_geometry =
+   /* subscription_2_aruco_geometry =
         this->create_subscription<geometry_msgs::msg::TransformStamped>(
             "aruco_point_wrt_camera", 10,
-            std::bind(&Tf2Pub::aruco_geometry_callback_base_camera, this, _1));
+            std::bind(&Tf2Pub::aruco_geometry_callback_base_camera, this, _1)); */
   }
 
 private:
@@ -51,7 +51,7 @@ private:
       const geometry_msgs::msg::TransformStamped::SharedPtr msg) {
     RCLCPP_INFO(this->get_logger(), "aruco_geometry_callback_aruco_camera");
 
-    //------------ broadcast TF
+    //------------ broadcast aruco_frame TF
 
     geometry_msgs::msg::TransformStamped msg_aruco_camera;
     rclcpp::Time now = this->get_clock()->now();
