@@ -45,6 +45,7 @@ public:
         std::make_shared<geometry_msgs::msg::TransformStamped>();
 
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+    tf_broadcaster2_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
     subscription_2_aruco_geometry =
@@ -66,6 +67,7 @@ private:
   rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr
       subscription_2_aruco_geometry;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster2_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::shared_ptr<geometry_msgs::msg::TransformStamped>
@@ -97,6 +99,23 @@ private:
     RCLCPP_INFO(this->get_logger(), "aruco_geometry_service_callback");
 
     if (this->is_calibrating) { // CALIBRATING
+
+
+    //------------ broadcast aruco_frame TF
+
+    geometry_msgs::msg::TransformStamped msg_aruco_camera;
+    rclcpp::Time now = this->get_clock()->now();
+    msg_aruco_camera.header.stamp = now;
+    msg_aruco_camera.header.frame_id = msg->header.frame_id;
+    msg_aruco_camera.child_frame_id = msg->child_frame_id;
+    msg_aruco_camera.transform.translation.x = msg->transform.translation.x;
+    msg_aruco_camera.transform.translation.y = msg->transform.translation.y;
+    msg_aruco_camera.transform.translation.z = msg->transform.translation.z;
+    msg_aruco_camera.transform.rotation.x = msg->transform.rotation.x;
+    msg_aruco_camera.transform.rotation.y = msg->transform.rotation.y;
+    msg_aruco_camera.transform.rotation.z = msg->transform.rotation.z;
+    msg_aruco_camera.transform.rotation.w = msg->transform.rotation.w;
+    tf_broadcaster2_->sendTransform(msg_aruco_camera);
 
       // 1. Let rg2_gripper_aruco_link be a known avalue, find transformation
       // from base to rg2_gripper_aruco_link
@@ -169,7 +188,19 @@ private:
 
     } else { // PUBLISING_CALIBRATED
 
-      ; // do nothing
+    geometry_msgs::msg::TransformStamped msg_aruco_camera;
+    rclcpp::Time now = this->get_clock()->now();
+    msg_aruco_camera.header.stamp = now;
+    msg_aruco_camera.header.frame_id = msg->header.frame_id;
+    msg_aruco_camera.child_frame_id = msg->child_frame_id;
+    msg_aruco_camera.transform.translation.x = 0;
+    msg_aruco_camera.transform.translation.y = 0;
+    msg_aruco_camera.transform.translation.z =0;
+    msg_aruco_camera.transform.rotation.x = 0;
+    msg_aruco_camera.transform.rotation.y = 0;
+    msg_aruco_camera.transform.rotation.z = 0;
+    msg_aruco_camera.transform.rotation.w = 1;
+    tf_broadcaster2_->sendTransform(msg_aruco_camera);
     }
   }
 

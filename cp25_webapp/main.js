@@ -214,7 +214,9 @@ var app = new Vue({
                 ros : this.ros,
                 fixedFrame : 'base_link',
                 angularThres : 0.01,
-                transThres : 0.01
+                transThres : 0.01,
+                seconds: 1.0
+                
             })
             this.tfClient_aruco_baselink.subscribe('aruco_frame', (tf) => {
                 this.tf_aruco_baselink.x = tf.translation.x
@@ -228,8 +230,11 @@ var app = new Vue({
             this.tfClient_camera_sol_baselink = new ROSLIB.TFClient({
                 ros : this.ros,
                 fixedFrame : 'base_link',
+                rate : 10.0,
+                updateDelay : 10,
                 angularThres : 0.01,
-                transThres : 0.01
+                transThres : 0.01,
+                seconds: 1.0
             })
             this.tfClient_camera_sol_baselink.subscribe('camera_solution_frame', (tf) => {
                 this.tf_camera_sol_baselink.x = tf.translation.x
@@ -243,8 +248,11 @@ var app = new Vue({
             this.tfClient_camera_real_baselink = new ROSLIB.TFClient({
                 ros : this.ros,
                 fixedFrame : 'base_link',
+                rate : 10.0,
+                updateDelay : 10,
                 angularThres : 0.01,
-                transThres : 0.01
+                transThres : 0.01,
+                seconds: 1.0
             })
             this.tfClient_camera_real_baselink.subscribe('wrist_rgbd_camera_depth_optical_frame', (tf) => {
                 this.tf_camera_real_baselink.x = tf.translation.x
@@ -258,8 +266,8 @@ var app = new Vue({
             this.tfClient_detected_vs_real_aruco = new ROSLIB.TFClient({
                 ros : this.ros,
                 fixedFrame : 'base_link',
-                //rate : 10.0,
-                //updateDelay : 10,
+                rate : 10.0,
+                updateDelay : 10,
                 angularThres : 0.001,
                 transThres : 0.001
             })
