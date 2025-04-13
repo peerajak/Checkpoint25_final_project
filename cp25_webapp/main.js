@@ -3,6 +3,7 @@ var app = new Vue({
     // storing the state of the page
     data: {
         connected: false,
+        is_fix_tf: false,
         ros: null,
         viewer: null,
         logs: [],
@@ -125,6 +126,14 @@ var app = new Vue({
         },
         disconnect: function() {
             this.ros.close()
+        },
+        fix_tf: function() {
+           console.log("fix_tf")
+           this.is_fix_tf = false
+        },
+        calibrate_tf: function() {
+           console.log("calibrate_tf")
+           this.is_fix_tf = true
         },
         setup3DViewer() {
             this.viewer3d = new ROS3D.Viewer({
