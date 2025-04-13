@@ -15,12 +15,46 @@ var app = new Vue({
         // 3D stuff
         viewer3d: null,
         tfClient: null,
-        tfClient2: null,
+        tfClient_aruco_baselink: null,
+        tfClient_camera_sol_baselink: null,
+        tfClient_camera_real_baselink: null,
+        tfClient_detected_vs_real_aruco: null,
         urdfClient: null,
-        tf_aruco: {
+        tf_aruco_baselink: {
             x: 0,
             y: 0,
-            z: 0
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
+        },
+        tf_camera_sol_baselink: {
+            x: 0,
+            y: 0,
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
+        },
+        tf_camera_real_baselink: {
+            x: 0,
+            y: 0,
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
+        },
+        tf_error_cal: {
+            x: 0,
+            y: 0,
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
         },
     },
     // helper methods to connect to ROS
@@ -123,17 +157,69 @@ var app = new Vue({
                 rate: 10.0
             })
 
-            this.tfClient2 = new ROSLIB.TFClient({
+            this.tfClient_aruco_baselink = new ROSLIB.TFClient({
                 ros : this.ros,
-                fixedFrame : 'world',
+                fixedFrame : 'base_link',
                 angularThres : 0.01,
                 transThres : 0.01
             })
-            this.tfClient2.subscribe('aruco_frame', (tf) => {
-                console.log(tf.translation.x)
-                this.tf_aruco.x = tf.translation.x
-                this.tf_aruco.y = tf.translation.y;
-                this.tf_aruco.z = tf.translation.z;
+            this.tfClient_aruco_baselink.subscribe('aruco_frame', (tf) => {
+                this.tf_aruco_baselink.x = tf.translation.x
+                this.tf_aruco_baselink.y = tf.translation.y;
+                this.tf_aruco_baselink.z = tf.translation.z;
+                this.tf_aruco_baselink.ax = tf.rotation.x
+                this.tf_aruco_baselink.ay = tf.rotation.y;
+                this.tf_aruco_baselink.az = tf.rotation.z;
+                this.tf_aruco_baselink.aw = tf.rotation.w;
+            })
+            this.tfClient_camera_sol_baselink = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'base_link',
+                angularThres : 0.01,
+                transThres : 0.01
+            })
+            this.tfClient_camera_sol_baselink.subscribe('camera_solution_frame', (tf) => {
+                this.tf_camera_sol_baselink.x = tf.translation.x
+                this.tf_camera_sol_baselink.y = tf.translation.y;
+                this.tf_camera_sol_baselink.z = tf.translation.z;
+                this.tf_camera_sol_baselink.ax = tf.rotation.x
+                this.tf_camera_sol_baselink.ay = tf.rotation.y;
+                this.tf_camera_sol_baselink.az = tf.rotation.z;
+                this.tf_camera_sol_baselink.aw = tf.rotation.w;
+            })
+            this.tfClient_camera_real_baselink = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'base_link',
+                angularThres : 0.01,
+                transThres : 0.01
+            })
+            this.tfClient_camera_real_baselink.subscribe('wrist_rgbd_camera_depth_optical_frame', (tf) => {
+                this.tf_camera_real_baselink.x = tf.translation.x
+                this.tf_camera_real_baselink.y = tf.translation.y;
+                this.tf_camera_real_baselink.z = tf.translation.z;
+                this.tf_camera_real_baselink.ax = tf.rotation.x
+                this.tf_camera_real_baselink.ay = tf.rotation.y;
+                this.tf_camera_real_baselink.az = tf.rotation.z;
+                this.tf_camera_real_baselink.aw = tf.rotation.w;
+            })
+            this.tfClient_detected_vs_real_aruco = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'base_link',
+                //rate : 10.0,
+                //updateDelay : 10,
+                angularThres : 0.001,
+                transThres : 0.001
+            })
+            this.tfClient_detected_vs_real_aruco.subscribe('rg2_gripper_aruco_link', (tf) => {
+                console.log('tfClient_detected_vs_real_aruco sub aruco_frame')
+                console.log(tf.translation.x,tf.translation.y,tf.translation.z)
+                this.tf_error_cal.x = tf.translation.x
+                this.tf_error_cal.y = tf.translation.y;
+                this.tf_error_cal.z = tf.translation.z;
+                this.tf_error_cal.ax = tf.rotation.x
+                this.tf_error_cal.ay = tf.rotation.y;
+                this.tf_error_cal.az = tf.rotation.z;
+                this.tf_error_cal.aw = tf.rotation.w;
             })
 
             // Setup the URDF client.
@@ -155,18 +241,18 @@ var app = new Vue({
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
-                scale : 0.1,
-                tfClient : this.tfClient2,
+                scale : 0.3,
+                tfClient : this.tfClient,
                 rootObject : this.viewer3d.scene,
             });
 
             var tfAxes2 = new ROS3D.TFAxes({
-                frame_id: "wrist_2_link",
+                frame_id: "camera_solution_frame",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient2,
+                tfClient : this.tfClient_camera_sol_baselink,
                 rootObject : this.viewer3d.scene,
             });
 
@@ -176,10 +262,29 @@ var app = new Vue({
                 headRaidus : 0.07,
                 headLength : 0.2,
                 scale : 0.1,
-                tfClient : this.tfClient2,
+                tfClient : this.tfClient_aruco_baselink,
                 rootObject : this.viewer3d.scene,
             });
 
+            var tfAxes4 = new ROS3D.TFAxes({
+                frame_id: "rg2_gripper_aruco_link",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient_detected_vs_real_aruco,
+                rootObject : this.viewer3d.scene,
+            });
+
+            var tfAxes5 = new ROS3D.TFAxes({
+                frame_id: "wrist_rgbd_camera_depth_optical_frame",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient_camera_real_baselink,
+                rootObject : this.viewer3d.scene,
+            });
 
         },
 

@@ -254,10 +254,26 @@
                         <div class="card mt-2">
                             <div class="card">
                                 <div class="card-body">
-                                    <h2 class="text-center">Aruco Pose w.r.t base_link </h2>
-                                    <p>x,y,z: {{ tf_aruco.x.toFixed(3) }}, {{ tf_aruco.y.toFixed(3) }},{{
-                                        tf_aruco.z.toFixed(3) }}</p>
-                                    <!-- p>yaw,pitch,row: {{ tf_aruco.x.toFixed(3) }}, {{ tf_aruco.y.toFixed(3) }},{{ tf_aruco.z.toFixed(3) }} </p -->
+                                    <h3 class="text-center">Aruco Pose w.r.t base_link </h3>
+                                    <p>x,y,z: {{ tf_aruco_baselink.x.toFixed(3) }}, {{ tf_aruco_baselink.y.toFixed(3) }},{{
+                                        tf_aruco_baselink.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_aruco_baselink.ax.toFixed(3) }}, {{ tf_aruco_baselink.ay.toFixed(3)
+                                        }},{{ tf_aruco_baselink.az.toFixed(3) }},{{ tf_aruco_baselink.aw.toFixed(3) }} </p>
+                                    <p>error x,y,z:  {{ (tf_error_cal.x.toFixed(3)-tf_aruco_baselink.x.toFixed(3)).toFixed(3) }}, {{ (tf_error_cal.y.toFixed(3)-tf_aruco_baselink.y.toFixed(3)).toFixed(3) }},{{
+                                        (tf_error_cal.z.toFixed(3)-tf_aruco_baselink.z.toFixed(3)).toFixed(3) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3 class="text-center">Camera Pose w.r.t base_link </h3>
+                                    <p>x,y,z: {{ tf_camera_sol_baselink.x.toFixed(3) }}, {{ tf_camera_sol_baselink.y.toFixed(3) }},{{
+                                        tf_camera_sol_baselink.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_camera_sol_baselink.ax.toFixed(3) }}, {{ tf_camera_sol_baselink.ay.toFixed(3)
+                                        }},{{ tf_camera_sol_baselink.az.toFixed(3) }},{{ tf_camera_sol_baselink.aw.toFixed(3) }} </p>
+                                    <p>error x,y,z: {{ (tf_camera_real_baselink.x.toFixed(3) - tf_camera_sol_baselink.x.toFixed(3)).toFixed(3) }}, {{ (tf_camera_real_baselink.y.toFixed(3) - tf_camera_sol_baselink.y.toFixed(3)).toFixed(3) }},{{
+                                       (tf_camera_real_baselink.z.toFixed(3) - tf_camera_sol_baselink.z.toFixed(3)).toFixed(3) }}</p>
                                 </div>
                             </div>
                         </div>
