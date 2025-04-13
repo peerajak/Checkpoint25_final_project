@@ -128,12 +128,56 @@ var app = new Vue({
             this.ros.close()
         },
         fix_tf: function() {
-           console.log("fix_tf")
-           this.is_fix_tf = false
+            console.log("fix_tf")
+            this.is_fix_tf = false
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/tf2_pub_service',
+                serviceType: 'std_srvs/SetBool',
+            })
+
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
+                data: true,
+            })
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
         },
         calibrate_tf: function() {
-           console.log("calibrate_tf")
+             console.log("calibrate_tf")
            this.is_fix_tf = true
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/tf2_pub_service',
+                serviceType: 'std_srvs/SetBool',
+            })
+
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
+                data: false,
+            })
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
         },
         setup3DViewer() {
             this.viewer3d = new ROS3D.Viewer({
