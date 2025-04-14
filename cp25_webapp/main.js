@@ -23,6 +23,7 @@ var app = new Vue({
         tfClient_camera_real_baselink: null,
         tfClient_detected_vs_real_aruco: null,
         urdfClient: null,
+        current_joint: { shoulder_pan_joint: 0, shoulder_lift_joint: 0, elbow_joint: 0, wrist_1_joint: 0, wrist_2_joint: 0, wrist_3_joint: 0},
         tf_aruco_baselink: {
             x: 0,
             y: 0,
@@ -90,6 +91,22 @@ var app = new Vue({
 
                 clearInterval(this.pubInterval)         
             })
+
+            let topic_joint_state = new ROSLIB.Topic({
+                ros: this.ros,
+                name: '/joint_states',
+                messageType: 'sensor_msgs/JointState',
+            })
+
+            topic_joint_state.subscribe((message) => {
+                console.log(message)
+                this.current_joint.shoulder_pan_joint = message.position[0]
+                this.current_joint.shoulder_lift_joint = message.position[1]
+                this.current_joint.elbow_joint = message.position[2]
+                this.current_joint.wrist_1_joint = message.position[3]
+                this.current_joint.wrist_2_joint = message.position[4]
+                this.current_joint.wrist_3_joint = message.position[5]
+            })
         },
 
         showCamera: function() {
@@ -133,7 +150,9 @@ var app = new Vue({
         insertItemIntoListBox: function(){
             var x = document.getElementById("access");
             //TODO item should contains current 6 joint_states
-            var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3)];
+            var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
+            this.current_joint.shoulder_pan_joint, this.current_joint.shoulder_lift_joint, this.current_joint.elbow_joint, 
+            this.current_joint.wrist_1_joint, this.current_joint.wrist_2_joint, this.current_joint.wrist_3_joint];
             var option = document.createElement("option");
             option.text = item;
             
