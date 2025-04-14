@@ -129,6 +129,17 @@ var app = new Vue({
         disconnect: function() {
             this.ros.close()
         },
+
+        insertItemIntoListBox: function(){
+            var x = document.getElementById("access");
+            var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
+            this.tf_aruco_baselink.ax.toFixed(3),this.tf_aruco_baselink.ay.toFixed(3),this.tf_aruco_baselink.az.toFixed(3),this.tf_aruco_baselink.aw.toFixed(3)];
+            var option = document.createElement("option");
+            option.text = item;
+            x.add(option);
+        },
+        moveEndToWaypoints: function(){
+        },
         toggleCheckbox() {
         this.checkbox_fixTf = !this.checkbox_fixTf
         if(this.checkbox_fixTf) {
@@ -162,6 +173,7 @@ var app = new Vue({
             service.callService(request, (result) => {
                 this.service_busy = false
                 this.service_response = JSON.stringify(result)
+                console.log(result)
             }, (error) => {
                 this.service_busy = false
                 console.error(error)
@@ -188,6 +200,7 @@ var app = new Vue({
             service.callService(request, (result) => {
                 this.service_busy = false
                 this.service_response = JSON.stringify(result)
+                console.log(result)
             }, (error) => {
                 this.service_busy = false
                 console.error(error)

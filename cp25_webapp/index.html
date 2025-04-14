@@ -27,6 +27,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ros2d/build/ros2d.min.js">
     </script>
 
+    </script>
 
     <!-- 3D visualization -->
     <script src="./libs/three.min.js"></script>
@@ -36,6 +37,9 @@
     <script src="./libs/ros3d.min.js"></script>
 
     <style type="text/css">
+        #access{
+            width:350px;   
+        }
         #divMap {
             transform: rotate(90deg) translateY(20px);
             float: right;
@@ -388,6 +392,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card mt-4">
+                            <form>
+                                <p>Click to add aruco position to waypoint: </p>
+                                <p><input type="button" @click="insertItemIntoListBox()"  value="Insert" /></p>
+                                <select id="access" size="4">
+                                </select>
+                                <p><input type="button" @click="moveEndToWaypoints()"  value="Move" /></p>
+                            </form>
+                        </div>
                     </div>
 
                     <div class="col-4">
@@ -403,6 +416,7 @@
                         </div>
                     </div>
 
+
                 </div>
 
 
@@ -415,12 +429,14 @@
 
     </div>
 
+
     <script type="text/javascript">
         // We could have loaded main.js simply with:
         //  <script type="text/javascript" src="main.js">
         //
         // BUT we were having caching-related problems.
         // Loading main.js with a Date.now() in the URL we avoid using cache
+        
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = 'main.js?v=11.' + Date.now();
