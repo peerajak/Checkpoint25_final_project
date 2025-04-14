@@ -3,7 +3,9 @@ var app = new Vue({
     // storing the state of the page
     data: {
         connected: false,
-        is_fix_tf: false,
+        checkbox_fixTf: false,
+        checkbox_fixTf_string: "Calibrating",
+        is_fix_tf: true,
         ros: null,
         viewer: null,
         logs: [],
@@ -127,6 +129,18 @@ var app = new Vue({
         disconnect: function() {
             this.ros.close()
         },
+        toggleCheckbox() {
+        this.checkbox_fixTf = !this.checkbox_fixTf
+        if(this.checkbox_fixTf) {
+          this.checkbox_fixTf_string = "Camera TF fixed"
+          this.fix_tf()
+        }else{
+          this.checkbox_fixTf_string = "Calibrating"
+          this.calibrate_tf()
+        }
+        console.log("toggleCheckbox",this.checkbox_fixTf)
+        this.$emit('setCheckboxVal', this.checkbox_fixTf)
+        },
         fix_tf: function() {
             console.log("fix_tf")
             this.is_fix_tf = false
@@ -141,7 +155,7 @@ var app = new Vue({
 
             // define the request
             let request = new ROSLIB.ServiceRequest({
-                data: true,
+                data: false,
             })
 
             // define a callback
@@ -167,7 +181,7 @@ var app = new Vue({
 
             // define the request
             let request = new ROSLIB.ServiceRequest({
-                data: false,
+                data: true,
             })
 
             // define a callback
