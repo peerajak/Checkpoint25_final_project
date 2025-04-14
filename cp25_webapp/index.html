@@ -394,8 +394,12 @@
                         </div>
                         <div class="card mt-4">
                             <form>
-                                <p>Click to add aruco position to waypoint: </p>
-                                <p><input type="button" @click="insertItemIntoListBox()"  value="Insert" /></p>
+                                <p>Click to add aruco position to waypoint (max 4): </p>
+                                <p>
+                                <input type="button" @click="insertItemIntoListBox()"  value="Insert" />
+                                <input type="button" @click="removeSelectedItemIntoListBox()"  value="Remove Selected" />
+                                <input type="button" @click="clearItemIntoListBox()"  value="Clear" />
+                                </p>
                                 <select id="access" size="4">
                                 </select>
                                 <p><input type="button" @click="moveEndToWaypoints()"  value="Move" /></p>

@@ -132,11 +132,25 @@ var app = new Vue({
 
         insertItemIntoListBox: function(){
             var x = document.getElementById("access");
-            var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
-            this.tf_aruco_baselink.ax.toFixed(3),this.tf_aruco_baselink.ay.toFixed(3),this.tf_aruco_baselink.az.toFixed(3),this.tf_aruco_baselink.aw.toFixed(3)];
+            //TODO item should contains current 6 joint_states
+            var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3)];
             var option = document.createElement("option");
             option.text = item;
+            
+            if(x.options.length >= 4){
+               x.remove(0);
+            }
             x.add(option);
+        },
+        removeSelectedItemIntoListBox: function(){
+            var x = document.getElementById("access");
+            x.remove(x.selectedIndex);
+        },
+        clearItemIntoListBox: function(){
+            var x = document.getElementById("access");
+            while (x.options.length > 0) {                
+                x.remove(0);
+            } 
         },
         moveEndToWaypoints: function(){
         },
