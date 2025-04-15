@@ -23,7 +23,7 @@ var app = new Vue({
         tfClient_camera_real_baselink: null,
         tfClient_detected_vs_real_aruco: null,
         urdfClient: null,
-        current_joint: { shoulder_pan_joint: 0, shoulder_lift_joint: 0, elbow_joint: 0, wrist_1_joint: 0, wrist_2_joint: 0, wrist_3_joint: 0},
+        // current_joint: { shoulder_pan_joint: 0, shoulder_lift_joint: 0, elbow_joint: 0, wrist_1_joint: 0, wrist_2_joint: 0, wrist_3_joint: 0},
         tf_aruco_baselink: {
             x: 0,
             y: 0,
@@ -92,7 +92,7 @@ var app = new Vue({
                 clearInterval(this.pubInterval)         
             })
 
-            let topic_joint_state = new ROSLIB.Topic({
+            /* let topic_joint_state = new ROSLIB.Topic({
                 ros: this.ros,
                 name: '/joint_states',
                 messageType: 'sensor_msgs/JointState',
@@ -106,7 +106,7 @@ var app = new Vue({
                 this.current_joint.wrist_1_joint = message.position[3]
                 this.current_joint.wrist_2_joint = message.position[4]
                 this.current_joint.wrist_3_joint = message.position[5]
-            })
+            })*/
         },
 
         showCamera: function() {
@@ -151,13 +151,12 @@ var app = new Vue({
             var x = document.getElementById("access");
             //TODO item should contains current 6 joint_states
             var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
-            this.current_joint.shoulder_pan_joint, this.current_joint.shoulder_lift_joint, this.current_joint.elbow_joint, 
-            this.current_joint.wrist_1_joint, this.current_joint.wrist_2_joint, this.current_joint.wrist_3_joint];
+            this.tf_aruco_baselink.ax.toFixed(3),this.tf_aruco_baselink.ay.toFixed(3) ,this.tf_aruco_baselink.az.toFixed(3), this.tf_aruco_baselink.aw.toFixed(3)];
             var option = document.createElement("option");
             option.text = item;
             
             if(x.options.length >= 4){
-               x.remove(0);
+               x.remove(0);this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
             }
             x.add(option);
         },
@@ -171,7 +170,40 @@ var app = new Vue({
                 x.remove(0);
             } 
         },
+        /*sendJointCommand: function(six_joints) {
+            console.log("sendJointCommand" , six_joints);
+            let topic = new ROSLIB.Topic({
+                ros: this.ros,
+                name: '/moveit_goto_joints',
+                messageType: 'sensor_msgs/JointState'
+            })
+            let message = new ROSLIB.Message({
+                name: ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'],
+                position: [six_joints[0], six_joints[1],six_joints[2], six_joints[3],six_joints[4], six_joints[5]]
+            })
+            topic.publish(message)
+        },*/
+        sendPoseCommand: function(pose_aruco) {
+            console.log("sendJointCommand" , six_joints);
+            let topic = new ROSLIB.Topic({
+                ros: this.ros,
+                name: '/moveit_goto_pose',
+                messageType: 'geometry_msgs/Pose'
+            })
+            let message = new ROSLIB.Message({
+                position: {x: pose_aruco[0],y: pose_aruco[1],z: pose_aruco[2]},
+                orientation: {x: pose_aruco[3],y: pose_aruco[4],z: pose_aruco[5],w: pose_aruco[6]}
+            })
+            topic.publish(message)
+        },
         moveEndToWaypoints: function(){
+            var x = document.getElementById("access");
+            if(x.options.length > 0){
+                const array_pose_aruco = x.options[x.selectedIndex].text.split(',');
+                console.log("joints are: " + array_pose_aruco);     
+                this.sendPoseCommand(array_pose_aruco);   
+            }
+
         },
         toggleCheckbox() {
         this.checkbox_fixTf = !this.checkbox_fixTf

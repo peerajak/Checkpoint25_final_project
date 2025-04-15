@@ -77,6 +77,18 @@ def generate_launch_description():
             {'use_sim_time': True},
         ],
     )
+    moveit_goto_pose_topic_service_launch = Node(
+        #name="moveit_goto_pose_topic_service",
+        package="moveit_services",
+        executable="moveit_goto_pose_topic_service",
+        output="screen",
+        parameters=[
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.robot_description_kinematics,
+            {'use_sim_time': True},
+        ],
+    )
 
     #rviz2
     rviz_config_file = PathJoinSubstitution(
@@ -98,6 +110,7 @@ def generate_launch_description():
         aruco_tf_pub_tf2_pub_service,
         planning_sim_scene_service_launch,
         moveit_sim_service_launch,
+        #moveit_goto_pose_topic_service_launch,
         rviz_node 
 
     ])
