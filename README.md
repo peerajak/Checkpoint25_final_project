@@ -245,3 +245,59 @@ Don't forget those dockers whose shoing the GUI on host computer must have calle
 ```
 xhost +local:root
 ```
+
+
+### Test Simulation send hand to goal_pose_trajectory
+
+Terminal 1
+
+```
+source ~/ros2_ws/install/setup.bash
+ros2 launch the_construct_office_gazebo starbots_ur3e.launch.xml
+```
+
+
+Terminal 2
+
+```
+cd ~/ros2_ws/; source install/setup.bash
+ros2 launch my_moveit_config move_group.launch.py
+```
+
+Terminal 3
+
+```
+cd ~/ros2_ws/; source install/setup.bash
+ros2 launch my_moveit_config moveit_rviz.launch.py
+```
+
+
+Terminal 4
+
+```
+cd ~/ros2_ws/; source install/setup.bash
+ros2 launch moveit_services moveit_goto_pose_topic_service.launch.py
+```
+
+
+Terminal 5
+
+```
+cd ~/ros2_ws/; source install/setup.bash
+ros2 launch moveit_services moveit_goto_pose_topic_server_service_client.launch.py
+```
+
+Terminal 6
+
+```
+ros2 topic pub /moveit_goto_pose geometry_msgs/msg/Pose "position:
+  x: 0.343
+  y: 0.132
+  z: 0.284
+orientation:
+  x: -1.0
+  y: 0.0
+  z: 0.0
+  w: 0.0"
+```
+

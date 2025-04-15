@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(control_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_core REQUIRED)
 find_package(moveit_ros_planning REQUIRED)
@@ -46,6 +47,10 @@ add_executable(moveit_goto_pose_topic_service src/moveit_goto_pose_topic_service
 ament_target_dependencies(moveit_goto_pose_topic_service rclcpp moveit_msgs moveit_core 
 cp25_custom_interfaces moveit_ros_planning_interface moveit_ros_planning)
 
+add_executable(moveit_goto_pose_topic_server_service_client src/moveit_goto_pose_topic_server_service_client.cpp)
+ament_target_dependencies(moveit_goto_pose_topic_server_service_client rclcpp geometry_msgs cp25_custom_interfaces)
+
+
 
 add_executable(goal_pose_trajectory
     src/goal_pose_trajectory.cpp)
@@ -67,7 +72,8 @@ install(TARGETS
    moveit_sim_service
    moveit_realrobot_service 
    moveit_goto_pose_topic_service
-   goal_pose_trajectory
+   #goal_pose_trajectory # test only
+   moveit_goto_pose_topic_server_service_client
    DESTINATION lib/${PROJECT_NAME}
  )
 
