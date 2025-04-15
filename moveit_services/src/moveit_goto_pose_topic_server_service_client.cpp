@@ -46,33 +46,31 @@ private:
     request->az = msg->orientation.z;
     request->aw = msg->orientation.w;
                                                         
-    if (!service_called_) {
-        RCLCPP_INFO(this->get_logger(), "Send Async Request");
-        while (!client_->wait_for_service(1s)) {
-        if (!rclcpp::ok()) {
-            RCLCPP_ERROR(
-                this->get_logger(),
-                "Client interrupted while waiting for service. Terminating...");
-            return;
-        }
-        RCLCPP_INFO(this->get_logger(),
-                    "Service Unavailable. Waiting for Service...");
-        }
-        auto result_future = client_->async_send_request(
-            request, std::bind(&MoveitGotoPoseTopicServerServiceClient::response_callback, this,
-                            std::placeholders::_1));
-        service_called_ = true;
 
-        // Now check for the response after a timeout of 1 second
-        auto status = result_future.wait_for(1s);
-
-        if (status != std::future_status::ready) {
-
-        RCLCPP_WARN(this->get_logger(), "Response not ready yet.");
-        }
-    } else {
-      RCLCPP_INFO(this->get_logger(), "Timer Callback Executed");
+    RCLCPP_INFO(this->get_logger(), "Send Async Request");
+    while (!client_->wait_for_service(1s)) {
+    if (!rclcpp::ok()) {
+        RCLCPP_ERROR(
+            this->get_logger(),
+            "Client interrupted while waiting for service. Terminating...");
+        return;
     }
+    RCLCPP_INFO(this->get_logger(),
+                "Service Unavailable. Waiting for Service...");
+    }
+    auto result_future = client_->async_send_request(
+        request, std::bind(&MoveitGotoPoseTopicServerServiceClient::response_callback, this,
+                        std::placeholders::_1));
+    service_called_ = true;
+
+    // Now check for the response after a timeout of 1 second
+    auto status = result_future.wait_for(1s);
+
+    if (status != std::future_status::ready) {
+
+    RCLCPP_WARN(this->get_logger(), "Response not ready yet.");
+    }
+
 
   }
 

@@ -396,6 +396,8 @@
                             <form>
                                 <p>Click to add aruco position to waypoint (max 4): </p>
                                 <p>
+                                <input type="text" id="manual_pose" name="manual_pose"><br>
+                                <input type="button" @click="addPoseManually()" value="Insert manually"/>
                                 <input type="button" @click="insertItemIntoListBox()"  value="Insert" />
                                 <input type="button" @click="removeSelectedItemIntoListBox()"  value="Remove Selected" />
                                 <input type="button" @click="clearItemIntoListBox()"  value="Clear" />

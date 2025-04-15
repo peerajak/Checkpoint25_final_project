@@ -121,8 +121,8 @@ def generate_launch_description():
         aruco_tf_pub_tf2_pub_service,
         planning_sim_scene_service_launch,
         moveit_sim_service_launch,
-        moveit_goto_pose_topic_service_launch,
-        moveit_goto_pose_topic_server_service_client_node,
+        #moveit_goto_pose_topic_service_launch,
+        #moveit_goto_pose_topic_server_service_client_node,
         rviz_node 
 
     ])

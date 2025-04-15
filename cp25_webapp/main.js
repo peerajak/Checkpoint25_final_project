@@ -156,7 +156,7 @@ var app = new Vue({
             option.text = item;
             
             if(x.options.length >= 4){
-               x.remove(0);this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
+               x.remove(0);
             }
             x.add(option);
         },
@@ -169,6 +169,13 @@ var app = new Vue({
             while (x.options.length > 0) {                
                 x.remove(0);
             } 
+        },
+        addPoseManually: function(){
+            var x = document.getElementById("access");
+            var y = document.getElementById("manual_pose")
+            var option = document.createElement("option");
+            option.text = y.value;
+            x.add(option);
         },
         /*sendJointCommand: function(six_joints) {
             console.log("sendJointCommand" , six_joints);
@@ -184,17 +191,24 @@ var app = new Vue({
             topic.publish(message)
         },*/
         sendPoseCommand: function(pose_aruco) {
-            console.log("sendJointCommand" , six_joints);
-            let topic = new ROSLIB.Topic({
+            console.log("sendPoseCommand" , parseFloat(pose_aruco[0]));
+            pose_aruco_0 =  parseFloat(pose_aruco[0]);
+            pose_aruco_1 =  parseFloat(pose_aruco[1]);
+            pose_aruco_2 =  parseFloat(pose_aruco[2]);
+            pose_aruco_3 =  parseFloat(pose_aruco[3]);
+            pose_aruco_4 =  parseFloat(pose_aruco[4]);
+            pose_aruco_5 =  parseFloat(pose_aruco[5]);
+            pose_aruco_6 =  parseFloat(pose_aruco[6]);
+            let topic2 = new ROSLIB.Topic({
                 ros: this.ros,
                 name: '/moveit_goto_pose',
                 messageType: 'geometry_msgs/Pose'
             })
             let message = new ROSLIB.Message({
-                position: {x: pose_aruco[0],y: pose_aruco[1],z: pose_aruco[2]},
-                orientation: {x: pose_aruco[3],y: pose_aruco[4],z: pose_aruco[5],w: pose_aruco[6]}
+                position: {x: pose_aruco_0,y: pose_aruco_1,z: pose_aruco_2},
+                orientation: {x: pose_aruco_3,y: pose_aruco_4,z: pose_aruco_5,w: pose_aruco_6}
             })
-            topic.publish(message)
+            topic2.publish(message)
         },
         moveEndToWaypoints: function(){
             var x = document.getElementById("access");
