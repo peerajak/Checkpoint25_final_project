@@ -97,6 +97,11 @@ private:
   moveit::planning_interface::MoveGroupInterface::Plan kinematics_trajectory_plan_;
   geometry_msgs::msg::Pose target_pose_robot_;
   bool plan_success_robot_ = false;
+  moveit_msgs::msg::RobotTrajectory cartesian_trajectory_plan_;
+  std::vector<geometry_msgs::msg::Pose> cartesian_waypoints_;
+  double plan_fraction_robot_ = 0.0;
+  const double jump_threshold_ = 0.0;
+  const double end_effector_step_ = 0.01;
 
   //rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr subscription_;
 
@@ -121,6 +126,7 @@ private:
     move_group_robot_->setPoseTarget(target_pose_robot_);
   }
 
+
   void plan_trajectory_kinematics() {
     // plan the trajectory to target using kinematics
     plan_success_robot_ =
@@ -128,14 +134,119 @@ private:
          moveit::core::MoveItErrorCode::SUCCESS);
   }
 
+  void setup_waypoints_target(float x_delta, float y_delta, float z_delta) {
+    // initially set target pose to current pose of the robot
+    target_pose_robot_ = move_group_robot_->getCurrentPose().pose;
+    // add the current pose to the target waypoints vector
+    cartesian_waypoints_.push_back(target_pose_robot_);
+    // calculate the desired pose from delta value for the axis
+    target_pose_robot_.position.x += x_delta;
+    target_pose_robot_.position.y += y_delta;
+    target_pose_robot_.position.z += z_delta;
+    // add the desired pose to the target waypoints vector
+    cartesian_waypoints_.push_back(target_pose_robot_);
+  }
+
+  void plan_trajectory_cartesian() {
+    // plan the trajectory to target using cartesian path
+    plan_fraction_robot_ = move_group_robot_->computeCartesianPath(
+        cartesian_waypoints_, end_effector_step_, jump_threshold_,
+        cartesian_trajectory_plan_);
+  }
+
+  void execute_trajectory_cartesian() {
+    // execute the planned trajectory to target using cartesian path
+    if (plan_fraction_robot_ >= 0.0) {
+      // 0.0 to 1.0 = success and -1.0 = failure
+      move_group_robot_->execute(cartesian_trajectory_plan_);
+      RCLCPP_INFO(LOGGER, "Robot Cartesian Trajectory Success !");
+    } else {
+      RCLCPP_INFO(LOGGER, "Robot Cartesian Trajectory Failed !");
+    }
+    // clear cartesian waypoints vector
+    cartesian_waypoints_.clear();
+  }
+
+  float how_far_from_target(float target_pos_x, float target_pos_y, float target_pos_z){
+    return sqrt((move_group_robot_->getCurrentPose().pose.position.x - target_pos_x )*(move_group_robot_->getCurrentPose().pose.position.x - target_pos_x ) + 
+           (move_group_robot_->getCurrentPose().pose.position.y - target_pos_y )*(move_group_robot_->getCurrentPose().pose.position.y - target_pos_y ) +
+           (move_group_robot_->getCurrentPose().pose.position.z - target_pos_z )* (move_group_robot_->getCurrentPose().pose.position.z - target_pos_z ));
+  }
   void moveit_goto_pose_callback( const std::shared_ptr<cp25_custom_interfaces::srv::PoseToMoveit::Request> request, const std::shared_ptr<cp25_custom_interfaces::srv::PoseToMoveit::Response> response) 
     {
-        setup_goal_pose_target(request->x, request->y, request->z, request->ax, request->ay, request->az, request->aw);
-        //setup_goal_pose_target(+0.343, +0.132, +0.284, -1.000, +0.000, +0.000, +0.000);
-        plan_trajectory_kinematics();
-        move_group_robot_->execute(this->kinematics_trajectory_plan_);
-        response->success = true;
-        response->description = "success";
+        float far_threshold = 0.2; //more than 20 cm is far
+        float small_movement = 0.01;
+        if(how_far_from_target(request->x, request->y, request->z) > far_threshold){ //is far away
+            RCLCPP_INFO(LOGGER, "Far movement");
+            setup_goal_pose_target(request->x, request->y, request->z, request->ax, request->ay, request->az, request->aw);
+            //setup_goal_pose_target(+0.343, +0.132, +0.284, -1.000, +0.000, +0.000, +0.000);
+            plan_trajectory_kinematics();
+            move_group_robot_->execute(this->kinematics_trajectory_plan_);
+            response->success = true;
+            response->description = "success";      
+        }else{
+            RCLCPP_INFO(LOGGER, "Near movement");
+            // 1. X direction: find the different in x direction, the sign of the different, use a small movement to adjust
+            // 2. X direction: loop while setup_waypoint from current position until the target. use target value for the last loop
+            //  inside the loop, do setup_waypoint
+            // 3. X direction:     plan_trajectory_cartesian() and  execute_trajectory_cartesian();
+            // 4. Repeat 1-3 for Y and Z directions
+            float x_diff = request->x - move_group_robot_->getCurrentPose().pose.position.x ;
+            float y_diff = request->y - move_group_robot_->getCurrentPose().pose.position.y;
+            float z_diff = request->z - move_group_robot_->getCurrentPose().pose.position.z;
+            float x_planing =  move_group_robot_->getCurrentPose().pose.position.x ;
+            float y_planing =  move_group_robot_->getCurrentPose().pose.position.y ;
+            float z_planing =  move_group_robot_->getCurrentPose().pose.position.z ;
+            while(std::abs(x_diff) > small_movement){
+                if (x_diff > 0){
+                    if (request->x > x_planing + small_movement){
+                        x_planing += small_movement;
+                        x_diff =  request->x - x_planing ;
+                    }                            
+                }else if(x_diff > 0){
+                    if (request->x < x_planing - small_movement){
+                        x_planing -= small_movement;
+                    }     
+                } 
+                setup_waypoints_target(x_planing,y_planing,z_planing);          
+            }
+
+            while(std::abs(y_diff) > small_movement){
+                if (y_diff > 0){
+                    if (request->y > y_planing + small_movement){
+                        y_planing += small_movement;
+                        y_diff =  request->y - y_planing ;
+                    }                            
+                }else if(y_diff > 0){
+                    if (request->y < y_planing - small_movement){
+                        y_planing -= small_movement;
+                    }     
+                } 
+                setup_waypoints_target(x_planing,y_planing,z_planing);          
+            }
+
+            while(std::abs(z_diff) > small_movement){
+                if (z_diff > 0){
+                    if (request->z > z_planing + small_movement){
+                        z_planing += small_movement;
+                        z_diff =  request->z - z_planing ;
+                    }                            
+                }else if(z_diff > 0){
+                    if (request->z < z_planing - small_movement){
+                        z_planing -= small_movement;
+                    }     
+                } 
+                setup_waypoints_target(x_planing,y_planing,z_planing);          
+            }
+
+            plan_trajectory_cartesian();
+            RCLCPP_INFO(LOGGER, "Executing Cartesian Trajectory...");
+            execute_trajectory_cartesian();
+            response->success = true;
+            response->description = "success";   
+
+        }
+
     }
 
 };
