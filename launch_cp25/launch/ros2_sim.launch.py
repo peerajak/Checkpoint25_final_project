@@ -36,12 +36,12 @@ def generate_launch_description():
     # moveit_rviz
     moveit_rviz_launch = generate_moveit_rviz_launch(moveit_config) 
 
-    # my_tf_aruco
-    # aruco_tf_pub = Node(
-    #     package="my_tf_aruco",
-    #     executable="aruco_to_camlink_tf_pub.py",
-    #     output="screen",
-    # )
+    #my_tf_aruco
+    aruco_tf_pub = Node(
+        package="my_tf_aruco",
+        executable="aruco_to_camlink_tf_pub.py",
+        output="screen",
+    )
     aruco_tf_pub_send_to_tf2_pub = Node(
         package="my_tf_aruco",
         executable="aruco_to_camlink_send_to_tf2_pub.py",
@@ -116,13 +116,13 @@ def generate_launch_description():
     return LaunchDescription([
         move_group_launch ,
         moveit_rviz_launch,
+        #aruco_tf_pub,
         aruco_tf_pub_send_to_tf2_pub,
-        #aruco_tf_pub_tf2_pub,
         aruco_tf_pub_tf2_pub_service,
         planning_sim_scene_service_launch,
         moveit_sim_service_launch,
-        #moveit_goto_pose_topic_service_launch,
-        #moveit_goto_pose_topic_server_service_client_node,
+        moveit_goto_pose_topic_service_launch,
+        moveit_goto_pose_topic_server_service_client_node,
         rviz_node 
 
     ])

@@ -302,3 +302,34 @@ orientation:
 ```
 
 0.343,0.132,0.284,-1.0,0.0,0.0,0.0
+
+
+
+## To change the sim robot's camera position 
+
+change the followin to files 
+~/ros2_ws/src/universal_robot_ros2/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
+~/ros2_ws/src/Checkpoint25_final_project/cp25_webapp/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
+
+at line 109
+
+   <xacro:sensor_r430 prefix="wrist_rgbd" parent="base_link" >
+       <origin xyz="-0.3 -0.4 0.3" rpy="0 ${7*pi/18} ${pi/2}"/>
+   </xacro:sensor_r430>
+
+your proper xyz rpy
+
+and
+
+~/ros1_ws/src/Checkpoint25_final_project_ros1_and_ros1_bridge/Universal_Robots_ROS2_Description/urdf/ur.urdf.xacro
+
+at line 116
+
+   <xacro:if value="${is_sim_robot}">
+       <xacro:sensor_r430 prefix="wrist_rgbd" parent="base_link">
+        <origin xyz="-0.3 -0.4 0.3" rpy="0 ${7*pi/18} ${pi/2}"/>
+       </xacro:sensor_r430>
+   </xacro:if> <!-- peerajak this is testing value-->
+
+your proper xyz rpy
+

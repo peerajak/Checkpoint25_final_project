@@ -357,7 +357,7 @@ class ArucoToCamlinkTF(Node):
                 # Store the translation (i.e. position) information
                 self.transform_translation_x = tvecs[0]
                 self.transform_translation_y = tvecs[1]
-                self.transform_translation_z = tvecs[2]
+                self.transform_translation_z = tvecs[2] 
 
                 # Store the rotation information
                 #rotation_matrix = np.eye(3)
