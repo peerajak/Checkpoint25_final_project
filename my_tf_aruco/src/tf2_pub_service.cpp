@@ -109,8 +109,8 @@ private:
     geometry_msgs::msg::TransformStamped msg_aruco_camera;
     rclcpp::Time now = this->get_clock()->now();
     msg_aruco_camera.header.stamp = now;
-    msg_aruco_camera.header.frame_id = msg->header.frame_id;
-    msg_aruco_camera.child_frame_id = msg->child_frame_id;
+    msg_aruco_camera.header.frame_id = msg->header.frame_id;//"wrist_rgbd_camera_depth_optical_frame"
+    msg_aruco_camera.child_frame_id = msg->child_frame_id;// "aruco_frame"
     msg_aruco_camera.transform.translation.x = msg->transform.translation.x;
     msg_aruco_camera.transform.translation.y = msg->transform.translation.y;
     msg_aruco_camera.transform.translation.z = msg->transform.translation.z;
@@ -190,12 +190,14 @@ private:
       was_calibrated_before = true;
 
     } else { // PUBLISING_CALIBRATED
-
+    //because calibrated,  want to ignore the aruco_frame from web page. Therefore, 
+    // want aruco_frame to be hidden inside base link, and use web coding to hide the 
+    // below information.
     geometry_msgs::msg::TransformStamped msg_aruco_camera;
     rclcpp::Time now = this->get_clock()->now();
     msg_aruco_camera.header.stamp = now;
     msg_aruco_camera.header.frame_id = "base_link";//msg->header.frame_id;
-    msg_aruco_camera.child_frame_id = msg->child_frame_id;
+    msg_aruco_camera.child_frame_id = msg->child_frame_id;//// "aruco_frame"
     msg_aruco_camera.transform.translation.x = 0;
     msg_aruco_camera.transform.translation.y = 0;
     msg_aruco_camera.transform.translation.z =0;

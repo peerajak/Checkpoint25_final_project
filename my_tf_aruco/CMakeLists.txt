@@ -47,6 +47,7 @@ install(TARGETS
 
 
 install(PROGRAMS
+  scripts/hole_to_camlink_baselink_tf_pub.py
   scripts/aruco_to_camlink_tf_pub.py
   scripts/aruco_to_camlink_send_to_tf2_pub.py
   scripts/aruco_realrobot_to_camlink_tf_pub.py

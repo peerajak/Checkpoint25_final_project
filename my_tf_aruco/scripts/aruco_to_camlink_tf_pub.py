@@ -54,7 +54,7 @@ class ArucoToCamlinkTF(Node):
         self.is_marker_detected = False
         self.is_camera_info_set = False
         self._aruco_frame = aruco_frame 
-        self.publish_aruco_tf_to_camera = True # False would mean publish tf to base_link      
+        self.publish_aruco_tf_to_camera = True #Always True. False in not correct because new requirement. False would mean publish tf to base_link      
         
         # Create a new `TransformStamped` object.
         # A `TransformStamped` object is a ROS message that represents a transformation between two frames.
@@ -91,10 +91,10 @@ class ArucoToCamlinkTF(Node):
         
 
     def timer_callback(self):
-        if self.publish_aruco_tf_to_camera:
-            self.broadcast_new_tf_to_camera()
-        else:
-            self.broadcast_new_tf_to_baselink()
+        # if self.publish_aruco_tf_to_camera:
+        self.broadcast_new_tf_to_camera()
+        # else:
+        #     self.broadcast_new_tf_to_baselink()
         
 
     def broadcast_new_tf_to_baselink(self):
@@ -318,11 +318,14 @@ class ArucoToCamlinkTF(Node):
             detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
             cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
 
+        #print(corners, marker_ids)
+
         # Check that at least one ArUco marker was detected
         if marker_ids is not None: 
             self.is_marker_detected = True
             self.had_detected_marker = True
             num_markers = len(marker_ids)
+            print('corners',corners)
             # print('corners ',corners)
             # print('marker_ids', marker_ids)
             # Draw a square around detected markers in the video frame
