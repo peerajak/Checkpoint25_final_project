@@ -86,7 +86,7 @@ class ArucoToCamlinkTF(Node):
         # self.br = TransformBroadcaster(self)
         self.subscription_image = self.create_subscription(
                 Image,
-                '/wrist_rgbd_depth_sensor/image_raw',  
+                '/wrist_rgbd_depth_sensor/image_raw',   
                 self.image_callback, 10)
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
         self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 1)

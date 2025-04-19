@@ -19,12 +19,22 @@ var app = new Vue({
         viewer3d: null,
         tfClient: null,
         tfClient_aruco_baselink: null,
+        tfClient_hole_baselink: null,
         tfClient_camera_sol_baselink: null,
         tfClient_camera_real_baselink: null,
         tfClient_detected_vs_real_aruco: null,
         urdfClient: null,
         // current_joint: { shoulder_pan_joint: 0, shoulder_lift_joint: 0, elbow_joint: 0, wrist_1_joint: 0, wrist_2_joint: 0, wrist_3_joint: 0},
         tf_aruco_baselink: {
+            x: 0,
+            y: 0,
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
+        },
+        tf_hole_baselink: {
             x: 0,
             y: 0,
             z: 0,
@@ -137,12 +147,13 @@ var app = new Vue({
                 host: host,
                 width: 400,
                 height: 300,
-                topic: '/wrist_rgbd_depth_sensor/image_aruco_frame',
+                topic: '/wrist_rgbd_depth_sensor/image_hole_frame',
                 ssl: true,
             })
             }
 
         },
+
         disconnect: function() {
             this.ros.close()
         },
@@ -152,6 +163,19 @@ var app = new Vue({
             //TODO item should contains current 6 joint_states
             var item = [this.tf_aruco_baselink.x.toFixed(3),this.tf_aruco_baselink.y.toFixed(3) ,this.tf_aruco_baselink.z.toFixed(3),
             this.tf_aruco_baselink.ax.toFixed(3),this.tf_aruco_baselink.ay.toFixed(3) ,this.tf_aruco_baselink.az.toFixed(3), this.tf_aruco_baselink.aw.toFixed(3)];
+            var option = document.createElement("option");
+            option.text = item;
+            
+            if(x.options.length >= 4){
+               x.remove(0);
+            }
+            x.add(option);
+        },
+        insertHoleItemIntoListBox: function(){
+            var x = document.getElementById("access");
+            //TODO item should contains current 6 joint_states
+            var item = [this.tf_hole_baselink.x.toFixed(3),this.tf_hole_baselink.y.toFixed(3) ,this.tf_hole_baselink.z.toFixed(3),
+            this.tf_hole_baselink.ax.toFixed(3),this.tf_hole_baselink.ay.toFixed(3) ,this.tf_hole_baselink.az.toFixed(3), this.tf_hole_baselink.aw.toFixed(3)];
             var option = document.createElement("option");
             option.text = item;
             
@@ -333,6 +357,23 @@ var app = new Vue({
                 this.tf_aruco_baselink.az = tf.rotation.z;
                 this.tf_aruco_baselink.aw = tf.rotation.w;
             })
+            this.tfClient_hole_baselink = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'base_link',
+                angularThres : 0.01,
+                transThres : 0.01,
+                seconds: 1.0
+                
+            })
+            this.tfClient_hole_baselink.subscribe('hole_frame', (tf) => {
+                this.tf_hole_baselink.x = tf.translation.x
+                this.tf_hole_baselink.y = tf.translation.y;
+                this.tf_hole_baselink.z = tf.translation.z;
+                this.tf_hole_baselink.ax = tf.rotation.x
+                this.tf_hole_baselink.ay = tf.rotation.y;
+                this.tf_hole_baselink.az = tf.rotation.z;
+                this.tf_hole_baselink.aw = tf.rotation.w;
+            })
             this.tfClient_camera_sol_baselink = new ROSLIB.TFClient({
                 ros : this.ros,
                 fixedFrame : 'base_link',
@@ -453,12 +494,23 @@ var app = new Vue({
                 rootObject : this.viewer3d.scene,
             });
 
+            var tfAxes6 = new ROS3D.TFAxes({
+                frame_id: "hole_frame",
+                shaftRadius : 0.02,
+                headRaidus : 0.07,
+                headLength : 0.2,
+                scale : 0.1,
+                tfClient : this.tfClient_hole_baselink,
+                rootObject : this.viewer3d.scene,
+            });
+
         },
 
         unsetCamera() {
             document.getElementById('divCamera').innerHTML = ''
             this.viewer = null
         },
+
         unset3DViewer() {
             document.getElementById('div3DViewer').innerHTML = ''
             this.viewer3d = null

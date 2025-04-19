@@ -398,7 +398,8 @@
                                 <p>
                                 <input type="text" id="manual_pose" name="manual_pose"><br>
                                 <input type="button" @click="addPoseManually()" value="Insert manually"/>
-                                <input type="button" @click="insertItemIntoListBox()"  value="Insert" />
+                                <input type="button" @click="insertItemIntoListBox()"  value="Insert Aruco" />
+                                <input type="button" @click="insertHoleItemIntoListBox()"  value="Insert Hole" />
                                 <input type="button" @click="removeSelectedItemIntoListBox()"  value="Remove Selected" />
                                 <input type="button" @click="clearItemIntoListBox()"  value="Clear" />
                                 </p>
@@ -412,7 +413,7 @@
                     <div class="col-4">
                         <div class="card mt-4">
                             <div class="card-header">
-                                <h4>Camera</h4>
+                                <h4>Camera1</h4>
                             </div>
                             <div class="card-body">
                                 <div id="cameraButton">

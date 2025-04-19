@@ -24,7 +24,7 @@ from numpy.linalg import inv
 
 
 class HoleToCamlinkTF(Node):
-    hole_marker_side_length = 0.06 #measured by hand using blender on .dae file
+    hole_marker_side_length = 0.068 #measured by hand using blender on .dae file
 
     def __init__(self, hole_frame="hole_frame"):
         super().__init__('hole_to_camlink_tf_node')
@@ -60,7 +60,7 @@ class HoleToCamlinkTF(Node):
         self.br = TransformBroadcaster(self)
         self.subscription_image = self.create_subscription(
                 Image,
-                '/wrist_rgbd_depth_sensor/image_raw',  
+                '/wrist_rgbd_depth_sensor/image_aruco_frame',  
                 self.image_callback, 10)
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
         self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_hole_frame', 1)
@@ -239,7 +239,7 @@ class HoleToCamlinkTF(Node):
         if circles is not None:
             is_circle_found = True
             circles = np.uint16(np.around(circles))
-            print('circles',circles)
+            #print('circles',circles)
             for i in circles[0, :]:
                 center = (i[0], i[1])
 
@@ -251,7 +251,7 @@ class HoleToCamlinkTF(Node):
 
                 top_left = (i[0] - radius, i[1] - radius)
                 bottom_right = (i[0] + radius, i[1] + radius )
-                print(center, top_left, bottom_right)
+                #print(center, top_left, bottom_right)
                 cv2.rectangle(detectingImage,top_left,bottom_right,(0,255,0),2)
                 corners = (np.array([[[i[0] - radius,i[1] - radius], [i[0] + radius, i[1] - radius], [i[0] + radius, i[1] + radius], [i[0] - radius, i[1] + radius]]], 
                     dtype=np.float32),) 
@@ -267,7 +267,7 @@ class HoleToCamlinkTF(Node):
             self.is_marker_detected = True
             self.had_detected_marker = True
             num_markers = len(bounding_box_ids)
-            print('corners',corners)
+            #print('corners',corners)
 
             for i, marker_id in enumerate(bounding_box_ids):
 
