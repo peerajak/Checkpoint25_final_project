@@ -314,7 +314,7 @@
                         </div>
                         <div class="card mt-2">
                             <div class="card">
-                                <div class="card-body" id="aruco_pose" v-if="is_fix_tf">
+                                <div class="card-body" id="aruco_pose" v-if="checkbox_fixTf">
                                     <h3 class="text-center">Aruco Pose w.r.t base_link </h3>
                                     <p>x,y,z: {{ tf_aruco_baselink.x.toFixed(3) }}, {{ tf_aruco_baselink.y.toFixed(3)
                                         }},{{
@@ -379,13 +379,13 @@
                                 <div class="card-body">
                                     <h3 class="text-center">Calibrate or Fix TF </h3>
                                     <!--button class="btn btn-danger" @click="fix_tf"  :disabled="!connected || service_busy"
-                                        v-if="is_fix_tf">Calibrate the camera</button>
+                                        v-if="checkbox_fixTf">Calibrate the camera</button>
                                     <button class="btn btn-success" @click="calibrate_tf"  :disabled="!connected || service_busy"
                                         v-else>Fix Camera frame</button-->
                                           <!--Only code you need is this label-->
                                         <p>Slide right to fix the camera TF</p>
                                         <label class="switch">
-                                            <input type="checkbox" @click="toggleCheckbox">
+                                            <input type="checkbox" @click="fixCalibrationCheckbox">
                                             <div class="slider round"></div>
                                         </label>
                                         <p>{{ checkbox_fixTf_string }}</p>
@@ -419,6 +419,22 @@
                                 <div id="cameraButton">
                                     <div id="divCamera"></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="text-center">Fix hole TF</h3>
+                                <!--button class="btn btn-danger" @click="fix_tf"  :disabled="!connected || service_busy"
+                                    v-if="checkbox_fixTf">Calibrate the camera</button>
+                                <button class="btn btn-success" @click="calibrate_tf"  :disabled="!connected || service_busy"
+                                    v-else>Fix Camera frame</button-->
+                                        <!--Only code you need is this label-->
+                                    <p>Slide right to fix the camera TF</p>
+                                    <label class="switch">
+                                        <input type="checkbox" @click="fixHoleCheckbox" >
+                                        <div class="slider round"></div>
+                                    </label>
+                                    <p>{{ checkbox_hole_fixTf_string }}</p>
                             </div>
                         </div>
                     </div>

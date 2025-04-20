@@ -43,9 +43,14 @@ def generate_launch_description():
         output="screen",
     )
     
-    hole_tf_pub= Node(
+    hole_tf_pub = Node(
         package="my_tf_aruco",
         executable="hole_to_camlink_baselink_tf_pub.py",
+        output="screen",
+    )
+    hole_tf_pub_service = Node(
+        package="my_tf_aruco",
+        executable="hole_to_camlink_baselink_tf_pub_service.py", 
         output="screen",
     )
 
@@ -65,6 +70,17 @@ def generate_launch_description():
         output="screen",
     )
     
+    hole_tf_pub_send_to_tf2_pub = Node(
+        package="my_tf_aruco",
+        executable="hole_to_camlink_baselink_send_to_tf2_pub.py",
+        output="screen",
+    )
+
+    hole_tf_pub_tf2_pub_service = Node(
+        package="my_tf_aruco",
+        executable="tf2_hole_pub_service",
+        output="screen",
+    )
 
     # moveit_services
     planning_sim_scene_service_launch = Node(
@@ -124,9 +140,11 @@ def generate_launch_description():
         move_group_launch ,
         moveit_rviz_launch,
         #aruco_tf_pub,
-        hole_tf_pub,
+        hole_tf_pub_service,
         aruco_tf_pub_send_to_tf2_pub,
         aruco_tf_pub_tf2_pub_service,
+        #hole_tf_pub_send_to_tf2_pub,
+        #hole_tf_pub_tf2_pub_service,
         planning_sim_scene_service_launch,
         moveit_sim_service_launch,
         moveit_goto_pose_topic_service_launch,

@@ -5,7 +5,8 @@ var app = new Vue({
         connected: false,
         checkbox_fixTf: false,
         checkbox_fixTf_string: "Calibrating",
-        is_fix_tf: true,
+        checkbox_hole_fixTf: false,
+        checkbox_hole_fixTf_string: "Detecting Holes",
         ros: null,
         viewer: null,
         logs: [],
@@ -243,7 +244,7 @@ var app = new Vue({
             }
 
         },
-        toggleCheckbox() {
+        fixCalibrationCheckbox() {
         this.checkbox_fixTf = !this.checkbox_fixTf
         if(this.checkbox_fixTf) {
           this.checkbox_fixTf_string = "Camera TF fixed"
@@ -252,12 +253,11 @@ var app = new Vue({
           this.checkbox_fixTf_string = "Calibrating"
           this.calibrate_tf()
         }
-        console.log("toggleCheckbox",this.checkbox_fixTf)
+        console.log("fixCalibrationCheckbox",this.checkbox_fixTf)
         this.$emit('setCheckboxVal', this.checkbox_fixTf)
         },
         fix_tf: function() {
             console.log("fix_tf")
-            this.is_fix_tf = false
             this.service_busy = true
             this.service_response = ''
             // define the service to be called
@@ -283,14 +283,77 @@ var app = new Vue({
             })
         },
         calibrate_tf: function() {
-             console.log("calibrate_tf")
-           this.is_fix_tf = true
+            console.log("calibrate_tf")
             this.service_busy = true
             this.service_response = ''
             // define the service to be called
             let service = new ROSLIB.Service({
                 ros: this.ros,
                 name: '/tf2_pub_service',
+                serviceType: 'std_srvs/SetBool',
+            })
+
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
+                data: true,
+            })
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+                console.log(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
+        },
+        fixHoleCheckbox() {
+        this.checkbox_hole_fixTf = !this.checkbox_hole_fixTf
+        if(this.checkbox_hole_fixTf) {
+          this.checkbox_hole_fixTf_string = "A hole is TF fixed"
+          this.fix_hole_tf()
+        }else{
+          this.checkbox_hole_fixTf_string = "Detecting Holes"
+          this.calibrate_hole_tf()
+        }
+        console.log("fixCalibrationCheckbox",this.checkbox_hole_fixTf)
+        this.$emit('setCheckboxVal', this.checkbox_hole_fixTf)
+        },
+        fix_hole_tf: function() {
+            console.log("fix_hole_tf")
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/change_hole_mode_service',
+                serviceType: 'std_srvs/SetBool',
+            })
+
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
+                data: false,
+            })
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+                console.log(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
+        },
+        calibrate_hole_tf: function() {
+            console.log("calibrate_hole_tf")
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/change_hole_mode_service',
                 serviceType: 'std_srvs/SetBool',
             })
 
