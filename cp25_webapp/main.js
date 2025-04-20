@@ -627,5 +627,30 @@ var app = new Vue({
                 console.error(error)
             })
         },
+        callMoveitSimHoleService: function() {
+            // service is busy
+            this.service_busy = true
+            this.service_response = ''
+            // define the service to be called
+            let service = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/moveit_sim_hole_service',
+                serviceType: 'std_srvs/SetBool',
+            })
+
+            // define the request
+            let request = new ROSLIB.ServiceRequest({
+                data: true,
+            })
+
+            // define a callback
+            service.callService(request, (result) => {
+                this.service_busy = false
+                this.service_response = JSON.stringify(result)
+            }, (error) => {
+                this.service_busy = false
+                console.error(error)
+            })
+        },
     }
 })
