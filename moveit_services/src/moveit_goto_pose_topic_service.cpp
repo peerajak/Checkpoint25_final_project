@@ -51,11 +51,13 @@ public:
     move_group_robot_->setPoseReferenceFrame("base_link");
     RCLCPP_INFO(LOGGER, "set Pose Reference Frame to: %s",
                 move_group_robot_->getPoseReferenceFrame().c_str());
-    RCLCPP_INFO(LOGGER, "Planning Frame: %s",
-                move_group_robot_->getPlanningFrame().c_str());
-                move_group_robot_->setEndEffectorLink("rg2_gripper_aruco_link");
+
+    RCLCPP_INFO(LOGGER, "Planning Frame: %s", move_group_robot_->getPlanningFrame().c_str());
+
+    move_group_robot_->setEndEffectorLink("rg2_gripper_aruco_link");
     RCLCPP_INFO(LOGGER, "End Effector Link: %s",
                 move_group_robot_->getEndEffectorLink().c_str());
+                
     RCLCPP_INFO(LOGGER, "Available Planning Groups:");
     std::vector<std::string> group_names =
         move_group_robot_->getJointModelGroupNames();

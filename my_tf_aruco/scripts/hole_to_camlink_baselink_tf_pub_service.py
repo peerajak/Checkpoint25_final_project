@@ -105,71 +105,37 @@ class HoleToCamlinkTF(Node):
                 f'Could not transform {origin_frame} to {dest_frame}: {ex}')
             return None
 
-        if(self.is_marker_detected):
-            hole_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
-            hole_wrt_camera_pose.pose.position.x = self.transform_translation_x
-            hole_wrt_camera_pose.pose.position.y = self.transform_translation_y
-            hole_wrt_camera_pose.pose.position.z = self.transform_translation_z
-            
-            hole_wrt_camera_pose.pose.orientation.x = self.transform_rotation_x
-            hole_wrt_camera_pose.pose.orientation.y = self.transform_rotation_y
-            hole_wrt_camera_pose.pose.orientation.z = self.transform_rotation_z     
-            hole_wrt_camera_pose.pose.orientation.w = self.transform_rotation_w          
-                 
-            transform_baselink_hole_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(hole_wrt_camera_pose,transform_baselink_camera)   
-            
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = transform_baselink_hole_pose_stamped.pose.position.x
-            self.transform_stamped.transform.translation.y = transform_baselink_hole_pose_stamped.pose.position.y
-            self.transform_stamped.transform.translation.z = transform_baselink_hole_pose_stamped.pose.position.z
+        hole_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
+        hole_wrt_camera_pose.pose.position.x = self.transform_translation_x
+        hole_wrt_camera_pose.pose.position.y = self.transform_translation_y
+        hole_wrt_camera_pose.pose.position.z = self.transform_translation_z
+        
+        hole_wrt_camera_pose.pose.orientation.x = self.transform_rotation_x
+        hole_wrt_camera_pose.pose.orientation.y = self.transform_rotation_y
+        hole_wrt_camera_pose.pose.orientation.z = self.transform_rotation_z     
+        hole_wrt_camera_pose.pose.orientation.w = self.transform_rotation_w          
+                
+        transform_baselink_hole_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(hole_wrt_camera_pose,transform_baselink_camera)   
+        
+        self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
-            # Set the rotation of the TF message.
-            # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = transform_baselink_hole_pose_stamped.pose.orientation.x
-            self.transform_stamped.transform.rotation.y = transform_baselink_hole_pose_stamped.pose.orientation.y
-            self.transform_stamped.transform.rotation.z = transform_baselink_hole_pose_stamped.pose.orientation.z
-            self.transform_stamped.transform.rotation.w = transform_baselink_hole_pose_stamped.pose.orientation.w
+        # Set the translation of the TF message.
+        # The translation of the TF message is set to the current position of the robot.
+        self.transform_stamped.transform.translation.x = transform_baselink_hole_pose_stamped.pose.position.x
+        self.transform_stamped.transform.translation.y = transform_baselink_hole_pose_stamped.pose.position.y
+        self.transform_stamped.transform.translation.z = transform_baselink_hole_pose_stamped.pose.position.z
 
-            # Send (broadcast) the TF message.
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing tf from base_link to hole_frame")
-        else:
-            hole_wrt_camera_pose = geometry_msgs.msg.PoseStamped()
-            hole_wrt_camera_pose.pose.position.x = 0.0
-            hole_wrt_camera_pose.pose.position.y = 0.0
-            hole_wrt_camera_pose.pose.position.z = 0.0
-            r = R.from_matrix([[1, 0, 0],
-                   [0, 1, 0],
-                   [0, 0, 1]])          
-            quat = r.as_quat() 
-            hole_wrt_camera_pose.pose.orientation.x = quat[0]
-            hole_wrt_camera_pose.pose.orientation.y = quat[1]
-            hole_wrt_camera_pose.pose.orientation.z = quat[2]   
-            hole_wrt_camera_pose.pose.orientation.w = quat[3]      
-                 
-            transform_baselink_hole_pose_stamped = tf2_geometry_msgs.do_transform_pose_stamped(hole_wrt_camera_pose,transform_baselink_camera)   
-            
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+        # Set the rotation of the TF message.
+        # The rotation of the TF message is set to the current orientation of the robot.
+        self.transform_stamped.transform.rotation.x = transform_baselink_hole_pose_stamped.pose.orientation.x
+        self.transform_stamped.transform.rotation.y = transform_baselink_hole_pose_stamped.pose.orientation.y
+        self.transform_stamped.transform.rotation.z = transform_baselink_hole_pose_stamped.pose.orientation.z
+        self.transform_stamped.transform.rotation.w = transform_baselink_hole_pose_stamped.pose.orientation.w
 
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = transform_baselink_hole_pose_stamped.pose.position.x
-            self.transform_stamped.transform.translation.y = transform_baselink_hole_pose_stamped.pose.position.y
-            self.transform_stamped.transform.translation.z = transform_baselink_hole_pose_stamped.pose.position.z
-
-            # Set the rotation of the TF message.
-            # The rotation of the TF message is set to the current orientation of the robot.
-            self.transform_stamped.transform.rotation.x = transform_baselink_hole_pose_stamped.pose.orientation.x
-            self.transform_stamped.transform.rotation.y = transform_baselink_hole_pose_stamped.pose.orientation.y
-            self.transform_stamped.transform.rotation.z = transform_baselink_hole_pose_stamped.pose.orientation.z
-            self.transform_stamped.transform.rotation.w = transform_baselink_hole_pose_stamped.pose.orientation.w
-
-            # Send (broadcast) the TF message.
-            self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing identity tf from base_link to hole_frame")
+        # Send (broadcast) the TF message.
+        self.br.sendTransform(self.transform_stamped)
+        self.get_logger().info("publishing tf from base_link to hole_frame")
             
         # Euler angle format in radians
         try:
@@ -279,7 +245,7 @@ class HoleToCamlinkTF(Node):
         
 
         # Check that at least one hole marker was detected
-        if is_circle_found: 
+        if is_circle_found and self.publish_hole_tf_to_camera: # if published to baselink means no more changing of hole
             self.is_marker_detected = True
             self.had_detected_marker = True
             num_markers = len(bounding_box_ids)

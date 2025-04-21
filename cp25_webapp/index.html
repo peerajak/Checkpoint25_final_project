@@ -391,7 +391,7 @@
                                         <p>Show marker position</p>
                                     </div>
                                     <div class="image-container">
-                                        <button class="waypoint_button" id="WP3" :disabled="!connected || service_busy"
+                                        <button class="waypoint_button" id="WP3" :disabled="!connected || service_busy || !checkbox_fixTf || !checkbox_hole_fixTf"
                                             @click="callMoveitSimHoleService()">Goto Hole Button</button>
                                         <p>Goto Hole position</p>
                                     </div>
@@ -424,7 +424,7 @@
                                     <input type="text" id="manual_pose" name="manual_pose"><br>
                                     <input type="button" @click="addPoseManually()" value="Insert manually" />
                                     <input type="button" @click="insertItemIntoListBox()" value="Insert Aruco" />
-                                    <input type="button" @click="insertHoleItemIntoListBox()" value="Insert Hole" />
+                                    <!--input type="button" @click="insertHoleItemIntoListBox()" value="Insert Hole" /-->
                                     <input type="button" @click="removeSelectedItemIntoListBox()"
                                         value="Remove Selected" />
                                     <input type="button" @click="clearItemIntoListBox()" value="Clear" />
@@ -457,7 +457,7 @@
                                 <!--Only code you need is this label-->
                                 <p>Slide right to fix the camera TF</p>
                                 <label class="switch">
-                                    <input type="checkbox" @click="fixHoleCheckbox">
+                                    <input type="checkbox" @click="fixHoleCheckbox" >
                                     <div class="slider round"></div>
                                 </label>
                                 <p>{{ checkbox_hole_fixTf_string }}</p>

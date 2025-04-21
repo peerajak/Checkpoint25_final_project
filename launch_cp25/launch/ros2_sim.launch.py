@@ -148,20 +148,28 @@ def generate_launch_description():
         arguments=["-d", rviz_config_file]
     )
 
+    static_end_effector_tip_link_tf_pub = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_transform_publisher_end_effector_tip_link',
+        output='screen',
+        emulate_tty=True,
+        arguments=['0.15', '0', '-0.02', '0', '0', '0', 'rg2_gripper_aruco_link', 'end_effector_tip_link']
+    )
+
+
     return LaunchDescription([
         move_group_launch ,
         moveit_rviz_launch,
-        #aruco_tf_pub,
         hole_tf_pub_service,
         aruco_tf_pub_send_to_tf2_pub,
         aruco_tf_pub_tf2_pub_service,
-        #hole_tf_pub_send_to_tf2_pub,
-        #hole_tf_pub_tf2_pub_service,
         planning_sim_scene_service_launch,
         moveit_sim_service_launch,
         moveit_sim_hole_service_launch,
         moveit_goto_pose_topic_service_launch,
         moveit_goto_pose_topic_server_service_client_node,
+        static_end_effector_tip_link_tf_pub,
         rviz_node 
 
     ])
