@@ -13,8 +13,6 @@
 /*
 run together with
 ros2 run my_tf_aruco aruco_to_camlink_send_to_tf2_pub.py
-and
-ros2 run my_tf_aruco aruco_to_camlink_tf_pub.py
 to create fake_camera_frame from aruco_frame
 */
 

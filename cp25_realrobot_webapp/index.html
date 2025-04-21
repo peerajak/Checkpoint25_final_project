@@ -36,6 +36,10 @@
     <script src="./libs/ros3d.min.js"></script>
 
     <style type="text/css">
+        #access {
+            width: 350px;
+        }
+
         #divMap {
             transform: rotate(90deg) translateY(20px);
             float: right;
@@ -51,9 +55,9 @@
         .image-container {
             position: relative;
             /* set container to a relative position */
-            width: 192px;
+            width: 118px;
             /* set your desired width */
-            height: 240px;
+            height: 180px;
             /* set your desired height */
             padding-left: 0px;
 
@@ -115,9 +119,9 @@
             cursor: pointer;
             /* change mouse cursor on hover */
             transition: all 0.2s ease;
-            width: 192px;
+            width: 118px;
             /* set your desired width */
-            height: 240px;
+            height: 180px;
             /* set your desired height */
             padding-left: 0px;
             border-radius: 10%;
@@ -145,9 +149,9 @@
             cursor: pointer;
             /* change mouse cursor on hover */
             transition: all 0.2s ease;
-            width: 192px;
+            width: 118px;
             /* set your desired width */
-            height: 240px;
+            height: 180px;
             /* set your desired height */
             padding-left: 0px;
             border-radius: 10%;
@@ -205,6 +209,80 @@
             color: #666666;
             background-image: url("");
         }
+        .waypoint_button#WP3 {
+            color: #f5f10f;
+            /* set your desired text color */
+            background-image: url("Button_MoveArm_Hole.png");
+        }
+
+        .waypoint_button#WP3:active {
+            color: #f5f10f;
+            /* set your desired text color */
+            background-image: url("");
+        }
+
+        .waypoint_button#WP3:disabled,
+        button[disabled] {
+            color: #666666;
+            background-image: url("");
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: 0.4s;
+            transition: 0.4s;
+        }
+
+        input:checked+.slider {
+            background-color: #101010;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #101010;
+        }
+
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
 </head>
 
@@ -253,12 +331,39 @@
                         </div>
                         <div class="card mt-2">
                             <div class="card">
-                                <div class="card-body">
-                                    <h2 class="text-center">Aruco_frame w.r.t base_link </h2>
-                                    <p>x,y,z: {{ tf_camera.x.toFixed(3) }}, {{ tf_camera.y.toFixed(3) }},{{
-                                        tf_camera.z.toFixed(3) }}</p>
-                                    <p>Quotanion x,y,z,w: {{ tf_camera.ax.toFixed(3) }}, {{ tf_camera.ay.toFixed(3)
-                                        }},{{ tf_camera.az.toFixed(3) }},{{ tf_camera.aw.toFixed(3) }} </p>
+                                <div class="card-body" id="aruco_pose" v-if="checkbox_fixTf">
+                                    <h3 class="text-center">Aruco Pose w.r.t base_link </h3>
+                                    <p>x,y,z: {{ tf_aruco_baselink.x.toFixed(3) }}, {{ tf_aruco_baselink.y.toFixed(3)
+                                        }},{{
+                                        tf_aruco_baselink.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_aruco_baselink.ax.toFixed(3) }}, {{
+                                        tf_aruco_baselink.ay.toFixed(3)
+                                        }},{{ tf_aruco_baselink.az.toFixed(3) }},{{ tf_aruco_baselink.aw.toFixed(3) }}
+                                    </p>
+                                    <p>error x,y,z: {{
+                                        (tf_error_cal.x.toFixed(3)-tf_aruco_baselink.x.toFixed(3)).toFixed(3) }}, {{
+                                        (tf_error_cal.y.toFixed(3)-tf_aruco_baselink.y.toFixed(3)).toFixed(3) }},{{
+                                        (tf_error_cal.z.toFixed(3)-tf_aruco_baselink.z.toFixed(3)).toFixed(3) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body" id="camera_pose">
+                                    <h3 class="text-center">Camera Pose w.r.t base_link </h3>
+                                    <p>x,y,z: {{ tf_camera_sol_baselink.x.toFixed(3) }}, {{
+                                        tf_camera_sol_baselink.y.toFixed(3) }},{{
+                                        tf_camera_sol_baselink.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_camera_sol_baselink.ax.toFixed(3) }}, {{
+                                        tf_camera_sol_baselink.ay.toFixed(3)
+                                        }},{{ tf_camera_sol_baselink.az.toFixed(3) }},{{
+                                        tf_camera_sol_baselink.aw.toFixed(3) }} </p>
+                                    <p>error x,y,z: {{ (tf_camera_real_baselink.x.toFixed(3) -
+                                        tf_camera_sol_baselink.x.toFixed(3)).toFixed(3) }}, {{
+                                        (tf_camera_real_baselink.y.toFixed(3) -
+                                        tf_camera_sol_baselink.y.toFixed(3)).toFixed(3) }},{{
+                                        (tf_camera_real_baselink.z.toFixed(3) -
+                                        tf_camera_sol_baselink.z.toFixed(3)).toFixed(3) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -283,8 +388,48 @@
                                             @click="callMoveitSimService('goShow')">Show Marker Button</button>
                                         <p>Show marker position</p>
                                     </div>
+                                    <div class="image-container">
+                                        <button class="waypoint_button" id="WP3" :disabled="!connected || service_busy || !checkbox_fixTf || !checkbox_hole_fixTf"
+                                            @click="callMoveitSimHoleService()">Goto Hole Button</button>
+                                        <p>Goto Hole position</p>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3 class="text-center">Calibrate or Fix TF </h3>
+                                    <!--button class="btn btn-danger" @click="fix_tf"  :disabled="!connected || service_busy"
+                                        v-if="checkbox_fixTf">Calibrate the camera</button>
+                                    <button class="btn btn-success" @click="calibrate_tf"  :disabled="!connected || service_busy"
+                                        v-else>Fix Camera frame</button-->
+                                    <!--Only code you need is this label-->
+                                    <p>Slide right to fix the camera TF</p>
+                                    <label class="switch">
+                                        <input type="checkbox" @click="fixCalibrationCheckbox">
+                                        <div class="slider round"></div>
+                                    </label>
+                                    <p>{{ checkbox_fixTf_string }}</p>
                                 </div>
                             </div>
+                        </div>
+                        <div class="card mt-4">
+                            <form>
+                                <p>Click to add aruco position to waypoint (max 4): </p>
+                                <p>
+                                    <input type="text" id="manual_pose" name="manual_pose"><br>
+                                    <input type="button" @click="addPoseManually()" value="Insert manually" />
+                                    <input type="button" @click="insertItemIntoListBox()" value="Insert Aruco" />
+                                    <!--input type="button" @click="insertHoleItemIntoListBox()" value="Insert Hole" /-->
+                                    <input type="button" @click="removeSelectedItemIntoListBox()"
+                                        value="Remove Selected" />
+                                    <input type="button" @click="clearItemIntoListBox()" value="Clear" />
+                                </p>
+                                <select id="access" size="4">
+                                </select>
+                                <p><input type="button" @click="moveEndToWaypoints()" value="Move to Selected" /></p>
+                            </form>
                         </div>
                     </div>
 
@@ -299,16 +444,20 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card mt-2">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h2 class="text-center">Aruco_frame w.r.t rg2_gripper_aruco_link </h2>
-                                    <p>x,y,z: {{ tf_error_cal.x.toFixed(3) }}, {{ tf_error_cal.y.toFixed(3) }},{{
-                                        tf_error_cal.z.toFixed(3) }}</p>
-                                    <p>Quotanion x,y,z,w: {{ tf_error_cal.ax.toFixed(3) }}, {{
-                                        tf_error_cal.ay.toFixed(3) }},{{ tf_error_cal.az.toFixed(3) }},{{
-                                        tf_error_cal.aw.toFixed(3) }} </p>
-                                </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="text-center">Fix hole TF</h3>
+                                <!--button class="btn btn-danger" @click="fix_tf"  :disabled="!connected || service_busy"
+                                    v-if="checkbox_fixTf">Calibrate the camera</button>
+                                <button class="btn btn-success" @click="calibrate_tf"  :disabled="!connected || service_busy"
+                                    v-else>Fix Camera frame</button-->
+                                <!--Only code you need is this label-->
+                                <p>Slide right to fix the camera TF</p>
+                                <label class="switch">
+                                    <input type="checkbox" @click="fixHoleCheckbox" >
+                                    <div class="slider round"></div>
+                                </label>
+                                <p>{{ checkbox_hole_fixTf_string }}</p>
                             </div>
                         </div>
                     </div>

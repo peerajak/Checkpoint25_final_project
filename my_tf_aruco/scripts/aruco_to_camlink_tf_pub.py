@@ -221,7 +221,7 @@ class ArucoToCamlinkTF(Node):
 
             # Send (broadcast) the TF message.
             self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing identity tf from camera to aruco_frame")
+            self.get_logger().info("publishing tf from camera to aruco_frame")
         else:
             self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
@@ -247,7 +247,8 @@ class ArucoToCamlinkTF(Node):
             self.transform_stamped.transform.rotation.w = self.transform_rotation_w
             
             self.br.sendTransform(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
+            self.get_logger().info("publishing identity tf from camera to aruco_frame")
+
         
         # Euler angle format in radians
         try:

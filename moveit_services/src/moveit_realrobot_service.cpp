@@ -26,7 +26,7 @@ public:
     node_ = std::make_shared<rclcpp::Node>("moveit_realrobot_service");
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     srv_ = create_service<SetBool>(
-        "moveit_sim_service",
+        "moveit_realrobot_service",
         std::bind(&MoveitSimServerNode::moveit_realrobot_callback, this, _1,
                   _2));
 

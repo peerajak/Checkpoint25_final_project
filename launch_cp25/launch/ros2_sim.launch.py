@@ -154,7 +154,7 @@ def generate_launch_description():
         name='static_transform_publisher_end_effector_tip_link',
         output='screen',
         emulate_tty=True,
-        arguments=['0.15', '0', '-0.02', '0', '0', '0', 'rg2_gripper_aruco_link', 'end_effector_tip_link']
+        arguments=['0.25', '0', '0', '0', '0', '0', 'tool0', 'end_effector_tip_link']
     )
 
 

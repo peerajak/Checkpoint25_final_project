@@ -48,6 +48,10 @@ add_executable(moveit_realrobot_service src/moveit_realrobot_service.cpp)
 ament_target_dependencies(moveit_realrobot_service rclcpp std_srvs moveit_msgs moveit_core
 	moveit_ros_planning_interface moveit_ros_planning )
 
+add_executable(moveit_realrobot_hole_service src/moveit_realrobot_hole_service.cpp)
+ament_target_dependencies(moveit_realrobot_hole_service rclcpp std_srvs moveit_msgs moveit_core
+	moveit_ros_planning_interface moveit_ros_planning )
+
 add_executable(moveit_goto_pose_topic_service src/moveit_goto_pose_topic_service.cpp)
 ament_target_dependencies(moveit_goto_pose_topic_service rclcpp moveit_msgs moveit_core 
 cp25_custom_interfaces moveit_ros_planning_interface moveit_ros_planning)
@@ -55,6 +59,12 @@ cp25_custom_interfaces moveit_ros_planning_interface moveit_ros_planning)
 add_executable(moveit_goto_pose_topic_server_service_client src/moveit_goto_pose_topic_server_service_client.cpp)
 ament_target_dependencies(moveit_goto_pose_topic_server_service_client rclcpp geometry_msgs cp25_custom_interfaces)
 
+add_executable(moveit_realrobot_goto_pose_topic_service src/moveit_realrobot_goto_pose_topic_service.cpp)
+ament_target_dependencies(moveit_realrobot_goto_pose_topic_service rclcpp moveit_msgs moveit_core 
+cp25_custom_interfaces moveit_ros_planning_interface moveit_ros_planning)
+
+add_executable(moveit_realrobot_goto_pose_topic_server_service_client src/moveit_realrobot_goto_pose_topic_server_service_client.cpp)
+ament_target_dependencies(moveit_realrobot_goto_pose_topic_server_service_client rclcpp geometry_msgs cp25_custom_interfaces)
 
 
 add_executable(goal_pose_trajectory
@@ -77,9 +87,12 @@ install(TARGETS
    moveit_sim_service
    moveit_sim_hole_service
    moveit_realrobot_service 
+   moveit_realrobot_hole_service
    moveit_goto_pose_topic_service
+   moveit_realrobot_goto_pose_topic_service
    #goal_pose_trajectory # test only
    moveit_goto_pose_topic_server_service_client
+   moveit_realrobot_goto_pose_topic_server_service_client
    DESTINATION lib/${PROJECT_NAME}
  )
 

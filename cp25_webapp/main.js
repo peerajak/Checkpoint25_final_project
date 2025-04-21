@@ -25,7 +25,6 @@ var app = new Vue({
         tfClient_camera_real_baselink: null,
         tfClient_detected_vs_real_aruco: null,
         urdfClient: null,
-        // current_joint: { shoulder_pan_joint: 0, shoulder_lift_joint: 0, elbow_joint: 0, wrist_1_joint: 0, wrist_2_joint: 0, wrist_3_joint: 0},
         tf_aruco_baselink: {
             x: 0,
             y: 0,
@@ -102,22 +101,6 @@ var app = new Vue({
 
                 clearInterval(this.pubInterval)         
             })
-
-            /* let topic_joint_state = new ROSLIB.Topic({
-                ros: this.ros,
-                name: '/joint_states',
-                messageType: 'sensor_msgs/JointState',
-            })
-
-            topic_joint_state.subscribe((message) => {
-                console.log(message)
-                this.current_joint.shoulder_pan_joint = message.position[0]
-                this.current_joint.shoulder_lift_joint = message.position[1]
-                this.current_joint.elbow_joint = message.position[2]
-                this.current_joint.wrist_1_joint = message.position[3]
-                this.current_joint.wrist_2_joint = message.position[4]
-                this.current_joint.wrist_3_joint = message.position[5]
-            })*/
         },
 
         showCamera: function() {
@@ -172,19 +155,7 @@ var app = new Vue({
             }
             x.add(option);
         },
-        insertHoleItemIntoListBox: function(){
-            var x = document.getElementById("access");
-            //TODO item should contains current 6 joint_states
-            var item = [this.tf_hole_baselink.x.toFixed(3),this.tf_hole_baselink.y.toFixed(3) ,this.tf_hole_baselink.z.toFixed(3),
-            this.tf_hole_baselink.ax.toFixed(3),this.tf_hole_baselink.ay.toFixed(3) ,this.tf_hole_baselink.az.toFixed(3), this.tf_hole_baselink.aw.toFixed(3)];
-            var option = document.createElement("option");
-            option.text = item;
-            
-            if(x.options.length >= 4){
-               x.remove(0);
-            }
-            x.add(option);
-        },
+
         removeSelectedItemIntoListBox: function(){
             var x = document.getElementById("access");
             x.remove(x.selectedIndex);
@@ -202,19 +173,7 @@ var app = new Vue({
             option.text = y.value;
             x.add(option);
         },
-        /*sendJointCommand: function(six_joints) {
-            console.log("sendJointCommand" , six_joints);
-            let topic = new ROSLIB.Topic({
-                ros: this.ros,
-                name: '/moveit_goto_joints',
-                messageType: 'sensor_msgs/JointState'
-            })
-            let message = new ROSLIB.Message({
-                name: ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'],
-                position: [six_joints[0], six_joints[1],six_joints[2], six_joints[3],six_joints[4], six_joints[5]]
-            })
-            topic.publish(message)
-        },*/
+
         sendPoseCommand: function(pose_aruco) {
             console.log("sendPoseCommand" , parseFloat(pose_aruco[0]));
             pose_aruco_0 =  parseFloat(pose_aruco[0]);

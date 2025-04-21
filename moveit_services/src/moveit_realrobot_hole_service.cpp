@@ -19,20 +19,20 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 
 
-static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_sim_hole_service");
+static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_realrobot_hole_service");
 static const std::string PLANNING_GROUP = "ur_manipulator";
 
 
 class MoveitSimServerNode : public rclcpp::Node
 {
 public:
-  MoveitSimServerNode(rclcpp::NodeOptions &node_options): Node("moveit_sim_hole_service_node", node_options)
+  MoveitSimServerNode(rclcpp::NodeOptions &node_options): Node("moveit_realrobot_hole_service_node", node_options)
   {
 
 
-    node_ = std::make_shared<rclcpp::Node>("moveit_sim_hole_service");
+    node_ = std::make_shared<rclcpp::Node>("moveit_realrobot_hole_service");
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
-    srv_ = create_service<SetBool>("moveit_sim_hole_service", std::bind(&MoveitSimServerNode::moveit_sim_hole_callback, this, _1, _2));
+    srv_ = create_service<SetBool>("moveit_realrobot_hole_service", std::bind(&MoveitSimServerNode::moveit_realrobot_hole_callback, this, _1, _2));
    
     move_group = std::make_shared<moveit::planning_interface::MoveGroupInterface>(node_,PLANNING_GROUP);
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
@@ -102,10 +102,10 @@ private:
   }
 
 
-  void moveit_sim_hole_callback( const std::shared_ptr<SetBool::Request> request, const std::shared_ptr<SetBool::Response> response) 
+  void moveit_realrobot_hole_callback( const std::shared_ptr<SetBool::Request> request, const std::shared_ptr<SetBool::Response> response) 
     {
 
-        RCLCPP_INFO(LOGGER, "moveit_sim_hole_callback");
+        RCLCPP_INFO(LOGGER, "moveit_realrobot_hole_callback");
         float far_threshold = 0.2; //more than 20 cm is far
         RCLCPP_INFO(LOGGER, "Executing Hole Cartesian Trajectory...");
         std::string fromFrame = "base_link";  // parent
