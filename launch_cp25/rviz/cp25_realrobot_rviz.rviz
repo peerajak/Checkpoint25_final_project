@@ -67,7 +67,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /D415/color/image_raw/compressed
+        Value: /D415/color/image_hole/compressed
       Value: true
     - Class: rviz_default_plugins/TF
       Enabled: true
@@ -110,6 +110,8 @@ Visualization Manager:
           Value: false
         ft_frame:
           Value: false
+        hole_frame:
+          Value: true
         rg2_gripper_aruco_link:
           Value: false
         rg2_gripper_base_link:
@@ -142,50 +144,49 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
-          D415_bottom_screw_frame:
-            {}
-          D415_link:
-            D415_color_frame:
-              D415_color_optical_frame:
-                {}
-            D415_depth_frame:
-              D415_depth_optical_frame:
-                {}
-              D415_left_ir_frame:
-                D415_left_ir_optical_frame:
-                  {}
-              D415_right_ir_frame:
-                D415_right_ir_optical_frame:
-                  {}
-          aruco_frame:
-            {}
-          base:
-            {}
-          base_link_inertia:
-            shoulder_link:
-              upper_arm_link:
-                forearm_link:
-                  wrist_1_link:
-                    wrist_2_link:
-                      wrist_3_link:
-                        flange:
-                          tool0:
-                            rg2_gripper_base_link:
-                              aruco_link:
-                                {}
-                              rg2_gripper_aruco_link:
-                                {}
-                              rg2_gripper_left_finger:
-                                rg2_gripper_left_thumb:
-                                  {}
-                              rg2_gripper_right_finger:
-                                rg2_gripper_right_thumb:
-                                  {}
-                        ft_frame:
-                          {}
         world:
-          {}
+          base_link:
+            D415_bottom_screw_frame:
+              D415_link:
+                D415_depth_frame:
+                  D415_color_frame:
+                    D415_color_optical_frame:
+                      hole_frame:
+                        {}
+                  D415_depth_optical_frame:
+                    {}
+                  D415_left_ir_frame:
+                    D415_left_ir_optical_frame:
+                      {}
+                  D415_right_ir_frame:
+                    D415_right_ir_optical_frame:
+                      {}
+            aruco_frame:
+              {}
+            base:
+              {}
+            base_link_inertia:
+              shoulder_link:
+                upper_arm_link:
+                  forearm_link:
+                    wrist_1_link:
+                      wrist_2_link:
+                        wrist_3_link:
+                          flange:
+                            tool0:
+                              rg2_gripper_base_link:
+                                aruco_link:
+                                  {}
+                                rg2_gripper_aruco_link:
+                                  {}
+                                rg2_gripper_left_finger:
+                                  rg2_gripper_left_thumb:
+                                    {}
+                                rg2_gripper_right_finger:
+                                  rg2_gripper_right_thumb:
+                                    {}
+                          ft_frame:
+                            {}
       Update Interval: 0
       Value: true
     - Alpha: 1

@@ -44,6 +44,12 @@ def generate_launch_description():
         output="screen",
     )
 
+    aruco_tf_pub_tf2_pub_service = Node(
+        package="my_tf_aruco",
+        executable="tf2_realrobot_pub_service",
+        output="screen",
+    )
+
     hole_tf_pub_service = Node(
         package="my_tf_aruco",
         executable="hole_realrobot_to_camlink_baselink_tf_pub_service.py", 
@@ -130,7 +136,7 @@ def generate_launch_description():
         hole_tf_pub_service,
         #aruco_tf_pub,
         aruco_tf_pub_send_to_tf2_pub,
-        aruco_tf_pub_tf2_pub,
+        aruco_tf_pub_tf2_pub_service,
         planning_realrobot_scene_service_launch,
         moveit_realrobot_service_launch,
         moveit_realrobot_hole_service_launch,

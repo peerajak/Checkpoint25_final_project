@@ -4,6 +4,7 @@ import sys
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, DurabilityPolicy, QoSProfile
+from sensor_msgs.msg import Image
 from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import CameraInfo
 from tf2_ros import TransformException
@@ -13,7 +14,8 @@ from tf2_ros.transform_listener import TransformListener
 import geometry_msgs
 import tf2_geometry_msgs 
 from nav_msgs.msg import Odometry
-
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 import cv2 # Import the OpenCV library
 import numpy as np # Import Numpy library
 from scipy.spatial.transform import Rotation as R
@@ -51,23 +53,27 @@ class HoleToCamlinkTF(Node):
 
 
 
+        self.group_timer = MutuallyExclusiveCallbackGroup()
         self.Timer = self.create_timer(
-            1.0, self.timer_callback
+            0.05, self.timer_callback, callback_group=self.group_timer
         )
 
         self.srv = self.create_service(SetBool, 'change_hole_mode_service', self.change_hole_mode_service_callback)
 
         # This line creates a new `TransformBroadcaster` object.
         # A `TransformBroadcaster` object is a ROS node that publishes TF messages.
+        self.group_image = MutuallyExclusiveCallbackGroup()
         self.br = TransformBroadcaster(self)
         self.subscription_image = self.create_subscription(
                 CompressedImage,
                 '/D415/color/image_aruco/compressed', 
                 self.image_callback, qos_profile=1,callback_group=self.group_image)
+        self.group_camera_info = MutuallyExclusiveCallbackGroup()
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/D415/color/camera_info', self.camera_info_callback,\
              qos_profile=1, callback_group=self.group_camera_info)
-        self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_hole/compressed', \
-            qos_profile=1, )
+        # self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_hole/compressed', \
+        #     qos_profile=1, )
+        self.publisher_raw = self.create_publisher(Image, '/D415/color/image_hole_raw', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("hole_to_camlink_tf_node ready!!")
         
@@ -96,7 +102,7 @@ class HoleToCamlinkTF(Node):
         self.transform_stamped.header.frame_id = "base_link"
         try:
             now = rclpy.time.Time()
-            dest_frame = "camera_solution_frame"  #"wrist_rgbd_camera_depth_optical_frame" #
+            dest_frame = "camera_solution_frame"  #"D415_color_optical_frame" #
             origin_frame = "base_link"
             transform_baselink_camera = self.tf_buffer.lookup_transform(
                 origin_frame,
@@ -155,7 +161,7 @@ class HoleToCamlinkTF(Node):
         """
         This function broadcasts a new TF message to the TF network.
         """
-        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
+        self.transform_stamped.header.frame_id = "D415_color_optical_frame"
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.
@@ -191,7 +197,7 @@ class HoleToCamlinkTF(Node):
                                                                 self.transform_rotation_y, 
                                                                 self.transform_rotation_z, 
                                                                 self.transform_rotation_w)        
-            self.get_logger().info("TF wrist_rgbd_camera_depth_optical_frame->hole_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
+            self.get_logger().info("TF D415_color_optical_frame->hole_frame xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f})".format( \
                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
         except AttributeError:
             pass
@@ -336,8 +342,8 @@ class HoleToCamlinkTF(Node):
         #cv2.waitKey(3)    
         if detectingImage is not None:
             try:
-                image_message_compressed = self.cv_bridge.cv2_to_compressed_imgmsg(detectingImage)
-                self.publisher_compressed.publish(image_message_compressed)
+                image_message = self.cv_bridge.cv2_to_imgmsg(detectingImage, encoding="bgr8")
+                self.publisher_raw.publish(image_message)
             except Exception as e:
                 print(e)
 
@@ -420,10 +426,13 @@ class HoleToCamlinkTF(Node):
 
 
 def main(args=None):
-
     rclpy.init()
     hole_to_cam_tf_obj = HoleToCamlinkTF()
-    rclpy.spin(hole_to_cam_tf_obj)
+    executor = MultiThreadedExecutor()
+    executor.add_node(hole_to_cam_tf_obj)
+    executor.spin()
+
+
 
     #TODO
     # - add subscription to /camera_info topic and get all camera parameters, instead of mock up camera param currently use

@@ -172,21 +172,21 @@ private:
       current_state->copyJointGroupPositions(joint_model_group,
                                              joint_group_positions);
 
-      joint_group_positions[0] = 2.094395;   // Shoulder Pan
-      joint_group_positions[1] = -0.0697777; // Shoulder Lift
-      joint_group_positions[2] = 1.604888;   // Elbow
-      joint_group_positions[3] = -1.849111;  // Wrist 1
-      joint_group_positions[4] = -0.348888;  // Wrist 2
-      joint_group_positions[5] = -2.9496;    // Wrist 3
-      move_group->setJointValueTarget(joint_group_positions);
+    //   joint_group_positions[0] = 2.094395;   // Shoulder Pan
+    //   joint_group_positions[1] = -0.0697777; // Shoulder Lift
+    //   joint_group_positions[2] = 1.604888;   // Elbow
+    //   joint_group_positions[3] = -1.849111;  // Wrist 1
+    //   joint_group_positions[4] = -0.348888;  // Wrist 2
+    //   joint_group_positions[5] = -2.9496;    // Wrist 3
+    //   move_group->setJointValueTarget(joint_group_positions);
 
-      moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+       moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-      bool success = (move_group->plan(my_plan) ==
-                      moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    //   bool success = (move_group->plan(my_plan) ==
+    //                   moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
-      move_group->execute(my_plan);
-      sleep(SLEEPTIME);
+    //   move_group->execute(my_plan);
+    //   sleep(SLEEPTIME);
       // step 2 Home
 
       // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
@@ -198,12 +198,12 @@ private:
       joint_group_positions[5] = 0.0;     // Wrist 3
 
       move_group->setJointValueTarget(joint_group_positions);
-      bool success2 = (move_group->plan(my_plan) ==
+      bool success = (move_group->plan(my_plan) ==
                        moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
       move_group->execute(my_plan);
       sleep(SLEEPTIME);
-      if (success && success2) {
+      if (success) {
         response->success = true;
         response->message = "moveit to show: success";
       } else {

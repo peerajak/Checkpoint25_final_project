@@ -204,8 +204,8 @@ var app = new Vue({
 
         },
         fixCalibrationCheckbox() {
-        this.checkbox_fixTf = !this.checkbox_fixTf
-        if(this.checkbox_fixTf) {
+       
+        if(!this.checkbox_fixTf) {
           this.checkbox_fixTf_string = "Camera TF fixed"
           this.fix_tf()
         }else{
@@ -268,8 +268,8 @@ var app = new Vue({
             })
         },
         fixHoleCheckbox() {
-        this.checkbox_hole_fixTf = !this.checkbox_hole_fixTf
-        if(this.checkbox_hole_fixTf) {
+
+        if(!this.checkbox_hole_fixTf) {
           this.checkbox_hole_fixTf_string = "A hole is TF fixed"
           this.fix_hole_tf()
         }else{

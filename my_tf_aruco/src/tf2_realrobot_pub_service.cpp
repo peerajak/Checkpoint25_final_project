@@ -121,9 +121,9 @@ private:
     tf_broadcaster2_->sendTransform(msg_aruco_camera);
 
       // 1. Let rg2_gripper_aruco_link be a known avalue, find transformation
-      // from base to rg2_gripper_aruco_link
+      // from base to aruco_link
       std::string fromFrame = "base_link";            // parent
-      std::string toFrame = "rg2_gripper_aruco_link"; // child
+      std::string toFrame = "aruco_link"; // child
 
       geometry_msgs::msg::TransformStamped tf_aruco_to_base_link;
       try {

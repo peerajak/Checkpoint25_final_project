@@ -331,7 +331,7 @@
                         </div>
                         <div class="card mt-2">
                             <div class="card">
-                                <div class="card-body" id="aruco_pose" v-if="checkbox_fixTf">
+                                <div class="card-body" id="aruco_pose" v-if="!checkbox_fixTf">
                                     <h3 class="text-center">Aruco Pose w.r.t base_link </h3>
                                     <p>x,y,z: {{ tf_aruco_baselink.x.toFixed(3) }}, {{ tf_aruco_baselink.y.toFixed(3)
                                         }},{{
@@ -379,18 +379,18 @@
                                     <p>Click on the button to control the robot arm to the position shown in image</p>
                                     <div class="image-container">
                                         <button class="waypoint_button" id="WP1" :disabled="!connected || service_busy"
-                                            @click="callMoveitSimService('goHome')">Home Button</button>
+                                            @click="callMoveitRealRobotService('goHome')">Home Button</button>
                                         <p>Home Position</p>
 
                                     </div>
                                     <div class="image-container">
                                         <button class="waypoint_button" id="WP2" :disabled="!connected || service_busy"
-                                            @click="callMoveitSimService('goShow')">Show Marker Button</button>
+                                            @click="callMoveitRealRobotService('goShow')">Show Marker Button</button>
                                         <p>Show marker position</p>
                                     </div>
                                     <div class="image-container">
                                         <button class="waypoint_button" id="WP3" :disabled="!connected || service_busy || !checkbox_fixTf || !checkbox_hole_fixTf"
-                                            @click="callMoveitSimHoleService()">Goto Hole Button</button>
+                                            @click="callMoveitRealRobotHoleService()">Goto Hole Button</button>
                                         <p>Goto Hole position</p>
                                     </div>
                                 </div>
@@ -407,10 +407,11 @@
                                     <!--Only code you need is this label-->
                                     <p>Slide right to fix the camera TF</p>
                                     <label class="switch">
-                                        <input type="checkbox" @click="fixCalibrationCheckbox">
+                                        <input type="checkbox" v-model="checkbox_fixTf" @click="fixCalibrationCheckbox">
                                         <div class="slider round"></div>
                                     </label>
                                     <p>{{ checkbox_fixTf_string }}</p>
+                                    <p>Checkbox is checked: {{ checkbox_fixTf }}</p>
                                 </div>
                             </div>
                         </div>
@@ -454,10 +455,11 @@
                                 <!--Only code you need is this label-->
                                 <p>Slide right to fix the camera TF</p>
                                 <label class="switch">
-                                    <input type="checkbox" @click="fixHoleCheckbox" >
+                                    <input type="checkbox" v-model="checkbox_hole_fixTf" @click="fixHoleCheckbox" >
                                     <div class="slider round"></div>
                                 </label>
                                 <p>{{ checkbox_hole_fixTf_string }}</p>
+                                <p>Checkbox is checked: {{ checkbox_hole_fixTf }}</p>
                             </div>
                         </div>
                     </div>

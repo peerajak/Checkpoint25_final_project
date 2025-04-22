@@ -131,7 +131,7 @@ var app = new Vue({
                 host: host,
                 width: 400,
                 height: 300,
-                topic: '/D415/color/image_aruco_raw',
+                topic: '/D415/color/image_hole_raw',
                 ssl: true,
             })
             }
@@ -204,8 +204,8 @@ var app = new Vue({
         },
 
         fixCalibrationCheckbox() {
-        this.checkbox_fixTf = !this.checkbox_fixTf
-        if(this.checkbox_fixTf) {
+
+        if(!this.checkbox_fixTf) {
           this.checkbox_fixTf_string = "Camera TF fixed"
           this.fix_tf()
         }else{
@@ -268,15 +268,15 @@ var app = new Vue({
             })
         },
         fixHoleCheckbox() {
-        this.checkbox_hole_fixTf = !this.checkbox_hole_fixTf
-        if(this.checkbox_hole_fixTf) {
+
+        if(!this.checkbox_hole_fixTf) {
           this.checkbox_hole_fixTf_string = "A hole is TF fixed"
           this.fix_hole_tf()
         }else{
           this.checkbox_hole_fixTf_string = "Detecting Holes"
           this.calibrate_hole_tf()
         }
-        console.log("fixCalibrationCheckbox",this.checkbox_hole_fixTf)
+        console.log("fixHoleCheckbox",this.checkbox_hole_fixTf)
         this.$emit('setCheckboxVal', this.checkbox_hole_fixTf)
         },
         fix_hole_tf: function() {
@@ -442,7 +442,7 @@ var app = new Vue({
                 angularThres : 0.001,
                 transThres : 0.001
             })
-            this.tfClient_detected_vs_real_aruco.subscribe('rg2_gripper_aruco_link', (tf) => {
+            this.tfClient_detected_vs_real_aruco.subscribe('aruco_link', (tf) => {
                 console.log('tfClient_detected_vs_real_aruco sub aruco_frame')
                 console.log(tf.translation.x,tf.translation.y,tf.translation.z)
                 this.tf_error_cal.x = tf.translation.x
@@ -498,7 +498,7 @@ var app = new Vue({
             });
 
             var tfAxes4 = new ROS3D.TFAxes({
-                frame_id: "rg2_gripper_aruco_link",
+                frame_id: "aruco_link",
                 shaftRadius : 0.02,
                 headRaidus : 0.07,
                 headLength : 0.2,
