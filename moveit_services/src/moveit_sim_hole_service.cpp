@@ -126,6 +126,7 @@ private:
         float z_diff = tf_hole_to_base_link.transform.translation.z - move_group->getCurrentPose().pose.position.z + z_offset;
 
         if(how_far_from_target(x_diff, y_diff, z_diff) > far_threshold){ //is far away
+            RCLCPP_INFO(LOGGER, "Far movement");
             const moveit::core::JointModelGroup *joint_model_group =
             move_group->getCurrentState()->getJointModelGroup(PLANNING_GROUP);
 
@@ -165,7 +166,7 @@ private:
             sleep(SLEEPTIME);
         }
             // step 2  no longer far
-    
+            RCLCPP_INFO(LOGGER, "Finetune movement");
             setup_waypoints_target(x_diff,y_diff,z_diff);   
             plan_trajectory_cartesian();
 

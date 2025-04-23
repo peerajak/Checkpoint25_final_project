@@ -86,7 +86,7 @@ private:
     shape_msgs::msg::SolidPrimitive primitive_coffee_machine_box;
     primitive_counter.type = primitive_counter.BOX;
     primitive_counter.dimensions.resize(3);
-    primitive_counter.dimensions[0] = 0.5;
+    primitive_counter.dimensions[0] = 0.85;//0.5
     primitive_counter.dimensions[1] = 1.8;
     primitive_counter.dimensions[2] = 1.0;
 

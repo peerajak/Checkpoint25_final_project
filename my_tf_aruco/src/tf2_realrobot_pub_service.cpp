@@ -46,6 +46,7 @@ public:
 
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     tf_broadcaster2_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+    tf_broadcaster3_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
     subscription_2_aruco_geometry =
@@ -68,6 +69,7 @@ private:
       subscription_2_aruco_geometry;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster2_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster3_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
   std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   std::shared_ptr<geometry_msgs::msg::TransformStamped>
@@ -149,8 +151,31 @@ private:
       tf2::Quaternion q_camera_aruco =
           transform_aruco_camera.inverse().getRotation();
 
-      // tf2::Quaternion q_camera_aruco = q_aruco_camera.inverse();// this is
-      // also ok
+      // tf2::Quaternion q_camera_aruco = q_aruco_camera.inverse();// this is also ok
+
+      //2.1 broadcast to check correctness
+      geometry_msgs::msg::TransformStamped calibrated_msg_camera_aruco =
+        geometry_msgs::msg::TransformStamped();
+      std::string fromFrameRel_camera_aruco =
+          "aruco_frame"; // rg2_gripper_aruco_link will not work //parent
+      std::string toFrameRel_camera_aruco =
+          "camera_solution_frame_check"; //"camera_solution_frame"; // child
+      rclcpp::Time now2_1 = this->get_clock()->now();
+      calibrated_msg_camera_aruco.header.stamp = now2_1;
+      calibrated_msg_camera_aruco.header.frame_id = fromFrameRel_camera_aruco.c_str();
+      calibrated_msg_camera_aruco.child_frame_id = toFrameRel_camera_aruco.c_str();
+      calibrated_msg_camera_aruco.transform.translation.x =
+          p_camera_aruco.getX();
+      calibrated_msg_camera_aruco.transform.translation.y =
+          p_camera_aruco.getY();
+      calibrated_msg_camera_aruco.transform.translation.z =
+          p_camera_aruco.getZ();
+      calibrated_msg_camera_aruco.transform.rotation.x = q_camera_aruco.getX();
+      calibrated_msg_camera_aruco.transform.rotation.y = q_camera_aruco.getY();
+      calibrated_msg_camera_aruco.transform.rotation.z = q_camera_aruco.getZ();
+      calibrated_msg_camera_aruco.transform.rotation.w = q_camera_aruco.getW();
+      tf_broadcaster3_->sendTransform(calibrated_msg_camera_aruco);
+
 
       // 3. prepare p,q base_camera from 1) and 2)
       tf2::Quaternion q_aruco_to_base_link(
