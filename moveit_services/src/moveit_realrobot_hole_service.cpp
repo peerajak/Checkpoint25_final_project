@@ -149,12 +149,12 @@ private:
             std::vector<double> joint_group_positions;
             current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
     
-            joint_group_positions[0] = 0.1396; // Shoulder Pan
-            joint_group_positions[1] = -3.08923;  // Shoulder Lift
-            joint_group_positions[2] = -0.47197;      // Elbow
-            joint_group_positions[3] = -0.5934119;  // Wrist 1
-            joint_group_positions[4] = 1.535889;     // Wrist 2
-            joint_group_positions[5] = -0.157079;      // Wrist 3
+            joint_group_positions[0] = 8*3.14159/180; // Shoulder Pan
+            joint_group_positions[1] = -190*3.14159/180;  // Shoulder Lift
+            joint_group_positions[2] = -47*3.14159/180;      // Elbow
+            joint_group_positions[3] = -21*3.14159/180;  // Wrist 1
+            joint_group_positions[4] = 85*3.14159/180;     // Wrist 2
+            joint_group_positions[5] = -8*3.14159/180;      // Wrist 3
             move_group->setJointValueTarget(joint_group_positions);
     
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;

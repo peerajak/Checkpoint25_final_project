@@ -262,7 +262,6 @@ class HoleToCamlinkTF(Node):
             marker_id = bounding_box_ids[i]
             #for i, marker_id in enumerate(bounding_box_ids):
 
-            # TODO #if(bounding_box_ids is the chosen hole):
             realign_corners = np.zeros((4,2), dtype =np.float32)
             realign_corners[0] = corners[i][:,0,:].flatten()
             realign_corners[1] = corners[i][:,1,:].flatten()

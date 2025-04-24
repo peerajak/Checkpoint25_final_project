@@ -11,11 +11,9 @@ Panels:
         - /TF1
         - /TF1/Frames1
         - /RobotModel1
-        - /Image2
-        - /Image2/Topic1
         - /RobotModel2
       Splitter Ratio: 0.658823549747467
-    Tree Height: 255
+    Tree Height: 370
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -67,15 +65,13 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /D415/color/image_hole/compressed
+        Value: /D415/color/image_hole_raw
       Value: true
     - Class: rviz_default_plugins/TF
       Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        D415_bottom_screw_frame:
-          Value: false
         D415_color_frame:
           Value: false
         D415_color_optical_frame:
@@ -84,26 +80,22 @@ Visualization Manager:
           Value: false
         D415_depth_optical_frame:
           Value: false
-        D415_left_ir_frame:
-          Value: false
-        D415_left_ir_optical_frame:
-          Value: false
         D415_link:
           Value: false
-        D415_right_ir_frame:
-          Value: false
-        D415_right_ir_optical_frame:
-          Value: false
+        D415_link_sol:
+          Value: true
         aruco_frame:
           Value: true
         aruco_link:
-          Value: false
+          Value: true
         base:
           Value: false
         base_link:
           Value: true
         base_link_inertia:
           Value: false
+        camera_solution_frame_check:
+          Value: true
         flange:
           Value: false
         forearm_link:
@@ -144,49 +136,41 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
+        base_link:
+          D415_color_optical_frame:
+            hole_frame:
+              {}
+          D415_link_sol:
+            {}
+          aruco_frame:
+            camera_solution_frame_check:
+              {}
+          base:
+            {}
+          base_link_inertia:
+            shoulder_link:
+              upper_arm_link:
+                forearm_link:
+                  wrist_1_link:
+                    wrist_2_link:
+                      wrist_3_link:
+                        flange:
+                          tool0:
+                            rg2_gripper_base_link:
+                              aruco_link:
+                                {}
+                              rg2_gripper_aruco_link:
+                                {}
+                              rg2_gripper_left_finger:
+                                rg2_gripper_left_thumb:
+                                  {}
+                              rg2_gripper_right_finger:
+                                rg2_gripper_right_thumb:
+                                  {}
+                        ft_frame:
+                          {}
         world:
-          base_link:
-            D415_bottom_screw_frame:
-              D415_link:
-                D415_depth_frame:
-                  D415_color_frame:
-                    D415_color_optical_frame:
-                      hole_frame:
-                        {}
-                  D415_depth_optical_frame:
-                    {}
-                  D415_left_ir_frame:
-                    D415_left_ir_optical_frame:
-                      {}
-                  D415_right_ir_frame:
-                    D415_right_ir_optical_frame:
-                      {}
-            aruco_frame:
-              {}
-            base:
-              {}
-            base_link_inertia:
-              shoulder_link:
-                upper_arm_link:
-                  forearm_link:
-                    wrist_1_link:
-                      wrist_2_link:
-                        wrist_3_link:
-                          flange:
-                            tool0:
-                              rg2_gripper_base_link:
-                                aruco_link:
-                                  {}
-                                rg2_gripper_aruco_link:
-                                  {}
-                                rg2_gripper_left_finger:
-                                  rg2_gripper_left_thumb:
-                                    {}
-                                rg2_gripper_right_finger:
-                                  rg2_gripper_right_thumb:
-                                    {}
-                          ft_frame:
-                            {}
+          {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -215,20 +199,6 @@ Visualization Manager:
       Update Interval: 0
       Value: false
       Visual Enabled: true
-    - Class: rviz_default_plugins/Image
-      Enabled: true
-      Max Value: 1
-      Median window: 5
-      Min Value: 0
-      Name: Image
-      Normalize Range: true
-      Topic:
-        Depth: 1
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /D415/color/image_aruco/compressed
-      Value: true
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
@@ -385,7 +355,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.3747031688690186
+      Distance: 0.9266453385353088
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -400,10 +370,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.279797077178955
+      Pitch: 0.5297972559928894
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.403573989868164
+      Yaw: 3.793569564819336
     Saved: ~
 Window Geometry:
   Displays:
@@ -413,7 +383,7 @@ Window Geometry:
   Hide Right Dock: false
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd000000040000000000000156000002b4fc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003e0000018a000000cb00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000001ce000000890000002800fffffffb0000000a0049006d006100670065010000025d000000950000002800fffffffb0000000a0049006d0061006700650000000260000000920000000000000000000000010000010f000002b4fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003e000002b4000000a500fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006400000003efc0100000002fb0000000800540069006d00650100000000000006400000027900fffffffb0000000800540069006d00650100000000000004500000000000000000000003cf000002b400000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000040000000000000169000002b4fc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003e000001fd000000cb00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d0061006700650100000241000000b10000002800fffffffb0000000a0049006d006100670065000000025d000000950000000000000000fb0000000a0049006d0061006700650000000260000000920000000000000000000000010000010f000002b4fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003e000002b4000000a500fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000006400000003efc0100000002fb0000000800540069006d00650100000000000006400000027900fffffffb0000000800540069006d00650100000000000004500000000000000000000003bc000002b400000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:

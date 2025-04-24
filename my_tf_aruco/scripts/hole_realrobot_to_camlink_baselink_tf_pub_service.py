@@ -102,7 +102,7 @@ class HoleToCamlinkTF(Node):
         self.transform_stamped.header.frame_id = "base_link"
         try:
             now = rclpy.time.Time()
-            dest_frame = "camera_solution_frame"  #"D415_color_optical_frame" #
+            dest_frame = "D415_color_optical_frame" #
             origin_frame = "base_link"
             transform_baselink_camera = self.tf_buffer.lookup_transform(
                 origin_frame,
@@ -226,13 +226,18 @@ class HoleToCamlinkTF(Node):
         circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,
                                 param1=100, param2=30,
                                 minRadius=1, maxRadius=30)
+
+        corners = []
+        centers = []
+        bounding_box_ids = []
+        bb_id = 0
         if circles is not None:
             is_circle_found = True
             circles = np.uint16(np.around(circles))
             #print('circles',circles)
             for i in circles[0, :]:
                 center = (i[0], i[1])
-
+                centers.append(center)
                 # circle center
                 cv2.circle(detectingImage, center, 1, (0, 100, 100), 3)
                 # circle outline
@@ -243,9 +248,11 @@ class HoleToCamlinkTF(Node):
                 bottom_right = (i[0] + radius, i[1] + radius )
                 #print(center, top_left, bottom_right)
                 cv2.rectangle(detectingImage,top_left,bottom_right,(0,255,0),2)
-                corners = (np.array([[[i[0] - radius,i[1] - radius], [i[0] + radius, i[1] - radius], [i[0] + radius, i[1] + radius], [i[0] - radius, i[1] + radius]]], 
-                    dtype=np.float32),) 
-                bounding_box_ids =  [[0]] 
+                corner = np.array([[[i[0] - radius,i[1] - radius], [i[0] + radius, i[1] - radius], [i[0] + radius, i[1] + radius], [i[0] - radius, i[1] + radius]]], 
+                    dtype=np.float32)
+                corners.append(corner)
+                bounding_box_ids.append(bb_id)
+                bb_id = bb_id +1
 
         else:
             is_circle_found = False
@@ -259,62 +266,63 @@ class HoleToCamlinkTF(Node):
             num_markers = len(bounding_box_ids)
             #print('corners',corners)
 
-            for i, marker_id in enumerate(bounding_box_ids):
+            i = centers.index(min(centers, key=lambda x: x[0]))
+            marker_id = bounding_box_ids[i]
+            #for i, marker_id in enumerate(bounding_box_ids):
 
-                # TODO #if(bounding_box_ids is the chosen hole):
-                realign_corners = np.zeros((4,2), dtype =np.float32)
-                realign_corners[0] = corners[i][:,0,:].flatten()
-                realign_corners[1] = corners[i][:,1,:].flatten()
-                realign_corners[2] = corners[i][:,2,:].flatten()
-                realign_corners[3] = corners[i][:,3,:].flatten()
-                # print(realign_corners)  
-                image_points = realign_corners.reshape(4,1,2)
-                ## print(image_points)
-            
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
-                rvecs = rvecs.flatten()
-                tvecs = tvecs.flatten()
-                # print('rvecs',rvecs)
-                # print('tvecs',tvecs)
-                # Store the translation (i.e. position) information
-                self.transform_translation_x = tvecs[0]
-                self.transform_translation_y = tvecs[1]
-                self.transform_translation_z = tvecs[2] 
+            realign_corners = np.zeros((4,2), dtype =np.float32)
+            realign_corners[0] = corners[i][:,0,:].flatten()
+            realign_corners[1] = corners[i][:,1,:].flatten()
+            realign_corners[2] = corners[i][:,2,:].flatten()
+            realign_corners[3] = corners[i][:,3,:].flatten()
+            # print(realign_corners)  
+            image_points = realign_corners.reshape(4,1,2)
+            ## print(image_points)
+        
+            #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
+            flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+            rvecs = rvecs.flatten()
+            tvecs = tvecs.flatten()
+            # print('rvecs',rvecs)
+            # print('tvecs',tvecs)
+            # Store the translation (i.e. position) information
+            self.transform_translation_x = tvecs[0]
+            self.transform_translation_y = tvecs[1]
+            self.transform_translation_z = tvecs[2] 
 
-                # Store the rotation information
-                #rotation_matrix = np.eye(3)
-                rotation_matrix = cv2.Rodrigues(np.array(rvecs))[0]
-                r = R.from_matrix(rotation_matrix)
-                quat = r.as_quat()   
+            # Store the rotation information
+            #rotation_matrix = np.eye(3)
+            rotation_matrix = cv2.Rodrigues(np.array(rvecs))[0]
+            r = R.from_matrix(rotation_matrix)
+            quat = r.as_quat()   
 
-                # Quaternion format     
-                self.transform_rotation_x = quat[0] 
-                self.transform_rotation_y = quat[1] 
-                self.transform_rotation_z = quat[2] 
-                self.transform_rotation_w = quat[3] 
+            # Quaternion format     
+            self.transform_rotation_x = quat[0] 
+            self.transform_rotation_y = quat[1] 
+            self.transform_rotation_z = quat[2] 
+            self.transform_rotation_w = quat[3] 
 
-                # Euler angle format in radians
-                roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
-                                                            self.transform_rotation_y, 
-                                                            self.transform_rotation_z, 
-                                                            self.transform_rotation_w)
-                self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
-                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
-                 self.transform_stamped.header.frame_id))
+            # Euler angle format in radians
+            roll_x, pitch_y, yaw_z = self.euler_from_quaternion(self.transform_rotation_x, 
+                                                        self.transform_rotation_y, 
+                                                        self.transform_rotation_z, 
+                                                        self.transform_rotation_w)
+            self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
+                self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
+                self.transform_stamped.header.frame_id))
 
 
-                (topLeft, topRight, bottomRight, bottomLeft) = corners[i].reshape((4, 2))
-                # convert each of the (x, y)-coordinate pairs to integers
-                topRight = (int(topRight[0]), int(topRight[1]))
-                bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
-                bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
-                topLeft = (int(topLeft[0]), int(topLeft[1]))
-                cX = int((topLeft[0] + bottomRight[0]) / 2.0)
-                cY = int((topLeft[1] + bottomRight[1]) / 2.0)
+            (topLeft, topRight, bottomRight, bottomLeft) = corners[i].reshape((4, 2))
+            # convert each of the (x, y)-coordinate pairs to integers
+            topRight = (int(topRight[0]), int(topRight[1]))
+            bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
+            bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
+            topLeft = (int(topLeft[0]), int(topLeft[1]))
+            cX = int((topLeft[0] + bottomRight[0]) / 2.0)
+            cY = int((topLeft[1] + bottomRight[1]) / 2.0)
 
-                # Draw the axes on the marker
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
+            # Draw the axes on the marker
+            detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
 
                 
         else:

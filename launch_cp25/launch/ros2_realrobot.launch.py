@@ -111,12 +111,12 @@ def generate_launch_description():
     )
     # # Answer D415 TF position
 
-    # D415_link_answer_TF = Node(
-    #         package='tf2_ros',
-    #         executable='static_transform_publisher',
-    #         arguments = ['-0.415', '-0.375', '0.31', '1.57', '1.197', '0', 'base_link', 'D415_link'] #Answer (xyz,ypr)
+    D415_link_answer_TF = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['-0.415', '-0.375', '0.31', '1.57', '1.197', '0', 'base_link', 'sol_D415_link'] #Answer (xyz,ypr)
 
-    # )
+    )
 
     #rviz2
     rviz_config_file = PathJoinSubstitution(
@@ -134,7 +134,6 @@ def generate_launch_description():
         move_group_launch ,
         moveit_rviz_launch,
         hole_tf_pub_service,
-        #aruco_tf_pub,
         aruco_tf_pub_send_to_tf2_pub,
         aruco_tf_pub_tf2_pub_service,
         planning_realrobot_scene_service_launch,
@@ -142,7 +141,7 @@ def generate_launch_description():
         moveit_realrobot_hole_service_launch,
         moveit_goto_pose_topic_service_launch,
         moveit_goto_pose_topic_server_service_client_node,
-        #D415_link_answer_TF,
+        D415_link_answer_TF,
         rviz_node 
 
     ])

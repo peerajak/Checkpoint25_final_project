@@ -59,43 +59,93 @@ class ArucoToCamlinkTF(Node):
         super().__init__('aruco_realrobot_to_camlink_send_to_tf_node')
         self.is_marker_detected = False
         self.is_camera_info_set = False
-        self._aruco_frame = aruco_frame        
+        self._aruco_frame = aruco_frame       
 
 
-
-
-        # For the TF listener
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        self.group_timer = MutuallyExclusiveCallbackGroup()
         self.Timer = self.create_timer(
-            0.05, self.timer_callback, callback_group=self.group_timer
-        )
+            0.05, self.timer_callback)
 
-        self.group_image = MutuallyExclusiveCallbackGroup()
         self.subscription_image = self.create_subscription(
                 CompressedImage,
                 '/D415/color/image_raw/compressed', 
-                self.image_callback, qos_profile=1,callback_group=self.group_image)
+                self.image_callback, qos_profile=1)
 
-        self.group_camera_info = MutuallyExclusiveCallbackGroup()
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/D415/color/camera_info', self.camera_info_callback,\
-             qos_profile=1, callback_group=self.group_camera_info)
+             qos_profile=1)
 
         self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', \
-            qos_profile=1, )
+            qos_profile=1)
         self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("aruco_realrobot_to_camlink_send_to_tf2_pub ready!!")
         
-
     def timer_callback(self):
         self.get_logger().info("timer_callback")
         self.broadcast_new_tf_to_camera()
-        #self.broadcast_new_tf_to_baselink()
 
 
+    def image_callback(self, msg: CompressedImage) -> None:
+        self.get_logger().info("image_callback")
+        try:
+            self.cv_image = self.cv_bridge.compressed_imgmsg_to_cv2(msg)
+        except Exception as e:
+            self.get_logger().error("Error converting CompressedImage Image to OpenCV format: {0}".format(e))
+            return
+
+        (rows,cols,channels) = self.cv_image.shape
+
+
+        cv2.imshow("Image window", self.cv_image)
+        cv2.waitKey(3)
+        detectingImage = self.detect_pose_return_tf()
+        
+        if detectingImage is not None:
+            try:
+                image_message_compressed = self.cv_bridge.cv2_to_compressed_imgmsg(detectingImage)
+                self.publisher_compressed.publish(image_message_compressed)
+
+            except Exception as e:
+                print(e)
+
+
+    def camera_info_callback(self, msg: CameraInfo) -> None:
+        self.is_camera_info_set = True
+        self.distortion_params = np.zeros((5,), np.float32) 
+        self.distortion_params[0] = msg.d[0] 
+        self.distortion_params[1] = msg.d[1] 
+        self.distortion_params[2] = msg.d[2] 
+        self.distortion_params[3] = msg.d[3] 
+        self.distortion_params[4] = msg.d[4] 
+
+        self.projection_matrix_k = np.zeros((3,3), np.float32)
+        self.projection_matrix_k[0,0] = msg.k[0] #* 0.86 #fx   best at 0.85
+        self.projection_matrix_k[0,1] = msg.k[1]
+        self.projection_matrix_k[0,2] = msg.k[2] #* 1.05 #cx  best at 1.05
+        self.projection_matrix_k[1,0] = msg.k[3]
+        self.projection_matrix_k[1,1] = msg.k[4] #* 0.86 #fy   best at 0.85
+        self.projection_matrix_k[1,2] = msg.k[5] #* 1.225 #cy  best at 1.225
+        self.projection_matrix_k[2,0] = msg.k[6]
+        self.projection_matrix_k[2,1] = msg.k[7]
+        self.projection_matrix_k[2,2] = msg.k[8]
+
+        self.projection_matrix_p = np.zeros((3,4), np.float32)
+        self.projection_matrix_p[0,0] = msg.p[0]
+        self.projection_matrix_p[0,1] = msg.p[1]
+        self.projection_matrix_p[0,2] = msg.p[2]
+        self.projection_matrix_p[0,3] = msg.p[3]
+        self.projection_matrix_p[1,0] = msg.p[4]
+        self.projection_matrix_p[1,1] = msg.p[5]
+        self.projection_matrix_p[1,2] = msg.p[6]
+        self.projection_matrix_p[1,3] = msg.p[7]
+        self.projection_matrix_p[2,0] = msg.p[8]
+        self.projection_matrix_p[2,1] = msg.p[9]
+        self.projection_matrix_p[2,2] = msg.p[10]
+        self.projection_matrix_p[2,3] = msg.p[11]
+
+    
     def broadcast_new_tf_to_baselink(self):
         self.transform_stamped = tf2_geometry_msgs.TransformStamped()
         try:
@@ -273,19 +323,6 @@ class ArucoToCamlinkTF(Node):
                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
         except AttributeError:
             pass
-    
-    def increase_brightness(self,img, value=30):
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        h, s, v = cv2.split(hsv)
-
-        lim = 255 - value
-        v[v > lim] = 255
-        v[v <= lim] += value
-
-        final_hsv = cv2.merge((h, s, v))
-        img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
-        return img
-
 
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
@@ -334,7 +371,7 @@ class ArucoToCamlinkTF(Node):
             for x in range(detectingImage.shape[1]):
                 for c in range(detectingImage.shape[2]):
                     detectingImage_np[y,x,c] = np.clip(alpha*detectingImage[y,x,c] + beta, 0, 255)
-        #detectingImage = self.increase_brightness(detectingImage, beta)
+
         # Detect ArUco markers in the video frame
 
         # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
@@ -431,71 +468,7 @@ class ArucoToCamlinkTF(Node):
 
         #cv2.imshow('frame',detectingImage )
         #cv2.waitKey(3)
-        return detectingImage
-                    
-
-    def image_callback(self, msg: CompressedImage) -> None:
-        self.get_logger().info("image_callback")
-        try:
-            self.cv_image = self.cv_bridge.compressed_imgmsg_to_cv2(msg)
-        except Exception as e:
-            self.get_logger().error("Error converting CompressedImage Image to OpenCV format: {0}".format(e))
-            return
-
-        (rows,cols,channels) = self.cv_image.shape
-
-
-        #cv2.imshow("Image window", self.cv_image)
-        #cv2.waitKey(3)
-        detectingImage = self.detect_pose_return_tf()
-        
-        if detectingImage is not None:
-            try:
-                image_message_compressed = self.cv_bridge.cv2_to_compressed_imgmsg(detectingImage)
-                self.publisher_compressed.publish(image_message_compressed)
-
-            except Exception as e:
-                print(e)
-
-    def camera_info_callback(self, msg: CameraInfo) -> None:
-        self.is_camera_info_set = True
-        self.distortion_params = np.zeros((5,), np.float32) 
-        self.distortion_params[0] = msg.d[0] 
-        self.distortion_params[1] = msg.d[1] 
-        self.distortion_params[2] = msg.d[2] 
-        self.distortion_params[3] = msg.d[3] 
-        self.distortion_params[4] = msg.d[4] 
-
-        self.projection_matrix_k = np.zeros((3,3), np.float32)
-        self.projection_matrix_k[0,0] = msg.k[0] #* 0.86 #fx   best at 0.85
-        self.projection_matrix_k[0,1] = msg.k[1]
-        self.projection_matrix_k[0,2] = msg.k[2] #* 1.05 #cx  best at 1.05
-        self.projection_matrix_k[1,0] = msg.k[3]
-        self.projection_matrix_k[1,1] = msg.k[4] #* 0.86 #fy   best at 0.85
-        self.projection_matrix_k[1,2] = msg.k[5] #* 1.225 #cy  best at 1.225
-        self.projection_matrix_k[2,0] = msg.k[6]
-        self.projection_matrix_k[2,1] = msg.k[7]
-        self.projection_matrix_k[2,2] = msg.k[8]
-
-        self.projection_matrix_p = np.zeros((3,4), np.float32)
-        self.projection_matrix_p[0,0] = msg.p[0]
-        self.projection_matrix_p[0,1] = msg.p[1] * 1.05
-        self.projection_matrix_p[0,2] = msg.p[2]
-        self.projection_matrix_p[0,3] = msg.p[3]
-        self.projection_matrix_p[1,0] = msg.p[4]
-        self.projection_matrix_p[1,1] = msg.p[5]
-        self.projection_matrix_p[1,2] = msg.p[6]
-        self.projection_matrix_p[1,3] = msg.p[7]
-        self.projection_matrix_p[2,0] = msg.p[8]
-        self.projection_matrix_p[2,1] = msg.p[9]
-        self.projection_matrix_p[2,2] = msg.p[10]
-        self.projection_matrix_p[2,3] = msg.p[11]
-
-        #print(self.distortion_params)
-        #print(self.projection_matrix_k)
-        #print(self.projection_matrix_p)
-        
-
+        return detectingImage   
 
     def euler_from_quaternion(self, x, y, z, w):
         """
@@ -534,16 +507,11 @@ class ArucoToCamlinkTF(Node):
 
 
 
-
 def main(args=None):
 
     rclpy.init()
-
     aruco_to_cam_tf_obj = ArucoToCamlinkTF()
-    executor = MultiThreadedExecutor()
-    executor.add_node(aruco_to_cam_tf_obj)
-    executor.spin()
-
+    rclpy.spin(aruco_to_cam_tf_obj)
 
 if __name__ == '__main__':
     main()

@@ -73,6 +73,7 @@ install(PROGRAMS
   scripts/aruco_realrobot_to_camlink_send_to_tf2_pub.py
   #scripts/test_cv_bridge.py
   #scripts/test_cv_bridge_realrobot.py
+  scripts/simpleSubscriber.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
