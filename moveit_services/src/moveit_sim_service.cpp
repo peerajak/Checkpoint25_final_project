@@ -27,7 +27,7 @@ public:
   {
 
 
-    node_ = std::make_shared<rclcpp::Node>("example_group_node");
+    node_ = std::make_shared<rclcpp::Node>("moveit_sim_service");
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     srv_ = create_service<SetBool>("moveit_sim_service", std::bind(&MoveitSimServerNode::moveit_sim_callback, this, _1, _2));
    
@@ -86,7 +86,7 @@ private:
     
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
     
-            bool success = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+            bool success = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group->execute(my_plan);
             sleep(SLEEPTIME);
@@ -101,10 +101,10 @@ private:
             joint_group_positions[5] = -1.482777;  // Wrist 3
     
             move_group->setJointValueTarget(joint_group_positions);
-            bool success2 = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+            bool success2 = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     
             move_group->execute(my_plan);
-
+            sleep(SLEEPTIME);
             if(success && success2){
                 response->success = true;
                 response->message = "moveit to show: success";
@@ -145,7 +145,7 @@ private:
   
           moveit::planning_interface::MoveGroupInterface::Plan my_plan;
   
-          bool success = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+          bool success = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   
           move_group->execute(my_plan);
           sleep(SLEEPTIME);
@@ -160,10 +160,10 @@ private:
           joint_group_positions[5] = 0.0;  // Wrist 3
   
           move_group->setJointValueTarget(joint_group_positions);
-          bool success2 = (move_group->plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+          bool success2 = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   
           move_group->execute(my_plan);
-
+          sleep(SLEEPTIME);
           if(success && success2){
               response->success = true;
               response->message = "moveit to show: success";

@@ -30,7 +30,7 @@ from numpy.linalg import inv
 class ArucoToCamlinkTF(Node):
     # Dictionary that was used to generate the ArUco marker
     aruco_dictionary_name = "DICT_4X4_50"
-    aruco_marker_side_length = 0.045 
+    aruco_marker_side_length = 0.046 #0.045 to be correct
 
     # The different ArUco dictionaries built into the OpenCV library. 
     ARUCO_DICT = {
@@ -54,7 +54,7 @@ class ArucoToCamlinkTF(Node):
     }
 
     def __init__(self, aruco_frame="aruco_frame"):
-        super().__init__('aruco_to_camlink_tf_node')
+        super().__init__('aruco_to_camlink_send_to_tf_node')
         self.is_marker_detected = False
         self.is_camera_info_set = False
         self._aruco_frame = aruco_frame 
@@ -86,13 +86,13 @@ class ArucoToCamlinkTF(Node):
         # self.br = TransformBroadcaster(self)
         self.subscription_image = self.create_subscription(
                 Image,
-                '/wrist_rgbd_depth_sensor/image_raw',  
+                '/wrist_rgbd_depth_sensor/image_raw',   
                 self.image_callback, 10)
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
         self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 1)
-        self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 1)
+        self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 10)
         self.cv_bridge = CvBridge()
-        self.get_logger().info("aruco_to_camlink_tf_node ready!!")
+        self.get_logger().info("aruco_to_camlink_send_to_tf_node ready!!")
         
 
     def timer_callback(self):
@@ -105,6 +105,7 @@ class ArucoToCamlinkTF(Node):
         This function broadcasts a new TF message to the TF network.
         """
         self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
+        self.transform_stamped.child_frame_id = "aruco_frame"
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.
@@ -128,35 +129,36 @@ class ArucoToCamlinkTF(Node):
             self.transform_stamped.transform.rotation.z = self.transform_rotation_z
             self.transform_stamped.transform.rotation.w = self.transform_rotation_w
 
-            # Send (broadcast) the TF message.
+            # Send (broadcast) the TF message.\
+            self.get_logger().info("publishing tf from camera to aruco_frame1")
             self.publisher_to_tf2_pub.publish(self.transform_stamped)
-            self.get_logger().info("publishing identity tf from camera to aruco_frame")
-        else:
-            self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
+            self.get_logger().info("publishing tf from camera to aruco_frame2")
+        # else:
+        #     self.transform_stamped.header.stamp = self.get_clock().now().to_msg()
 
-            # Set the translation of the TF message.
-            # The translation of the TF message is set to the current position of the robot.
-            self.transform_stamped.transform.translation.x = 0.0
-            self.transform_stamped.transform.translation.y = 0.0
-            self.transform_stamped.transform.translation.z = 0.0      
-            r = R.from_matrix([[1, 0, 0],
-                   [0, 1, 0],
-                   [0, 0, 1]])          
-            quat = r.as_quat()   
+        #     # Set the translation of the TF message.
+        #     # The translation of the TF message is set to the current position of the robot.
+        #     self.transform_stamped.transform.translation.x = 0.0
+        #     self.transform_stamped.transform.translation.y = 0.0
+        #     self.transform_stamped.transform.translation.z = 0.0      
+        #     r = R.from_matrix([[1, 0, 0],
+        #            [0, 1, 0],
+        #            [0, 0, 1]])          
+        #     quat = r.as_quat()   
 
-            # Quaternion format     
-            self.transform_rotation_x = quat[0] 
-            self.transform_rotation_y = quat[1] 
-            self.transform_rotation_z = quat[2] 
-            self.transform_rotation_w = quat[3] 
+        #     # Quaternion format     
+        #     self.transform_rotation_x = quat[0] 
+        #     self.transform_rotation_y = quat[1] 
+        #     self.transform_rotation_z = quat[2] 
+        #     self.transform_rotation_w = quat[3] 
 
-            self.transform_stamped.transform.rotation.x = self.transform_rotation_x
-            self.transform_stamped.transform.rotation.y = self.transform_rotation_y
-            self.transform_stamped.transform.rotation.z = self.transform_rotation_z
-            self.transform_stamped.transform.rotation.w = self.transform_rotation_w
+        #     self.transform_stamped.transform.rotation.x = self.transform_rotation_x
+        #     self.transform_stamped.transform.rotation.y = self.transform_rotation_y
+        #     self.transform_stamped.transform.rotation.z = self.transform_rotation_z
+        #     self.transform_stamped.transform.rotation.w = self.transform_rotation_w
             
-            self.publisher_to_tf2_pub.publish(self.transform_stamped)
-            self.get_logger().info("publishing tf from camera to aruco_frame")
+        #     self.publisher_to_tf2_pub.publish(self.transform_stamped)
+        #     self.get_logger().info("publishing tf from camera to aruco_frame")
         
         # Euler angle format in radians
         try:
@@ -168,7 +170,19 @@ class ArucoToCamlinkTF(Node):
                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z))
         except AttributeError:
             pass
-    
+
+    def increase_brightness(self,img, value=30):
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+
+        lim = 255 - value
+        v[v > lim] = 255
+        v[v <= lim] += value
+
+        final_hsv = cv2.merge((h, s, v))
+        img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return img
+
     def detect_pose_return_tf(self):
         # Check that we have a valid ArUco marker
         if self.ARUCO_DICT.get(self.aruco_dictionary_name, None) is None:
@@ -184,14 +198,15 @@ class ArucoToCamlinkTF(Node):
         # mtx = cv_file.getNode('K').mat()
         # dst = cv_file.getNode('D').mat()
         # cv_file.release()
-        mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
+        #mtx_np = np.array([ [759.895784, 0.000000, 312.753105],[0.000000, 762.113647, 214.923553], [0., 0., 1.]], np.float32)
+        mtx_np = np.array([ [456.16, 0.000000, 312.753105],[0.000000, 456.16, 214.923553], [0., 0., 1.]], np.float32)
         mtx = mtx_np
         #dst_np = np.array([0.062948, -0.273568, 0.005933, -0.001056, 0.000000], np.float32)   
         dst_np = np.array([ 0.189572, -0.795616, 0.001088, -0.006897, 0.000000], np.float32)  
         prj_np = np.array([[761.265137, 0.000000, 311.720175, 0.000000],\
                            [0.000000, 764.304443, 215.883204, 0.000000],\
                            [0.000000, 0.000000, 1.000000, 0.000000]], np.float32)   
-        dst = dst_np * 2
+        dst = dst_np 
         # Load the ArUco dictionary
         # print("[INFO] detecting '{}' markers...".format(self.aruco_dictionary_name))
         this_aruco_dictionary = cv2.aruco.Dictionary_get(self.ARUCO_DICT[self.aruco_dictionary_name])
@@ -216,7 +231,7 @@ class ArucoToCamlinkTF(Node):
         # as the video frame.
 
         detectingImage = self.cv_image.copy() 
-
+        detectingImage = self.increase_brightness(detectingImage, 30)
         # Detect ArUco markers in the video frame
         # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
         #     detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
@@ -247,6 +262,7 @@ class ArucoToCamlinkTF(Node):
             # x-axis points to the right
             # y-axis points straight down towards your toes
             # z-axis points straight ahead away from your eye, out of the camera
+           # print('corners',corners)
             for i, marker_id in enumerate(marker_ids):
                 realign_corners = np.zeros((4,2), dtype =np.float32)
                 realign_corners[0] = corners[i][:,0,:].flatten()
@@ -255,10 +271,10 @@ class ArucoToCamlinkTF(Node):
                 realign_corners[3] = corners[i][:,3,:].flatten()
                 # print(realign_corners)  
                 image_points = realign_corners.reshape(4,1,2)
-                ## print(image_points)
+                ##print(image_points)
             
-                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
-                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)# intentionally make it wrong to solve real robot
+                flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params) # correct one
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
@@ -285,8 +301,8 @@ class ArucoToCamlinkTF(Node):
                                                             self.transform_rotation_y, 
                                                             self.transform_rotation_z, 
                                                             self.transform_rotation_w)
-                self.get_logger().info("marker id {} detected at xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
-                 self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
+                self.get_logger().info("marker id {} detected at xy=({:.3f},{:.3f}) xyz=({:.3f},{:.3f},{:.3f}), row,pitch,yaw=({:.3f},{:.3f},{:.3f}) w.r.t {}".format(marker_id,
+                image_points[0,0,0], image_points[0,0,1],self.transform_translation_x, self.transform_translation_y, self.transform_translation_z,roll_x, pitch_y, yaw_z,
                  self.transform_stamped.header.frame_id))
 
                 # roll_x = math.degrees(roll_x)
@@ -313,10 +329,10 @@ class ArucoToCamlinkTF(Node):
                 #print("translation matrix",[transform_translation_x ,transform_translation_y,transform_translation_z])
                 #print(obj_points[i])
 
-                # Draw the axes on the marker
-                #detectingImage =  cv2.aruco.drawAxis(detectingImage , self.projection_matrix_k,dst, rvecs, tvecs, 0.05)
-                # detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)
-                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
+                # Draw the axes on the marker                
+                #detectingImage =  cv2.aruco.drawAxis(detectingImage , mtx ,dst, rvecs, tvecs, 0.05)# Intentionally make it wrong, to solve the real robot
+                detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, self.distortion_params, rvecs, tvecs, 0.05)#Correct one 
+                #detectingImage = cv2.drawFrameAxes(detectingImage, self.projection_matrix_k, dst, rvecs, tvecs, 0.05)  
                 
         else:
             self.is_marker_detected = False
