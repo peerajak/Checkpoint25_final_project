@@ -30,7 +30,7 @@ from numpy.linalg import inv
 class ArucoToCamlinkTF(Node):
     # Dictionary that was used to generate the ArUco marker
     aruco_dictionary_name = "DICT_4X4_50"
-    aruco_marker_side_length = 0.046 #0.045 to be correct
+    aruco_marker_side_length = 0.045 #0.045 to be correct
 
     # The different ArUco dictionaries built into the OpenCV library. 
     ARUCO_DICT = {
