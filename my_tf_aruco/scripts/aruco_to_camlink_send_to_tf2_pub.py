@@ -301,11 +301,11 @@ class ArucoToCamlinkTF(Node):
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
 
-                print('object_points',object_points)
-                print('image_points',image_points)
-                print('projection_matrix_k',self.projection_matrix_k)
-                print('rvecs',rvecs)
-                print('tvecs',tvecs)
+                # print('object_points',object_points)
+                # print('image_points',image_points)
+                # print('projection_matrix_k',self.projection_matrix_k)
+                # print('rvecs',rvecs)
+                # print('tvecs',tvecs)
                 # Store the translation (i.e. position) information
                 self.transform_translation_x = tvecs[0]
                 self.transform_translation_y = tvecs[1]
