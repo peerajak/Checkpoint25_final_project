@@ -98,7 +98,7 @@ private:
             joint_group_positions[2] = 1.604888;   // Elbow
             joint_group_positions[3] = -1.849111;  // Wrist 1
             joint_group_positions[4] = -0.348888;  // Wrist 2
-            joint_group_positions[5] = -1.482777;  // Wrist 3
+            joint_group_positions[5] = -75*3.14159/180;  // Wrist 3
     
             move_group->setJointValueTarget(joint_group_positions);
             bool success2 = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);

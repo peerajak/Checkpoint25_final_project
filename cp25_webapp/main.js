@@ -19,12 +19,53 @@ var app = new Vue({
         // 3D stuff
         viewer3d: null,
         tfClient: null,
+        tfClient_aruco_camera: null,
         tfClient_aruco_baselink: null,
         tfClient_hole_baselink: null,
         tfClient_camera_sol_baselink: null,
         tfClient_camera_real_baselink: null,
         tfClient_detected_vs_real_aruco: null,
         urdfClient: null,
+        calibrate_object_listener: null,
+        camera_info_listener: null,
+        calibrate_object_info: {
+            u1: 0,
+            v1: 0,
+            p1x: 0,
+            p1y: 0,
+            p1z: 0,
+            u2: 0,
+            v2: 0,
+            p2x: 0,
+            p2y: 0,
+            p2z: 0,
+            u3: 0,
+            v3: 0,
+            p3x: 0,
+            p3y: 0,
+            p3z: 0,
+            u4: 0,
+            v4: 0,
+            p4x: 0,
+            p4y: 0,
+            p4z: 0,
+        },
+        camera_info: {
+            cx: 0,
+            cy: 0,
+            fx: 0,
+            fy: 0,
+
+        },
+        tf_aruco_camera: {
+            x: 0,
+            y: 0,
+            z: 0,
+            ax: 0,
+            ay: 0,
+            az: 0,
+            aw: 0
+        },
         tf_aruco_baselink: {
             x: 0,
             y: 0,
@@ -87,7 +128,54 @@ var app = new Vue({
                 this.showCamera()
                 this.showRobotModel()
                 this.callPlanningSceneService()
+                this.camera_info_listener = new ROSLIB.Topic({
+                    ros : this.ros,
+                    name : '/wrist_rgbd_depth_sensor/camera_info',
+                    messageType : 'sensor_msgs/CameraInfo'
+                });
 
+                this.camera_info_listener.subscribe((message) => {
+                    this.camera_info.cx = message.K[2]
+                    this.camera_info.cy = message.K[5]
+                    this.camera_info.fx = message.K[0]
+                    this.camera_info.fy = message.K[4]
+
+                });
+
+                this.calibrate_object_listener = new ROSLIB.Topic({
+                    ros : this.ros,
+                    name : '/wrist_rgbd_depth_sensor/calibrate_object',
+                    messageType : 'std_msgs/Float32MultiArray'
+                });
+
+                this.calibrate_object_listener.subscribe((message) => {
+                    //console.log(message)
+                    //console.log.unshift('Received calibrate_object message on ' + listener.name + ': ' + message.data[0] + "," + message.data[1] + "," );
+                    this.calibrate_object_info.u1 = message.data[0]
+                    this.calibrate_object_info.v1 = message.data[1]
+                    this.calibrate_object_info.p1x = message.data[2]
+                    this.calibrate_object_info.p1y = message.data[3]
+                    this.calibrate_object_info.p1z = message.data[4]
+
+                    this.calibrate_object_info.u2 = message.data[5]
+                    this.calibrate_object_info.v2 = message.data[6]
+                    this.calibrate_object_info.p2x = message.data[7]
+                    this.calibrate_object_info.p2y = message.data[8]
+                    this.calibrate_object_info.p2z = message.data[9]
+
+                    this.calibrate_object_info.u3 = message.data[10]
+                    this.calibrate_object_info.v3 = message.data[11]
+                    this.calibrate_object_info.p3x = message.data[12]
+                    this.calibrate_object_info.p3y = message.data[13]
+                    this.calibrate_object_info.p3z = message.data[14]
+
+                    this.calibrate_object_info.u4 = message.data[15]
+                    this.calibrate_object_info.v4 = message.data[16]
+                    this.calibrate_object_info.p4x = message.data[17]
+                    this.calibrate_object_info.p4y = message.data[18]
+                    this.calibrate_object_info.p4z = message.data[19]
+
+                });
             })
             this.ros.on('error', (error) => {
                 this.logs.unshift((new Date()).toTimeString() + ` - Error: ${error}`)
@@ -362,6 +450,24 @@ var app = new Vue({
                 rate: 10.0
             })
 
+            
+            this.tfClient_aruco_camera = new ROSLIB.TFClient({
+                ros : this.ros,
+                fixedFrame : 'wrist_rgbd_camera_depth_optical_frame',
+                angularThres : 0.01,
+                transThres : 0.01,
+                seconds: 1.0
+                
+            })
+            this.tfClient_aruco_camera.subscribe('aruco_frame', (tf) => {
+                this.tf_aruco_camera.x = tf.translation.x
+                this.tf_aruco_camera.y = tf.translation.y;
+                this.tf_aruco_camera.z = tf.translation.z;
+                this.tf_aruco_camera.ax = tf.rotation.x
+                this.tf_aruco_camera.ay = tf.rotation.y;
+                this.tf_aruco_camera.az = tf.rotation.z;
+                this.tf_aruco_camera.aw = tf.rotation.w;
+            })
             this.tfClient_aruco_baselink = new ROSLIB.TFClient({
                 ros : this.ros,
                 fixedFrame : 'base_link',
