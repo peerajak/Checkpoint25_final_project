@@ -297,10 +297,15 @@ class ArucoToCamlinkTF(Node):
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)# intentionally make it wrong to solve real robot
                 flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params) # correct one
                 self.publish_calibrate_object(image_points, object_points)
+                
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
-                # print('rvecs',rvecs)
-                # print('tvecs',tvecs)
+
+                print('object_points',object_points)
+                print('image_points',image_points)
+                print('projection_matrix_k',self.projection_matrix_k)
+                print('rvecs',rvecs)
+                print('tvecs',tvecs)
                 # Store the translation (i.e. position) information
                 self.transform_translation_x = tvecs[0]
                 self.transform_translation_y = tvecs[1]
@@ -389,6 +394,7 @@ class ArucoToCamlinkTF(Node):
 
     def camera_info_callback(self, msg: CameraInfo) -> None:
         self.is_camera_info_set = True
+        s = 1.045
         self.distortion_params = np.zeros((5,), np.float32) 
         self.distortion_params[0] = msg.d[0] 
         self.distortion_params[1] = msg.d[1] 
@@ -397,15 +403,15 @@ class ArucoToCamlinkTF(Node):
         self.distortion_params[4] = msg.d[4] 
 
         self.projection_matrix_k = np.zeros((3,3), np.float32)
-        self.projection_matrix_k[0,0] = msg.k[0]
-        self.projection_matrix_k[0,1] = msg.k[1]
-        self.projection_matrix_k[0,2] = msg.k[2]
-        self.projection_matrix_k[1,0] = msg.k[3]
-        self.projection_matrix_k[1,1] = msg.k[4]
-        self.projection_matrix_k[1,2] = msg.k[5]
-        self.projection_matrix_k[2,0] = msg.k[6]
-        self.projection_matrix_k[2,1] = msg.k[7]
-        self.projection_matrix_k[2,2] = msg.k[8]
+        self.projection_matrix_k[0,0] = msg.k[0] * s
+        self.projection_matrix_k[0,1] = msg.k[1] * s
+        self.projection_matrix_k[0,2] = msg.k[2] * s
+        self.projection_matrix_k[1,0] = msg.k[3] * s
+        self.projection_matrix_k[1,1] = msg.k[4] * s
+        self.projection_matrix_k[1,2] = msg.k[5] * s
+        self.projection_matrix_k[2,0] = msg.k[6] * s
+        self.projection_matrix_k[2,1] = msg.k[7] * s
+        self.projection_matrix_k[2,2] = msg.k[8] * s
 
         self.projection_matrix_p = np.zeros((3,4), np.float32)
         self.projection_matrix_p[0,0] = msg.p[0]

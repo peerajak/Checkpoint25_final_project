@@ -10,7 +10,7 @@
 
 #define DATA_GO_SHOW true
 #define DATA_GO_HOME false
-#define SLEEPTIME 3
+#define SLEEPTIME 5
 using SetBool = std_srvs::srv::SetBool;
 using std::placeholders::_1;
 using std::placeholders::_2;
@@ -93,12 +93,12 @@ private:
             // step 2
     
             // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-            joint_group_positions[0] = 2.808555;   // Shoulder Pan
-            joint_group_positions[1] = -0.0697777; // Shoulder Lift
-            joint_group_positions[2] = 1.604888;   // Elbow
-            joint_group_positions[3] = -1.849111;  // Wrist 1
-            joint_group_positions[4] = -0.348888;  // Wrist 2
-            joint_group_positions[5] = -1.482777;  // Wrist 3
+            joint_group_positions[0] = 163*3.14159/180;   // Shoulder Pan
+            joint_group_positions[1] = -3*3.14159/180;  // Shoulder Lift
+            joint_group_positions[2] = 84*3.14159/180;   // Elbow
+            joint_group_positions[3] = -100*3.14159/180;  // Wrist 1
+            joint_group_positions[4] = -18*3.14159/180;  // Wrist 2
+            joint_group_positions[5] = -73*3.14159/180;  // Wrist 3
     
             move_group->setJointValueTarget(joint_group_positions);
             bool success2 = (move_group->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);

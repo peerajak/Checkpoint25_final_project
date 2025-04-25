@@ -13,7 +13,7 @@
 
 #define DATA_GO_SHOW true
 #define DATA_GO_HOME false
-#define SLEEPTIME 8
+#define SLEEPTIME 4
 using SetBool = std_srvs::srv::SetBool;
 using std::placeholders::_1;
 using std::placeholders::_2;
@@ -63,18 +63,42 @@ private:
   const double jump_threshold_ = 0.0;
   const double end_effector_step_ = 0.01;
 
-  void setup_waypoints_target(float x_delta, float y_delta, float z_delta) {
+  void setup_waypoints_target(float target_x, float target_y, float target_z) {
     // initially set target pose to current pose of the robot
     target_pose_robot_ = move_group->getCurrentPose().pose;
     // add the current pose to the target waypoints vector
     cartesian_waypoints_.push_back(target_pose_robot_);
     // calculate the desired pose from delta value for the axis
-    target_pose_robot_.position.x += x_delta;
-    target_pose_robot_.position.y += y_delta;
-    target_pose_robot_.position.z += z_delta;
-    // add the desired pose to the target waypoints vector
-    cartesian_waypoints_.push_back(target_pose_robot_);
-    RCLCPP_INFO(LOGGER, "setup_waypoints_target(%f, %f, %f)",x_delta, y_delta, z_delta);
+
+    double xyz_resolution = 0.0001, xy_goal_threshold = 0.0001, z_goal_threshold = 0.01;
+  
+
+    while (abs(target_pose_robot_.position.x - target_x) > xy_goal_threshold) {
+      target_pose_robot_.position.x += xyz_resolution *
+                                 (target_x - target_pose_robot_.position.x) /
+                                 abs(target_pose_robot_.position.x - target_x);
+      cartesian_waypoints_.push_back(target_pose_robot_);
+    }
+    while (abs(target_pose_robot_.position.y - target_y) > xy_goal_threshold) {
+      target_pose_robot_.position.y += xyz_resolution *
+                                 (target_y - target_pose_robot_.position.y) /
+                                 abs(target_pose_robot_.position.y - target_y);
+      cartesian_waypoints_.push_back(target_pose_robot_);
+    }
+    while (abs(target_pose_robot_.position.z - target_z) > z_goal_threshold) {
+      target_pose_robot_.position.z += xyz_resolution *
+                                 (target_z - target_pose_robot_.position.z) /
+                                 abs(target_pose_robot_.position.z - target_z);
+      cartesian_waypoints_.push_back(target_pose_robot_);
+    }
+  
+  
+    // target_pose_robot_.position.x += x_delta;
+    // target_pose_robot_.position.y += y_delta;
+    // target_pose_robot_.position.z += z_delta;
+    // // add the desired pose to the target waypoints vector
+    // cartesian_waypoints_.push_back(target_pose_robot_);
+    // RCLCPP_INFO(LOGGER, "setup_waypoints_target(%f, %f, %f)",x_delta, y_delta, z_delta);
   }
 
   void plan_trajectory_cartesian() {
@@ -166,10 +190,11 @@ private:
             sleep(SLEEPTIME);
         }
             // step 2  no longer far
-            RCLCPP_INFO(LOGGER, "Finetune movement");
-            setup_waypoints_target(x_diff,y_diff,z_diff);   
-            plan_trajectory_cartesian();
 
+
+            RCLCPP_INFO(LOGGER, "Finetune movement");
+            setup_waypoints_target(tf_hole_to_base_link.transform.translation.x ,tf_hole_to_base_link.transform.translation.y, tf_hole_to_base_link.transform.translation.z);   
+            plan_trajectory_cartesian();
             execute_trajectory_cartesian();
             sleep(SLEEPTIME);
             response->success = true;
