@@ -13,6 +13,7 @@ from tf2_ros.transform_listener import TransformListener
 import geometry_msgs
 import tf2_geometry_msgs 
 from nav_msgs.msg import Odometry
+from std_msgs.msg import Float32MultiArray,MultiArrayDimension
 
 import cv2 # Import the OpenCV library
 import numpy as np # Import Numpy library
@@ -91,9 +92,29 @@ class ArucoToCamlinkTF(Node):
         self.subscription_camera_info = self.create_subscription( CameraInfo, '/wrist_rgbd_depth_sensor/camera_info', self.camera_info_callback, 10)
         self.publisher = self.create_publisher(Image, '/wrist_rgbd_depth_sensor/image_aruco_frame', 1)
         self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 10)
+        self.publisher_calibrate_object = self.create_publisher(Float32MultiArray, '/wrist_rgbd_depth_sensor/calibrate_object', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("aruco_to_camlink_send_to_tf_node ready!!")
         
+
+    def publish_calibrate_object(self, image_points, obj_points):
+        ims = image_points.reshape((4,2))
+        objs = obj_points.reshape((4,3))
+
+        msg = Float32MultiArray()
+        raw_data = [ims[0,0], ims[0,1], objs[0,0], objs[0,1], objs[0,2],
+                    ims[1,0], ims[1,1], objs[0,0], objs[1,1], objs[1,2],
+                    ims[2,0], ims[2,1], objs[0,0], objs[2,1], objs[2,2],
+                    ims[3,0], ims[3,1], objs[0,0], objs[3,1], objs[3,2]]
+        msg.data = [float(i) for i in raw_data]
+        #print(msg.data)
+        msg.layout.dim = [MultiArrayDimension()]
+
+        # dim[0] is the vertical dimension of your matrix
+        msg.layout.dim[0].label = "uvxyz1to4"
+        msg.layout.dim[0].size = 1
+        msg.layout.dim[0].stride = 20
+        self.publisher_calibrate_object.publish(msg)
 
     def timer_callback(self):
         self.broadcast_new_tf_to_camera()
@@ -275,6 +296,7 @@ class ArucoToCamlinkTF(Node):
             
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx,dst)# intentionally make it wrong to solve real robot
                 flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params) # correct one
+                self.publish_calibrate_object(image_points, object_points)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
                 # print('rvecs',rvecs)
