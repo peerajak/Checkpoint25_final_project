@@ -65,7 +65,15 @@ private:
 
   void setup_waypoints_target(float target_x, float target_y, float target_z) {
     // initially set target pose to current pose of the robot
-    target_pose_robot_ = move_group->getCurrentPose().pose;
+    //target_pose_robot_ = move_group->getCurrentPose().pose; this is ok, but trying below may be better
+    target_pose_robot_.position.x = move_group->getCurrentPose().pose.position.x;//start with current, and waypont to real target
+    target_pose_robot_.position.y = move_group->getCurrentPose().pose.position.y;
+    target_pose_robot_.position.z = move_group->getCurrentPose().pose.position.z;
+    target_pose_robot_.orientation.x = -1.0;
+    target_pose_robot_.orientation.y = 0.00;
+    target_pose_robot_.orientation.z = 0.00;
+    target_pose_robot_.orientation.w = 0.00;
+  
     // add the current pose to the target waypoints vector
     cartesian_waypoints_.push_back(target_pose_robot_);
     // calculate the desired pose from delta value for the axis
@@ -175,11 +183,11 @@ private:
             current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
     
             joint_group_positions[0] = -0.01745; // Shoulder Pan
-            joint_group_positions[1] = -3.7;  // Shoulder Lift
-            joint_group_positions[2] = -0.418879;      // Elbow
-            joint_group_positions[3] = -0.69813;  // Wrist 1
-            joint_group_positions[4] = 1.6057;      // Wrist 2
-            joint_group_positions[5] = -0.174532;      // Wrist 3
+            joint_group_positions[1] = -213*3.14159/180;  // Shoulder Lift
+            joint_group_positions[2] = -25*3.14159/180;      // Elbow
+            joint_group_positions[3] = -1*3.14159/180;  // Wrist 1
+            joint_group_positions[4] = 92*3.14159/180;      // Wrist 2
+            joint_group_positions[5] = -16*3.14159/180;      // Wrist 3
             move_group->setJointValueTarget(joint_group_positions);
     
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
