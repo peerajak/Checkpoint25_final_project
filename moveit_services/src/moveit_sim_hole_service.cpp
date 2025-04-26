@@ -65,7 +65,14 @@ private:
 
   void setup_waypoints_target(float target_x, float target_y, float target_z) {
     // initially set target pose to current pose of the robot
-    target_pose_robot_ = move_group->getCurrentPose().pose;
+    //target_pose_robot_ = move_group->getCurrentPose().pose;//this is ok, but below is much better
+    target_pose_robot_.position.x = move_group->getCurrentPose().pose.position.x;//start with current, and waypont to real target
+    target_pose_robot_.position.y = move_group->getCurrentPose().pose.position.y;
+    target_pose_robot_.position.z = move_group->getCurrentPose().pose.position.z;
+    target_pose_robot_.orientation.x = -1.0;
+    target_pose_robot_.orientation.y = 0.00;
+    target_pose_robot_.orientation.z = 0.00;
+    target_pose_robot_.orientation.w = 0.00;
     // add the current pose to the target waypoints vector
     cartesian_waypoints_.push_back(target_pose_robot_);
     // calculate the desired pose from delta value for the axis
