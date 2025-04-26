@@ -82,8 +82,6 @@ Visualization Manager:
           Value: false
         D415_link:
           Value: false
-        D415_link_sol:
-          Value: true
         aruco_frame:
           Value: true
         aruco_link:
@@ -118,6 +116,26 @@ Visualization Manager:
           Value: false
         shoulder_link:
           Value: false
+        sol_D415_bottom_screw_frame:
+          Value: false
+        sol_D415_color_frame:
+          Value: false
+        sol_D415_color_optical_frame:
+          Value: false
+        sol_D415_depth_frame:
+          Value: false
+        sol_D415_depth_optical_frame:
+          Value: false
+        sol_D415_left_ir_frame:
+          Value: false
+        sol_D415_left_ir_optical_frame:
+          Value: false
+        sol_D415_link:
+          Value: true
+        sol_D415_right_ir_frame:
+          Value: false
+        sol_D415_right_ir_optical_frame:
+          Value: false
         tool0:
           Value: false
         upper_arm_link:
@@ -140,8 +158,6 @@ Visualization Manager:
           D415_color_optical_frame:
             hole_frame:
               {}
-          D415_link_sol:
-            {}
           aruco_frame:
             camera_solution_frame_check:
               {}
@@ -169,6 +185,21 @@ Visualization Manager:
                                   {}
                         ft_frame:
                           {}
+          sol_D415_bottom_screw_frame:
+            {}
+          sol_D415_link:
+            sol_D415_depth_frame:
+              sol_D415_color_frame:
+                sol_D415_color_optical_frame:
+                  {}
+              sol_D415_depth_optical_frame:
+                {}
+              sol_D415_left_ir_frame:
+                sol_D415_left_ir_optical_frame:
+                  {}
+              sol_D415_right_ir_frame:
+                sol_D415_right_ir_optical_frame:
+                  {}
         world:
           {}
       Update Interval: 0
@@ -370,10 +401,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5297972559928894
+      Pitch: 0.19479729235172272
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.793569564819336
+      Yaw: 2.8335676193237305
     Saved: ~
 Window Geometry:
   Displays:

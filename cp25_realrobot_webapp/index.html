@@ -209,6 +209,7 @@
             color: #666666;
             background-image: url("");
         }
+
         .waypoint_button#WP3 {
             color: #f5f10f;
             /* set your desired text color */
@@ -389,12 +390,12 @@
                                         <p>Show marker position</p>
                                     </div>
                                     <div class="image-container">
-                                        <button class="waypoint_button" id="WP3" :disabled="!connected || service_busy || !checkbox_fixTf || !checkbox_hole_fixTf"
+                                        <button class="waypoint_button" id="WP3"
                                             @click="callMoveitRealRobotHoleService()">Goto Hole Button</button>
                                         <p>Goto Hole position</p>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="card mt-2">
                             <div class="card">
@@ -455,11 +456,47 @@
                                 <!--Only code you need is this label-->
                                 <p>Slide right to fix the camera TF</p>
                                 <label class="switch">
-                                    <input type="checkbox" v-model="checkbox_hole_fixTf" @click="fixHoleCheckbox" >
+                                    <input type="checkbox" v-model="checkbox_hole_fixTf" @click="fixHoleCheckbox"
+                                        :disabled="!checkbox_fixTf">
                                     <div class="slider round"></div>
                                 </label>
                                 <p>{{ checkbox_hole_fixTf_string }}</p>
                                 <p>Checkbox is checked: {{ checkbox_hole_fixTf }}</p>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body" id="camera_pose">
+                                    <h3 class="text-center">Camera Calibration Parameters</h3>
+                                    <p>Aruco Pose w.r.t camera</p>
+                                    <p>x,y,z: {{ tf_aruco_camera.x.toFixed(5) }}, {{
+                                        tf_aruco_camera.y.toFixed(5) }},{{
+                                        tf_aruco_camera.z.toFixed(5) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_aruco_camera.ax.toFixed(5) }}, {{
+                                        tf_aruco_camera.ay.toFixed(5)
+                                        }},{{ tf_aruco_camera.az.toFixed(5) }},{{
+                                        tf_aruco_camera.aw.toFixed(5) }} </p>
+                                    <p>Camera Info</p>
+                                    <p>cx,cy,fx,fy: {{ camera_info.cx.toFixed(2) }},{{ camera_info.cy.toFixed(2) }},{{
+                                        camera_info.fx }},{{ camera_info.fy }}</p>
+                                    <p>Calibrating object info</p>
+                                    <p>u1,v1,x1,y1,z1: {{ calibrate_object_info.u1.toFixed(5) }},{{
+                                        calibrate_object_info.v1.toFixed(5) }},{{ calibrate_object_info.p1x.toFixed(5)
+                                        }},{{ calibrate_object_info.p1y.toFixed(5) }},{{
+                                        calibrate_object_info.p1z.toFixed(5) }} </p>
+                                    <p>u2,v2,x2,y2,z2: {{ calibrate_object_info.u2.toFixed(5) }},{{
+                                        calibrate_object_info.v2.toFixed(5) }},{{ calibrate_object_info.p2x.toFixed(5)
+                                        }},{{ calibrate_object_info.p2y.toFixed(5) }},{{
+                                        calibrate_object_info.p2z.toFixed(5) }} </p>
+                                    <p>u3,v3,x3,y3,z3: {{ calibrate_object_info.u3.toFixed(5) }},{{
+                                        calibrate_object_info.v3.toFixed(5) }},{{ calibrate_object_info.p3x.toFixed(5)
+                                        }},{{ calibrate_object_info.p3y.toFixed(5) }},{{
+                                        calibrate_object_info.p3z.toFixed(5) }} </p>
+                                    <p>u4,v4,x4,y4,z4: {{ calibrate_object_info.u4.toFixed(5) }},{{
+                                        calibrate_object_info.v4.toFixed(5) }},{{ calibrate_object_info.p4x.toFixed(5)
+                                        }},{{ calibrate_object_info.p4y.toFixed(5) }},{{
+                                        calibrate_object_info.p4z.toFixed(5) }} </p>
+                                </div>
                             </div>
                         </div>
                     </div>

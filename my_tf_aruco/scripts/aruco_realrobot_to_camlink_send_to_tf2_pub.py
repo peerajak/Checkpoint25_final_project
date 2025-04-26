@@ -7,6 +7,7 @@ from rclpy.qos import ReliabilityPolicy, DurabilityPolicy, QoSProfile
 # from sensor_msgs.msg import Image
 from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import CameraInfo
+from std_msgs.msg import Float32MultiArray,MultiArrayDimension
 from tf2_ros import TransformException
 from tf2_ros import TransformBroadcaster
 from tf2_ros.buffer import Buffer
@@ -86,9 +87,30 @@ class ArucoToCamlinkTF(Node):
         self.publisher_compressed = self.create_publisher(CompressedImage, '/D415/color/image_aruco/compressed', \
             qos_profile=1, )
         self.publisher_to_tf2_pub = self.create_publisher(tf2_geometry_msgs.TransformStamped, '/aruco_point_wrt_camera', 1)
+        self.publisher_calibrate_object = self.create_publisher(Float32MultiArray, '/D415/color/calibrate_object', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("aruco_realrobot_to_camlink_send_to_tf2_pub ready!!")
         
+
+    def publish_calibrate_object(self, image_points, obj_points):
+        ims = image_points.reshape((4,2))
+        objs = obj_points.reshape((4,3))
+
+        msg = Float32MultiArray()
+        raw_data = [ims[0,0], ims[0,1], objs[0,0], objs[0,1], objs[0,2],
+                    ims[1,0], ims[1,1], objs[0,0], objs[1,1], objs[1,2],
+                    ims[2,0], ims[2,1], objs[0,0], objs[2,1], objs[2,2],
+                    ims[3,0], ims[3,1], objs[0,0], objs[3,1], objs[3,2]]
+        msg.data = [float(i) for i in raw_data]
+        #print(msg.data)
+        msg.layout.dim = [MultiArrayDimension()]
+
+        # dim[0] is the vertical dimension of your matrix
+        msg.layout.dim[0].label = "uvxyz1to4"
+        msg.layout.dim[0].size = 1
+        msg.layout.dim[0].stride = 20
+        self.publisher_calibrate_object.publish(msg)
+
 
     def timer_callback(self):
         self.get_logger().info("timer_callback")
@@ -376,8 +398,13 @@ class ArucoToCamlinkTF(Node):
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,dst)
                 #flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, mtx, dst, useExtrinsicGuess=False,flags=cv2.SOLVEPNP_ITERATIVE)
                 flag, rvecs, tvecs = cv2.solvePnP(object_points, image_points, self.projection_matrix_k,self.distortion_params)
+                self.publish_calibrate_object(image_points, object_points)
                 rvecs = rvecs.flatten()
                 tvecs = tvecs.flatten()
+                # print('object_points',object_points)
+                # print('image_points',image_points)
+                # print('projection_matrix_k',self.projection_matrix_k)
+                # print('rvecs',rvecs)
                 # print('tvecs',tvecs)
 
                 # Store the translation (i.e. position) information
@@ -458,6 +485,7 @@ class ArucoToCamlinkTF(Node):
                 print(e)
 
     def camera_info_callback(self, msg: CameraInfo) -> None:
+        s = 1.0
         self.is_camera_info_set = True
         self.distortion_params = np.zeros((5,), np.float32) 
         self.distortion_params[0] = msg.d[0] 
@@ -467,15 +495,15 @@ class ArucoToCamlinkTF(Node):
         self.distortion_params[4] = msg.d[4] 
 
         self.projection_matrix_k = np.zeros((3,3), np.float32)
-        self.projection_matrix_k[0,0] = msg.k[0] #* 0.86 #fx   best at 0.85
-        self.projection_matrix_k[0,1] = msg.k[1]
-        self.projection_matrix_k[0,2] = msg.k[2] #* 1.05 #cx  best at 1.05
-        self.projection_matrix_k[1,0] = msg.k[3]
-        self.projection_matrix_k[1,1] = msg.k[4] #* 0.86 #fy   best at 0.85
-        self.projection_matrix_k[1,2] = msg.k[5] #* 1.225 #cy  best at 1.225
-        self.projection_matrix_k[2,0] = msg.k[6]
-        self.projection_matrix_k[2,1] = msg.k[7]
-        self.projection_matrix_k[2,2] = msg.k[8]
+        self.projection_matrix_k[0,0] = msg.k[0]*s #* 0.86 #fx   best at 0.85
+        self.projection_matrix_k[0,1] = msg.k[1]*s
+        self.projection_matrix_k[0,2] = msg.k[2]*s #* 1.05 #cx  best at 1.05
+        self.projection_matrix_k[1,0] = msg.k[3]*s
+        self.projection_matrix_k[1,1] = msg.k[4]*s #* 0.86 #fy   best at 0.85
+        self.projection_matrix_k[1,2] = msg.k[5]*s #* 1.225 #cy  best at 1.225
+        self.projection_matrix_k[2,0] = msg.k[6]*s
+        self.projection_matrix_k[2,1] = msg.k[7]*s
+        self.projection_matrix_k[2,2] = msg.k[8]*s
 
         self.projection_matrix_p = np.zeros((3,4), np.float32)
         self.projection_matrix_p[0,0] = msg.p[0]

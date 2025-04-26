@@ -28,7 +28,7 @@ from std_srvs.srv import SetBool
 
 
 class HoleToCamlinkTF(Node):
-    hole_marker_side_length = 0.068 #measured by hand using blender on .dae file
+    hole_marker_side_length = 0.067 #measured by hand using blender on .dae file
 
     def __init__(self, hole_frame="hole_frame"):
         super().__init__('hole_to_camlink_tf_node')
