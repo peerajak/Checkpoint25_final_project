@@ -143,7 +143,7 @@ private:
         RCLCPP_INFO(LOGGER, "Executing Hole Cartesian Trajectory...");
         std::string fromFrame = "base_link";  // parent
         std::string toFrame = "hole_frame"; // child
-        float z_offset = 0.3;//hard code this is the distance from tool0 to from end_effector_tip_link 
+        float z_offset = 0.15;//hard code this is the distance from tool0 to from end_effector_tip_link 
 
         geometry_msgs::msg::TransformStamped tf_hole_to_base_link;
         try {

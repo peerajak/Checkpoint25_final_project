@@ -76,7 +76,20 @@ class HoleToCamlinkTF(Node):
         self.publisher_raw = self.create_publisher(Image, '/D415/color/image_hole_raw', 1)
         self.cv_bridge = CvBridge()
         self.get_logger().info("hole_to_camlink_tf_node ready!!")
-        
+
+    def increase_brightness(self,img, value=30):
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+
+        lim = 255 - value
+        v[v > lim] = 255
+        v[v <= lim] += value
+
+        final_hsv = cv2.merge((h, s, v))
+        img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return img
+
+
     def change_hole_mode_service_callback(self, request, response):
     
         if request.data: 
@@ -216,7 +229,7 @@ class HoleToCamlinkTF(Node):
                 print("failed to capture videos")
                 return
         detectingImage = self.cv_image.copy() 
-
+        detectingImage = self.increase_brightness(detectingImage, 100)
         # Detect hole in the video frame
         # return (list) bounding_box_ids, (what data type?) corners
 

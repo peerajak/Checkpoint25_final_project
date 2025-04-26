@@ -341,10 +341,10 @@
                                         tf_aruco_baselink.ay.toFixed(3)
                                         }},{{ tf_aruco_baselink.az.toFixed(3) }},{{ tf_aruco_baselink.aw.toFixed(3) }}
                                     </p>
-                                    <p>error x,y,z: {{
+                                    <!--p>error x,y,z: {{
                                         (tf_error_cal.x.toFixed(3)-tf_aruco_baselink.x.toFixed(3)).toFixed(3) }}, {{
                                         (tf_error_cal.y.toFixed(3)-tf_aruco_baselink.y.toFixed(3)).toFixed(3) }},{{
-                                        (tf_error_cal.z.toFixed(3)-tf_aruco_baselink.z.toFixed(3)).toFixed(3) }}</p>
+                                        (tf_error_cal.z.toFixed(3)-tf_aruco_baselink.z.toFixed(3)).toFixed(3) }}</p-->
                                 </div>
                             </div>
                         </div>
@@ -413,6 +413,20 @@
                                     </label>
                                     <p>{{ checkbox_fixTf_string }}</p>
                                     <p>Checkbox is checked: {{ checkbox_fixTf }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body" id="camera_pose">
+                                    <h3 class="text-center">Hole Pose w.r.t base_link </h3>
+                                    <p>x,y,z: {{ tf_hole_baselink.x.toFixed(3) }}, {{
+                                        tf_hole_baselink.y.toFixed(3) }},{{
+                                        tf_hole_baselink.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_hole_baselink.ax.toFixed(3) }}, {{
+                                        tf_hole_baselink.ay.toFixed(3)
+                                        }},{{ tf_hole_baselink.az.toFixed(3) }},{{
+                                        tf_hole_baselink.aw.toFixed(3) }} </p>
                                 </div>
                             </div>
                         </div>
