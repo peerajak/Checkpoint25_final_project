@@ -314,11 +314,17 @@ Visualization Manager:
           Value: true
         base_link_inertia:
           Value: false
+        camera_solution_frame_check:
+          Value: true
         flange:
           Value: false
         forearm_link:
           Value: false
         ft_frame:
+          Value: false
+        hole_frame:
+          Value: true
+        rg2_gripper_aruco_link:
           Value: false
         rg2_gripper_base_link:
           Value: false
@@ -332,6 +338,26 @@ Visualization Manager:
           Value: false
         shoulder_link:
           Value: false
+        sol_D415_bottom_screw_frame:
+          Value: true
+        sol_D415_color_frame:
+          Value: true
+        sol_D415_color_optical_frame:
+          Value: true
+        sol_D415_depth_frame:
+          Value: true
+        sol_D415_depth_optical_frame:
+          Value: true
+        sol_D415_left_ir_frame:
+          Value: true
+        sol_D415_left_ir_optical_frame:
+          Value: true
+        sol_D415_link:
+          Value: true
+        sol_D415_right_ir_frame:
+          Value: true
+        sol_D415_right_ir_optical_frame:
+          Value: true
         tool0:
           Value: false
         upper_arm_link:
@@ -353,7 +379,10 @@ Visualization Manager:
         world:
           base_link:
             D415_color_optical_frame:
-              aruco_frame:
+              hole_frame:
+                {}
+            aruco_frame:
+              camera_solution_frame_check:
                 {}
             base:
               {}
@@ -369,6 +398,8 @@ Visualization Manager:
                               rg2_gripper_base_link:
                                 aruco_link:
                                   {}
+                                rg2_gripper_aruco_link:
+                                  {}
                                 rg2_gripper_left_finger:
                                   rg2_gripper_left_thumb:
                                     {}
@@ -377,6 +408,21 @@ Visualization Manager:
                                     {}
                           ft_frame:
                             {}
+            sol_D415_bottom_screw_frame:
+              {}
+            sol_D415_link:
+              sol_D415_depth_frame:
+                sol_D415_color_frame:
+                  sol_D415_color_optical_frame:
+                    {}
+                sol_D415_depth_optical_frame:
+                  {}
+                sol_D415_left_ir_frame:
+                  sol_D415_left_ir_optical_frame:
+                    {}
+                sol_D415_right_ir_frame:
+                  sol_D415_right_ir_optical_frame:
+                    {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -397,25 +443,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.299694776535034
+      Distance: 0.7581161856651306
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.5681495666503906
-        Y: -0.04485517740249634
-        Z: 0.3058032691478729
+        X: -0.549162745475769
+        Y: -0.15572257339954376
+        Z: 0.30681440234184265
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.45999979972839355
+      Pitch: 1.3599997758865356
       Target Frame: world
       Value: Orbit (rviz_default_plugins)
-      Yaw: 3.205183982849121
+      Yaw: 3.3801841735839844
     Saved: ~
 Window Geometry:
   Displays:

@@ -229,7 +229,7 @@ class HoleToCamlinkTF(Node):
                 print("failed to capture videos")
                 return
         detectingImage = self.cv_image.copy() 
-        detectingImage = self.increase_brightness(detectingImage, 100)
+        detectingImage = self.increase_brightness(detectingImage, 60)
         # Detect hole in the video frame
         # return (list) bounding_box_ids, (what data type?) corners
 

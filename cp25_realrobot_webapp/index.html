@@ -390,7 +390,7 @@
                                         <p>Show marker position</p>
                                     </div>
                                     <div class="image-container">
-                                        <button class="waypoint_button" id="WP3"
+                                        <button class="waypoint_button" id="WP3" :disabled="!connected || service_busy || !checkbox_fixTf || !checkbox_hole_fixTf"
                                             @click="callMoveitRealRobotHoleService()">Goto Hole Button</button>
                                         <p>Goto Hole position</p>
                                     </div>
