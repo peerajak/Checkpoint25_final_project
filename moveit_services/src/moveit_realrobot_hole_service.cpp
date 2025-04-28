@@ -145,7 +145,7 @@ private:
   void moveit_realrobot_hole_callback(
       const std::shared_ptr<SetBool::Request> request,
       const std::shared_ptr<SetBool::Response> response) {
-
+    bool success;
     RCLCPP_INFO(LOGGER, "moveit_realrobot_hole_callback");
     float far_threshold = 0.2; // more than 20 cm is far
     RCLCPP_INFO(LOGGER, "Executing Hole Cartesian Trajectory...");
@@ -207,8 +207,8 @@ private:
 
       moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-      bool success = (move_group->plan(my_plan) ==
-                      moveit::planning_interface::MoveItErrorCode::SUCCESS);
+      success = (move_group->plan(my_plan) ==
+                 moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
       move_group->execute(my_plan);
       sleep(SLEEPTIME);
@@ -222,7 +222,7 @@ private:
     plan_trajectory_cartesian();
     execute_trajectory_cartesian();
     sleep(SLEEPTIME);
-    response->success = true;
+    response->success = success;
     response->message = "moveit to hole: success";
   }
 };

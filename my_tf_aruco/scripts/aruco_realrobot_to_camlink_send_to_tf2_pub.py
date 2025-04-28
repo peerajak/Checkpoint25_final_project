@@ -507,7 +507,7 @@ class ArucoToCamlinkTF(Node):
 
         self.projection_matrix_p = np.zeros((3,4), np.float32)
         self.projection_matrix_p[0,0] = msg.p[0]
-        self.projection_matrix_p[0,1] = msg.p[1] * 1.05
+        self.projection_matrix_p[0,1] = msg.p[1]
         self.projection_matrix_p[0,2] = msg.p[2]
         self.projection_matrix_p[0,3] = msg.p[3]
         self.projection_matrix_p[1,0] = msg.p[4]
