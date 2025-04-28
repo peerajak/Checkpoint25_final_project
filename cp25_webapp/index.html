@@ -467,6 +467,20 @@
                         <div class="card mt-2">
                             <div class="card">
                                 <div class="card-body" id="camera_pose">
+                                    <h3 class="text-center">Hole Pose w.r.t base_link </h3>
+                                    <p>x,y,z: {{ tf_hole_baselink.x.toFixed(3) }}, {{
+                                        tf_hole_baselink.y.toFixed(3) }},{{
+                                        tf_hole_baselink.z.toFixed(3) }}</p>
+                                    <p>Quotanion x,y,z,w: {{ tf_hole_baselink.ax.toFixed(3) }}, {{
+                                        tf_hole_baselink.ay.toFixed(3)
+                                        }},{{ tf_hole_baselink.az.toFixed(3) }},{{
+                                        tf_hole_baselink.aw.toFixed(3) }} </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-2">
+                            <div class="card">
+                                <div class="card-body" id="camera_pose">
                                     <h3 class="text-center">Camera Calibration Parameters</h3>
                                     <p>Aruco Pose w.r.t camera</p>
                                     <p>x,y,z: {{ tf_aruco_camera.x.toFixed(5) }}, {{

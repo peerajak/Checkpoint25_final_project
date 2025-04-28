@@ -10,13 +10,14 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2_ros/transform_listener.h"
 
-
+#define Z_OFFSET 0.25
 #define DATA_GO_SHOW true
 #define DATA_GO_HOME false
 #define SLEEPTIME 4
 using SetBool = std_srvs::srv::SetBool;
 using std::placeholders::_1;
 using std::placeholders::_2;
+
 
 
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_sim_hole_service");
@@ -142,7 +143,7 @@ private:
         RCLCPP_INFO(LOGGER, "Executing Hole Cartesian Trajectory...");
         std::string fromFrame = "base_link";  // parent
         std::string toFrame = "hole_frame"; // child
-        float z_offset = 0.25;//hard code this is the distance from tool0 to from end_effector_tip_link 
+        float z_offset = Z_OFFSET;//hard code this is the distance from tool0 to from end_effector_tip_link 
 
         geometry_msgs::msg::TransformStamped tf_hole_to_base_link;
         try {
@@ -201,7 +202,7 @@ private:
 
 
             RCLCPP_INFO(LOGGER, "Finetune movement");
-            setup_waypoints_target(tf_hole_to_base_link.transform.translation.x ,tf_hole_to_base_link.transform.translation.y, tf_hole_to_base_link.transform.translation.z);   
+            setup_waypoints_target(tf_hole_to_base_link.transform.translation.x ,tf_hole_to_base_link.transform.translation.y, tf_hole_to_base_link.transform.translation.z + z_offset);   
             plan_trajectory_cartesian();
             execute_trajectory_cartesian();
             sleep(SLEEPTIME);

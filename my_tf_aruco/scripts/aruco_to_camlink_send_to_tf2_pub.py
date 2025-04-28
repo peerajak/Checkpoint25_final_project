@@ -252,7 +252,22 @@ class ArucoToCamlinkTF(Node):
         # as the video frame.
 
         detectingImage = self.cv_image.copy() 
-        detectingImage = self.increase_brightness(detectingImage, 30)
+        detectingImage = self.increase_brightness(detectingImage, 40)
+
+        # # Another way of brightness increment (slower)                
+        # detectingImage_np = np.zeros(detectingImage.shape, detectingImage.dtype)
+        # alpha = 4.2 #great value at 4.2#float  Simple contrast control 
+        # beta = 60  #great value at 60  #integer Simple brightness control
+        # for y in range(detectingImage.shape[0]):
+        #     for x in range(detectingImage.shape[1]):
+        #         for c in range(detectingImage.shape[2]):
+        #             detectingImage_np[y,x,c] = np.clip(alpha*detectingImage[y,x,c] + beta, 0, 255)
+
+
+        # # Detect ArUco markers in the video frame
+        # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
+        #     detectingImage_np, this_aruco_dictionary, parameters=this_aruco_parameters,
+        #     cameraMatrix=self.projection_matrix_k, distCoeff=self.distortion_params)
         # Detect ArUco markers in the video frame
         # (corners, marker_ids, rejected) = cv2.aruco.detectMarkers(
         #     detectingImage , this_aruco_dictionary, parameters=this_aruco_parameters,
@@ -394,7 +409,7 @@ class ArucoToCamlinkTF(Node):
 
     def camera_info_callback(self, msg: CameraInfo) -> None:
         self.is_camera_info_set = True
-        s = 1.045
+        s = 1.0
         self.distortion_params = np.zeros((5,), np.float32) 
         self.distortion_params[0] = msg.d[0] 
         self.distortion_params[1] = msg.d[1] 
@@ -403,12 +418,12 @@ class ArucoToCamlinkTF(Node):
         self.distortion_params[4] = msg.d[4] 
 
         self.projection_matrix_k = np.zeros((3,3), np.float32)
-        self.projection_matrix_k[0,0] = msg.k[0] * s
+        self.projection_matrix_k[0,0] = msg.k[0] * s * 1.0 # more fx and the camera move in x direction
         self.projection_matrix_k[0,1] = msg.k[1] * s
         self.projection_matrix_k[0,2] = msg.k[2] * s
         self.projection_matrix_k[1,0] = msg.k[3] * s
         self.projection_matrix_k[1,1] = msg.k[4] * s
-        self.projection_matrix_k[1,2] = msg.k[5] * s
+        self.projection_matrix_k[1,2] = msg.k[5] * s 
         self.projection_matrix_k[2,0] = msg.k[6] * s
         self.projection_matrix_k[2,1] = msg.k[7] * s
         self.projection_matrix_k[2,2] = msg.k[8] * s
