@@ -98,12 +98,12 @@ private:
       // step 2
 
       // moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-      joint_group_positions[0] = 161 * 3.14159 / 180;  // Shoulder Pan
-      joint_group_positions[1] = -4 * 3.14159 / 180;   // Shoulder Lift
-      joint_group_positions[2] = 92 * 3.14159 / 180;   // Elbow
-      joint_group_positions[3] = -106 * 3.14159 / 180; // Wrist 1
-      joint_group_positions[4] = -20 * 3.14159 / 180;  // Wrist 2
-      joint_group_positions[5] = -87 * 3.14159 / 180;  // Wrist 3
+      joint_group_positions[0] = 161 * 3.14159 / 180; // Shoulder Pan
+      joint_group_positions[1] = -24 * 3.14159 / 180; // Shoulder Lift
+      joint_group_positions[2] = 111 * 3.14159 / 180; // Elbow
+      joint_group_positions[3] = -80 * 3.14159 / 180; // Wrist 1
+      joint_group_positions[4] = -20 * 3.14159 / 180; // Wrist 2
+      joint_group_positions[5] = -96 * 3.14159 / 180; // Wrist 3
 
       move_group->setJointValueTarget(joint_group_positions);
       bool success2 = (move_group->plan(my_plan) ==

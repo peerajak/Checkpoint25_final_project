@@ -153,7 +153,7 @@ class HoleToCamlinkTF(Node):
         """
         This function broadcasts a new TF message to the TF network.
         """
-        self.transform_stamped.header.frame_id = "wrist_rgbd_camera_depth_optical_frame"
+        self.transform_stamped.header.frame_id = "camera_solution_frame"  #"wrist_rgbd_camera_depth_optical_frame"
         if(self.is_marker_detected):
             # print('broadcast_new_tf')
             # Get the current odometry data.

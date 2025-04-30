@@ -333,3 +333,6 @@ at line 116
 
 your proper xyz rpy
 
+### Real Robot Result
+
+![alt text](cp25_Success_real_robot_params.png)
