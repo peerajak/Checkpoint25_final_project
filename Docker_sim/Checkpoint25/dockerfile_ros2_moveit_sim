@@ -35,16 +35,17 @@ RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 WORKDIR /ros2_ws
 
 COPY universal_robot_ros2.tar /ros2_ws/src
-COPY Checkpoint25_final_project.tar /ros2_ws/src
-RUN cd /ros2_ws/src && tar xf universal_robot_ros2.tar && tar xf Checkpoint25_final_project.tar && git clone --branch humble https://github.com/ros-planning/moveit2_tutorials
+RUN cd /ros2_ws/src && tar xf universal_robot_ros2.tar && git clone --branch humble https://github.com/ros-planning/moveit2_tutorials
 
 #install moveit
-
 RUN apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y ros-humble-warehouse-*
 RUN cd /ros2_ws/src && vcs import < moveit2_tutorials/moveit2_tutorials.repos
 RUN apt update && cd /ros2_ws/src  && rosdep install -r --from-paths . --ignore-src --rosdistro humble  --skip-keys=warehouse_ros_mongo -y
 
 RUN cd /ros2_ws && source /opt/ros/humble/setup.bash  && colcon build 
+
+RUN cd /ros2_ws/ && cd src && git clone -b main https://github.com/peerajak/Checkpoint25_final_project.git 
+RUN cd /ros2_ws && source /ros2_ws/install/setup.bash  && colcon build --packages-select launch_cp25 moveit_services my_tf_aruco real_moveit_config moveit2_scripts my_moveit_config cp25_custom_interfaces
 
 RUN mkdir -p /home/user && ln -s /ros2_ws /home/user/
 COPY entrypoint_ros2_moveit_sim.sh /ros2_ws/entrypoint.sh

@@ -29,12 +29,8 @@ COPY async_web_server_cpp.tar /ros1_ws/src/
 COPY course_web_dev_ros.tar /ros1_ws/src/
 COPY tf2_web_republisher.tar /ros1_ws/src/
 COPY web_video_server.tar /ros1_ws/src/
-COPY robotnik_sensors.tar /ros1_ws/src/
-COPY rg2_gripper_description.tar /ros1_ws/src/
-COPY Universal_Robots_ROS2_Description.tar /ros1_ws/src/
 
-RUN cd /ros1_ws/src && tar xf async_web_server_cpp.tar && tar xf course_web_dev_ros.tar && tar xf tf2_web_republisher.tar && tar xf web_video_server.tar && \
-tar xf robotnik_sensors.tar && tar xf rg2_gripper_description.tar && tar xf Universal_Robots_ROS2_Description.tar
+RUN cd /ros1_ws/src && tar xf async_web_server_cpp.tar && tar xf course_web_dev_ros.tar && tar xf tf2_web_republisher.tar && tar xf web_video_server.tar 
 COPY tf2_web.launch /ros1_ws/src/course_web_dev_ros/launch/
 COPY web2.launch /ros1_ws/src/course_web_dev_ros/launch/
 
@@ -43,6 +39,7 @@ RUN cd /ros1_ws/ && rosdep init && \
 rosdep update && \
 rosdep install --from-paths src --ignore-src -r -y
 
+RUN cd /ros1_ws/src && git clone -b main https://github.com/peerajak/Checkpoint25_final_project_ros1_and_ros1_bridge.git
 # Build the Catkin workspace and ensure it's sourced
 RUN source /opt/ros/noetic/setup.bash \
  && cd /ros1_ws \

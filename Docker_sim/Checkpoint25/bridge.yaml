@@ -27,11 +27,42 @@ topics:
     type: sensor_msgs/msg/Image
     queue_size: 1
 
+  -
+    topic:  /wrist_rgbd_depth_sensor/image_hole_frame
+    type: sensor_msgs/msg/Image
+    queue_size: 1
+
+  - topic: /moveit_goto_pose
+    type: geometry_msgs/msg/Pose
+    queue_size: 1
+
+  - topic: /wrist_rgbd_depth_sensor/camera_info
+    type: sensor_msgs/msg/CameraInfo
+    queue_size: 1
+
+  - topic: /wrist_rgbd_depth_sensor/calibrate_object
+    type: std_msgs/msg/Float32MultiArray
+    queue_size: 1
+    
+
 
 services_1_to_2:
   -
     service: /moveit_sim_service # ROS 2 service name
     type: std_srvs/srv/SetBool  # The ROS 2 service type name
+
+  -
+    service: /moveit_sim_hole_service # ROS 2 service name
+    type: std_srvs/srv/SetBool  # The ROS 2 service type name
+
   -
     service: /planning_scene_cp25 # ROS 2 service name
     type: std_srvs/srv/Empty  # The ROS 2 service type name
+
+  -
+    service: /tf2_pub_service # ROS 2 service name
+    type: std_srvs/srv/SetBool  # The ROS 2 service type name
+
+  -
+    service: /change_hole_mode_service # ROS 2 service name
+    type: std_srvs/srv/SetBool  # The ROS 2 service type name 
