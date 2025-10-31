@@ -30,6 +30,14 @@ source ~/ros2_ws/install/setup.bash
 ros2 launch the_construct_office_gazebo starbots_ur3e.launch.xml
 ```
 
+or
+
+```
+xhost +local:root
+cd ~/ros2_ws/src/Checkpoint25_final_project/Docker_sim/Checkpoint25
+docker compose -f docker-compose-ros2sim_only.yml up
+```
+
 Check if controllers are loaded successfully
 
 ```

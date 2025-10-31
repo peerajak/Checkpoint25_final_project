@@ -1,0 +1,56 @@
+FROM ros:humble-ros-core-jammy
+
+# Change the default shell to Bash
+SHELL [ "/bin/bash" , "-c" ]
+
+# Install Git
+RUN apt-get update 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential git cmake pkg-config curl 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common
+
+# Install ros2 humble
+RUN add-apt-repository universe
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+RUN apt-get update
+RUN apt-get upgrade -y
+
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ros-humble-desktop ros-humble-joint-state-publisher ros-humble-robot-state-publisher \
+ros-humble-cartographer ros-humble-cartographer-ros ros-humble-gazebo-plugins ros-humble-teleop-twist-keyboard \
+ros-humble-teleop-twist-joy ros-humble-rviz2 ros-humble-xacro ros-humble-nav2* ros-humble-urdf python3-colcon-common-extensions
+
+RUN apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y vim ros-humble-image-tools ros-humble-rqt-image-view ros-humble-controller-manager* ros-humble-moveit-visual-tools \
+ros-humble-ros2-control* ros-humble-control* ros-humble-gazebo-ros2-control ros-humble-*-ros2-control* python3-vcstool python3-rosdep python3-colcon-common-extensions python3-colcon-mixin
+
+RUN rosdep init && rosdep update
+# Create a Catkin workspace and clone Tortoisebot repos
+RUN source /opt/ros/humble/setup.bash 
+RUN mkdir -p /ros2_ws/src 
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+
+
+# Set the working folder at startup
+WORKDIR /ros2_ws
+
+COPY universal_robot_ros2.tar /ros2_ws/src
+RUN cd /ros2_ws/src && tar xf universal_robot_ros2.tar && git clone --branch humble https://github.com/ros-planning/moveit2_tutorials
+
+#install moveit
+RUN apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y ros-humble-warehouse-*
+RUN cd /ros2_ws/src && vcs import < moveit2_tutorials/moveit2_tutorials.repos
+RUN apt update && cd /ros2_ws/src  && rosdep install -r --from-paths . --ignore-src --rosdistro humble  --skip-keys=warehouse_ros_mongo -y
+
+RUN cd /ros2_ws && source /opt/ros/humble/setup.bash  && colcon build 
+
+RUN cd /ros2_ws/ && cd src && git clone -b main https://github.com/peerajak/Checkpoint25_final_project.git 
+RUN cd /ros2_ws && source /ros2_ws/install/setup.bash  && colcon build --packages-select launch_cp25 moveit_services my_tf_aruco real_moveit_config moveit2_scripts my_moveit_config cp25_custom_interfaces
+
+RUN mkdir -p /home/user && ln -s /ros2_ws /home/user/
+COPY entrypoint_ros2_moveit_sim_only.sh /ros2_ws/entrypoint.sh
+RUN echo "source /ros2_ws/install/setup.bash " >> /root/.bashrc
+
+# Gazenp and RVIZ slam
+#ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && ros2 launch tortoisebot_bringup autobringup.launch.py use_sim_time:=True exploration:=True"]
+#CMD ["/bin/bash", "-c" , "source /ros2_ws/install/setup.bash && ros2 launch the_construct_office_gazebo starbots_ur3e.launch.xml"]
