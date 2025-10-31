@@ -3,7 +3,7 @@ services:
 
 
   ros2_sim:
-    image: ros2_moveit_sim:v1
+    image: ros2_moveit_sim_only:v1
     build: 
       dockerfile: ./dockerfile_ros2_moveit_sim_only 
     container_name: ros2_sim
