@@ -16,74 +16,74 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix   
 
 
-  ros1_core:
-    image: test:ros1_bridge
-    container_name: ros1_core
-    networks:
-        - test-bridge-network 
-    environment:
-        - ROS_MASTER_URI=http://ros1_core:11311
-    command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix   
-    depends_on:
-      ros2_sim:
-         condition: service_started
+  # ros1_core:
+  #   image: test:ros1_bridge
+  #   container_name: ros1_core
+  #   networks:
+  #       - test-bridge-network 
+  #   environment:
+  #       - ROS_MASTER_URI=http://ros1_core:11311
+  #   command: bash -c "source /ros1_ws/devel_isolated/setup.bash && roscore"
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix   
+  #   depends_on:
+  #     ros2_sim:
+  #        condition: service_started
 
 
-  ros1_bridge:
-    image: test:ros1_bridge
-    container_name: ros1_bridge
-    networks:
-        - test-bridge-network 
-    environment:
-        - ROS_DOMAIN_ID=2
-        - ROS_MASTER_URI=http://ros1_core:11311
-        - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
-        - ROS2_INSTALL_PATH=/ros2_ws/install
-    command: bash -c "cd /ros1_bridge/ && source /ros1_ws/devel_isolated/setup.bash && source /ros1_bridge/install/setup.bash && ros2 run ros1_bridge parameter_bridge"
-    #command: bash -c "cd /ros1_bridge/ && source /ros1_ws/devel_isolated/setup.bash && source /ros1_bridge/install/setup.bash && ros2 run ros1_bridge dynamic_bridge"
-    depends_on:
-      - ros1_core
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix  
+  # ros1_bridge:
+  #   image: test:ros1_bridge
+  #   container_name: ros1_bridge
+  #   networks:
+  #       - test-bridge-network 
+  #   environment:
+  #       - ROS_DOMAIN_ID=2
+  #       - ROS_MASTER_URI=http://ros1_core:11311
+  #       - ROS1_INSTALL_PATH=/ros1_ws/devel_isolated
+  #       - ROS2_INSTALL_PATH=/ros2_ws/install
+  #   command: bash -c "cd /ros1_bridge/ && source /ros1_ws/devel_isolated/setup.bash && source /ros1_bridge/install/setup.bash && ros2 run ros1_bridge parameter_bridge"
+  #   #command: bash -c "cd /ros1_bridge/ && source /ros1_ws/devel_isolated/setup.bash && source /ros1_bridge/install/setup.bash && ros2 run ros1_bridge dynamic_bridge"
+  #   depends_on:
+  #     - ros1_core
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix  
 
-  ros1_tf2_webbridge:
-    image: ros1_and_web_bridge:v1
-    container_name: ros1_tf2_webbridge  
-    networks:
-      - test-bridge-network
-    ports:
-      - 9090:9090
-      - 8080:8080
-      - 11315:11315
-    depends_on:
-      - ros1_core
-    environment:
-      - SLOT_ROSBRIDGE_PORT=20001
-      - ROS_MASTER_URI=http://ros1_core:11311
-      - ROS_HOSTNAME=ros1_tf2_webbridge
-      - DISPLAY=${DISPLAY} 
-    command: bash -c "sleep 10 && source /opt/ros/noetic/setup.bash  && /ros1_ws/entrypoint.sh" 
-    # command: bash -c "sleep 2 && source /opt/ros/noetic/setup.bash  && rosrun rqt_image_view rqt_image_view /camera/image_raw" 
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix    
+  # ros1_tf2_webbridge:
+  #   image: ros1_and_web_bridge:v1
+  #   container_name: ros1_tf2_webbridge  
+  #   networks:
+  #     - test-bridge-network
+  #   ports:
+  #     - 9090:9090
+  #     - 8080:8080
+  #     - 11315:11315
+  #   depends_on:
+  #     - ros1_core
+  #   environment:
+  #     - SLOT_ROSBRIDGE_PORT=20001
+  #     - ROS_MASTER_URI=http://ros1_core:11311
+  #     - ROS_HOSTNAME=ros1_tf2_webbridge
+  #     - DISPLAY=${DISPLAY} 
+  #   command: bash -c "sleep 10 && source /opt/ros/noetic/setup.bash  && /ros1_ws/entrypoint.sh" 
+  #   # command: bash -c "sleep 2 && source /opt/ros/noetic/setup.bash  && rosrun rqt_image_view rqt_image_view /camera/image_raw" 
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix    
 
 
-  web-server:
-    image: ubuntu2004_webapp:v1
-    container_name: web-server
-    ports:
-      - 7000:8001 # Host:Container port
-    networks:
-      - test-bridge-network
-    depends_on:
-      - ros1_tf2_webbridge
-      - ros2_sim
-    environment:
-      - ROS_MASTER_URI=http://ros1_core:11311
-      - ROS_HOSTNAME=web-server
-    command: "entrypoint.sh"
+  # web-server:
+  #   image: ubuntu2004_webapp:v1
+  #   container_name: web-server
+  #   ports:
+  #     - 7000:8001 # Host:Container port
+  #   networks:
+  #     - test-bridge-network
+  #   depends_on:
+  #     - ros1_tf2_webbridge
+  #     - ros2_sim
+  #   environment:
+  #     - ROS_MASTER_URI=http://ros1_core:11311
+  #     - ROS_HOSTNAME=web-server
+  #   command: "entrypoint.sh"
 
 
 networks:
