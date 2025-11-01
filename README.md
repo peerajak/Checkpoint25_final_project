@@ -4,8 +4,8 @@
 
 
 ```
-git clone <this repo git addr>
-cd Checkpoint25_final_project/Docker_sim/Checkpoint25
+xhost +local:root
+cd ~/ros2_ws/src/Checkpoint25_final_project/Docker_sim/Checkpoint25
 docker compose up
 ```
 then Open your web browser to 
