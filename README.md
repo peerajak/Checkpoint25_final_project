@@ -2,6 +2,17 @@
 
 ## Fast solutution
 
+Append these lines to .bashrc
+
+```
+source /opt/ros/humble/setup.bash
+export ROS1_INSTALL_PATH=/home/peerajak/ros1_source_ws/install_isolated/
+export ROS2_INSTALL_PATH=/opt/ros/humble/
+export ROS1_BRIDGE_INSTALL_PATH=/home/peerajak/ros2_ws_ros1_bridge/install/
+export ROS_DOMAIN_ID=2
+source ~/ros2_ws/install/setup.bash
+```
+
 
 ```
 xhost +local:root
