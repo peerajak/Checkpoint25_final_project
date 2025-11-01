@@ -229,8 +229,8 @@ class HoleToCamlinkTF(Node):
         gray = cv2.medianBlur(gray, 5)      
         rows = gray.shape[0]
         print('detecting holes...')
-        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 16,
-                                param1=50, param2=15,
+        circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,
+                                param1=70, param2=20,
                                 minRadius=1, maxRadius=30)
         corners = []
         centers = []
