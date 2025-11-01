@@ -221,7 +221,7 @@ class HoleToCamlinkTF(Node):
                 print("failed to capture videos")
                 return
         detectingImage = self.cv_image.copy() 
-        detectingImage = self.increase_brightness(detectingImage, 35)
+        detectingImage = self.increase_brightness(detectingImage, 100)
         # Detect hole in the video frame
         # return (list) bounding_box_ids, (what data type?) corners
 
@@ -230,7 +230,7 @@ class HoleToCamlinkTF(Node):
         rows = gray.shape[0]
         # print('detecting holes...')
         circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,
-                                param1=40, param2=20,
+                                param1=30, param2=15,
                                 minRadius=5, maxRadius=30)
         corners = []
         centers = []
